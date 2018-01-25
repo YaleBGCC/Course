@@ -1,0 +1,34 @@
+title: "Ecology, Statistics, and Data Science with R"
+type: inverse
+left:
+  - text: "Home"
+    href: index.html
+  - text: "Schedule"
+    href: Head2_Schedule.html
+  - text: "Course Materials"
+    menu:
+      - text: "About Course Content"
+        href: Head1_CourseContent.html
+      - text: "-----------------"
+      - text: "Module 1: Introduction to R"
+      - text: "1.0 Course Introduction"
+        href: 00_CourseIntroductionFrame.html
+      - text: "1.1 First Steps"
+        href: 01_Rintro.html
+      - text: "1.2 Data Wrangling"
+        href: 02_DataWrangling.html
+      - text: "1.3 Plotting"
+        href: 03_Plotting.html
+      - text: "2.1 Spatial Data"
+        href: 04_Spatial.html
+      - text: "2.2 Spatial Raster Data"
+        href: 05_Raster.html
+      - text: "2.3 More Raster Data"
+        href: 06_RasterTwo.html
+      - text: "-----------------"
+      - text: "-----------------"
+  - text: "Resources"
+    href: Head3_Resources.html
+right:
+  - icon: fa-github fa-lg
+    href: https://github.com/cmerow/RDataScience/tree/gh-pages

@@ -1,0 +1,21 @@
+output_dir: '.'
+output:
+  html_document:
+    theme: readable
+    highlight: textmate
+    mathjax: null
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    includes:
+      after_body: include/after_body.html
+    css: cm_yeti_bootswatch.css
+    keep_md: true
+    code_folding: show
+    df_print: paged
+    fig_caption: yes
+      
+
+    
+    
