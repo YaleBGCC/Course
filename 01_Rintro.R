@@ -3,18 +3,17 @@
 #' ---
 #' 
 #' 
-#' <div>
-#' <object data="01_assets/01_Rintro.pdf" type="application/pdf" width="100%" height="600px"> 
-#'   <p>It appears you don't have a PDF plugin for this browser.
-#'    No biggie... you can <a href="01_assets/01_Rintro.pdf">click here to
-#'   download the PDF file.</a></p>  
-#'  </object>
-#'  </div>
-#'  <p><a href="01_assets/01_Rintro.pdf">Download the PDF of the presentation</a></p>  
+#' <!-- <div> -->
+#' <!-- <object data="01_assets/01_Rintro.pdf" type="application/pdf" width="100%" height="600px">  -->
+#' <!--   <p>It appears you don't have a PDF plugin for this browser. -->
+#' <!--    No biggie... you can <a href="01_assets/01_Rintro.pdf">click here to -->
+#' <!--   download the PDF file.</a></p>   -->
+#' <!--  </object> -->
+#' <!--  </div> -->
+#' <!--  <p><a href="01_assets/01_Rintro.pdf">Download the PDF of the presentation</a></p>   -->
 #' 
 #' 
 #' # First Steps
-#' This tutorial has been forked from awesome classes developed by Adam Wilson here: http://adamwilson.us/RDataScience/
 #' 
 #' [<i class="fa fa-file-code-o fa-3x" aria-hidden="true"></i> The R Script associated with this page is available here](`r output`).  Download this file and open it (or copy-paste into a new script) with RStudio so you can follow along.  
 #' 
@@ -292,4 +291,6 @@ library(raster)
 #' 
 #' 
 #' If you don't have the packages above, install them in the package manager or by running `install.packages("raster")`.
+#' 
+#' This tutorial has been forked from awesome classes developed by Adam Wilson here: http://adamwilson.us/RDataScience/
 #' 
