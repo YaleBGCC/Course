@@ -23,8 +23,6 @@ left:
         href: 04_Spatial.html
       - text: "2.2 Spatial Raster Data"
         href: 05_Raster.html
-      - text: "2.3 More Raster Data"
-        href: 06_RasterTwo.html
       - text: "-----------------"
       - text: "-----------------"
   - text: "Resources"
