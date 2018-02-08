@@ -199,7 +199,7 @@ m + # reference the data
 #' 2. _Select country_: Country name of the boundaries using its ISO A3 country code
 #' 3. _Specify level_: Level of of administrative subdivision (0=country, 1=first level subdivision).
 #' 
-#' ## GADM:  Global Administrative Areas
+#' ## Shapefiles: Global Administrative Areas
 #' Administrative areas in this database are countries and lower level subdivisions.  
 #' 
 #' <img src="05_assets/gadm25.png" alt="alt text" width="70%">
@@ -369,13 +369,13 @@ gplot(r,maxpixels=10)+
 #' 
 #' 
 #' 
-#' Can use all the `ggplot` color ramps, etc.
+#' <!-- Can use all the `ggplot` color ramps, etc. -->
 #' 
-## ------------------------------------------------------------------------
-gplot(r)+ # reference the data
-  geom_raster(aes(fill=value))+ # cell's data value determines its color
-  scale_fill_distiller(palette="OrRd") # specify the color pallette
-
+#' <!-- ```{r} -->
+#' <!-- gplot(r)+ # reference the data -->
+#' <!--   geom_raster(aes(fill=value))+ # cell's data value determines its color -->
+#' <!--   scale_fill_distiller(palette="OrRd") # specify the color pallette -->
+#' <!-- ``` -->
 #' 
 #' ## Spatial Projections
 #' 
@@ -626,22 +626,22 @@ gplot(clim[[1]])+
   coord_equal()
 
 #' 
-#' ### Summarize climate data at point locations
-#' Use `gather()` to reshape the climate data for easy plotting with ggplot.
+#' <!-- ### Summarize climate data at point locations -->
+#' <!-- Use `gather()` to reshape the climate data for easy plotting with ggplot. -->
 #' 
-## ----warning=F-----------------------------------------------------------
-d2=pts_data%>%
-  gather(ID)
-colnames(d2)[1]="cell"
-head(d2)
-
+#' <!-- ```{r,warning=F} -->
+#' <!-- d2=pts_data%>% -->
+#' <!--   gather(ID) -->
+#' <!-- colnames(d2)[1]="cell" -->
+#' <!-- head(d2) -->
+#' <!-- ``` -->
 #' 
-#' And plot density plots (like histograms).
-## ------------------------------------------------------------------------
-ggplot(d2,aes(x=value))+
-  geom_density()+
-  facet_wrap(~ID,scales="free")
-
+#' <!-- And plot density plots (like histograms). -->
+#' <!-- ```{r} -->
+#' <!-- ggplot(d2,aes(x=value))+ -->
+#' <!--   geom_density()+ -->
+#' <!--   facet_wrap(~ID,scales="free") -->
+#' <!-- ``` -->
 #' 
 #' 
 #' ### Lines

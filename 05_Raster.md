@@ -375,7 +375,7 @@ Raster package includes access to some useful (vector and raster) datasets with 
 2. _Select country_: Country name of the boundaries using its ISO A3 country code
 3. _Specify level_: Level of of administrative subdivision (0=country, 1=first level subdivision).
 
-## GADM:  Global Administrative Areas
+## Shapefiles: Global Administrative Areas
 Administrative areas in this database are countries and lower level subdivisions.  
 
 <img src="05_assets/gadm25.png" alt="alt text" width="70%">
@@ -788,20 +788,13 @@ gplot(r,maxpixels=10)+
 
 
 
-Can use all the `ggplot` color ramps, etc.
+<!-- Can use all the `ggplot` color ramps, etc. -->
 
-
-```r
-gplot(r)+ # reference the data
-  geom_raster(aes(fill=value))+ # cell's data value determines its color
-  scale_fill_distiller(palette="OrRd") # specify the color pallette
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
+<!-- ```{r} -->
+<!-- gplot(r)+ # reference the data -->
+<!--   geom_raster(aes(fill=value))+ # cell's data value determines its color -->
+<!--   scale_fill_distiller(palette="OrRd") # specify the color pallette -->
+<!-- ``` -->
 
 ## Spatial Projections
 
@@ -863,30 +856,6 @@ Download the data:
 clim=getData('worldclim', var='bio', res=10) 
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
 `res` is resolution (0.5, 2.5, 5, and 10 minutes of a degree)
 
 
@@ -925,16 +894,7 @@ gain(clim)=0.1
 plot(clim[[1:3]]) # just the first 3, since its slow
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
  
 
@@ -950,12 +910,6 @@ gplot(clim[[1:3]])+geom_raster(aes(fill=value))+
 ```
 
 ```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```
 ## Warning in self$trans$transform(x): NaNs produced
 ```
 
@@ -963,7 +917,7 @@ gplot(clim[[1:3]])+geom_raster(aes(fill=value))+
 ## Warning: Transformation introduced infinite values in discrete y-axis
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
 
 
 
@@ -985,7 +939,7 @@ object.size(clim)
 ```
 
 ```
-## 227920 bytes
+## 233840 bytes
 ```
 
 ```r
@@ -1006,19 +960,8 @@ Use `[[1:3]]` to select raster layers from raster stack.
 ```r
 ## crop to a latitude/longitude box
 r1 <- crop(clim[[1]], extent(10,35,-35,-20))
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 ## Crop using a Spatial polygon
 r1 <- crop(clim[[1]], bbox(za))
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
 ```
 
 
@@ -1043,13 +986,7 @@ r1
 plot(r1)
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
 
 ## Spatial aggregation
 
@@ -1059,14 +996,7 @@ aggregate(r1, 3, fun=mean) %>%
   plot()
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
 
 <div class="well">
 ## Your turn
@@ -1081,14 +1011,7 @@ aggregate(r1, 10, fun=min) %>%
   plot()
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
 </div>
 </div>
 
@@ -1100,61 +1023,21 @@ focal(r1, w=matrix(1,3,3), fun=mean) %>%
   plot()
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-49-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
 
 
 ```r
 ## apply a function over a moving window
 rf_min <- focal(r1, w=matrix(1,11,11), fun=min)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 rf_max <- focal(r1, w=matrix(1,11,11), fun=max)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 rf_range=rf_max-rf_min
-```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 ## or just use the range function
 rf_range2 <- focal(r1, w=matrix(1,11,11), fun=range)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 plot(rf_range2)
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-50-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-49-1.png)<!-- -->
 
 <div class="well">
 ## Your turn
@@ -1170,14 +1053,7 @@ focal(r1,w=matrix(1,3,3),fun=sd)%>%
   plot()
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-51-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-50-1.png)<!-- -->
 </div>
 </div>
 
@@ -1201,13 +1077,6 @@ cellStats(r1,range)
 ```r
 ## add 10
 s = r1 + 10
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 cellStats(s,range)
 ```
 
@@ -1219,13 +1088,6 @@ cellStats(s,range)
 ```r
 ## take the square root
 s = sqrt(r1)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 cellStats(s,range)
 ```
 
@@ -1236,13 +1098,6 @@ cellStats(s,range)
 ```r
 # round values
 r = round(r1)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 cellStats(r,range)
 ```
 
@@ -1253,23 +1108,10 @@ cellStats(r,range)
 ```r
 # find cells with values less than 15 degrees C
 r = r1 < 15
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 plot(r)
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-53-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-52-1.png)<!-- -->
 
 
 
@@ -1278,14 +1120,6 @@ plot(r)
 ```r
 # multiply s times r and add 5
 s = s * r1 + 5
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 cellStats(s,range)
 ```
 
@@ -1313,49 +1147,24 @@ Generate 100 random points and the associated climate variables at those points.
 ```r
 ## define a new dataset of points to play with
 pts=sampleRandom(clim,100,xy=T,sp=T)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 plot(pts);axis(1);axis(2)
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-55-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-54-1.png)<!-- -->
 
 ### Extract data using a `SpatialPoints` object
 Often you will have some locations (points) for which you want data from a raster* object.  You can use the `extract` function here with the `pts` object (we'll pretend it's a new point dataset for which you want climate variables).
 
 ```r
 pts_data=raster::extract(clim[[1:4]],pts,df=T)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 head(pts_data)
 ```
 
-```
-##   ID bio1 bio2 bio3   bio4
-## 1  1 12.7 12.6  2.8 1114.2
-## 2  2  3.1  8.4  2.5  838.5
-## 3  3 23.0 11.6  7.0   90.5
-## 4  4  2.9 15.2  3.1 1098.9
-## 5  5 11.8  8.7  3.2  642.8
-## 6  6 23.7 13.4  6.2  259.9
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["bio4"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"12.7","3":"12.6","4":"2.8","5":"1114.2","_rn_":"1"},{"1":"2","2":"3.1","3":"8.4","4":"2.5","5":"838.5","_rn_":"2"},{"1":"3","2":"23.0","3":"11.6","4":"7.0","5":"90.5","_rn_":"3"},{"1":"4","2":"2.9","3":"15.2","4":"3.1","5":"1098.9","_rn_":"4"},{"1":"5","2":"11.8","3":"8.7","4":"3.2","5":"642.8","_rn_":"5"},{"1":"6","2":"23.7","3":"13.4","4":"6.2","5":"259.9","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 > Use `package::function` to avoid confusion with similar functions.
 
 
@@ -1370,43 +1179,24 @@ gplot(clim[[1]])+
   coord_equal()
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
+![](05_Raster_files/figure-html/unnamed-chunk-56-1.png)<!-- -->
 
-![](05_Raster_files/figure-html/unnamed-chunk-57-1.png)<!-- -->
+<!-- ### Summarize climate data at point locations -->
+<!-- Use `gather()` to reshape the climate data for easy plotting with ggplot. -->
 
-### Summarize climate data at point locations
-Use `gather()` to reshape the climate data for easy plotting with ggplot.
+<!-- ```{r,warning=F} -->
+<!-- d2=pts_data%>% -->
+<!--   gather(ID) -->
+<!-- colnames(d2)[1]="cell" -->
+<!-- head(d2) -->
+<!-- ``` -->
 
-
-```r
-d2=pts_data%>%
-  gather(ID)
-colnames(d2)[1]="cell"
-head(d2)
-```
-
-```
-##   cell   ID value
-## 1    1 bio1  12.7
-## 2    2 bio1   3.1
-## 3    3 bio1  23.0
-## 4    4 bio1   2.9
-## 5    5 bio1  11.8
-## 6    6 bio1  23.7
-```
-
-And plot density plots (like histograms).
-
-```r
-ggplot(d2,aes(x=value))+
-  geom_density()+
-  facet_wrap(~ID,scales="free")
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-59-1.png)<!-- -->
+<!-- And plot density plots (like histograms). -->
+<!-- ```{r} -->
+<!-- ggplot(d2,aes(x=value))+ -->
+<!--   geom_density()+ -->
+<!--   facet_wrap(~ID,scales="free") -->
+<!-- ``` -->
 
 
 ### Lines
@@ -1430,11 +1220,7 @@ gplot(r1)+geom_tile(aes(fill=value))+
   geom_line(aes(x=long,y=lat),data=fortify(transect),col="red")
 ```
 
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-![](05_Raster_files/figure-html/unnamed-chunk-60-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-57-1.png)<!-- -->
 
 
 
@@ -1447,33 +1233,14 @@ trans=raster::extract(x=clim[[12:14]],
                       along=T,
                       cellnumbers=T)%>%
   data.frame()
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 head(trans)
 ```
 
-```
-##      cell bio12 bio13 bio14
-## 1 1601755  81.4  13.0   2.0
-## 2 1601756  71.9  11.6   1.7
-## 3 1601757  56.8   8.8   1.5
-## 4 1601758  47.9   7.2   1.3
-## 5 1601759  41.5   6.1   1.3
-## 6 1601760  36.1   5.0   1.2
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["cell"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio12"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio13"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio14"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"1601755","2":"81.4","3":"13.0","4":"2.0","_rn_":"1"},{"1":"1601756","2":"71.9","3":"11.6","4":"1.7","_rn_":"2"},{"1":"1601757","2":"56.8","3":"8.8","4":"1.5","_rn_":"3"},{"1":"1601758","2":"47.9","3":"7.2","4":"1.3","_rn_":"4"},{"1":"1601759","2":"41.5","3":"6.1","4":"1.3","_rn_":"5"},{"1":"1601760","2":"36.1","3":"5.0","4":"1.2","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 #### Add other metadata and reshape
 
@@ -1483,15 +1250,11 @@ trans$order=as.integer(rownames(trans))
 head(trans)  
 ```
 
-```
-##      cell bio12 bio13 bio14      lon      lat order
-## 1 1601755  81.4  13.0   2.0 19.08333 19.08333     1
-## 2 1601756  71.9  11.6   1.7 19.25000 19.25000     2
-## 3 1601757  56.8   8.8   1.5 19.41667 19.41667     3
-## 4 1601758  47.9   7.2   1.3 19.58333 19.58333     4
-## 5 1601759  41.5   6.1   1.3 19.75000 19.75000     5
-## 6 1601760  36.1   5.0   1.2 19.91667 19.91667     6
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["cell"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio12"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio13"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio14"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["lon"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["lat"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["order"],"name":[7],"type":["int"],"align":["right"]}],"data":[{"1":"1601755","2":"81.4","3":"13.0","4":"2.0","5":"19.08333","6":"19.08333","7":"1","_rn_":"1"},{"1":"1601756","2":"71.9","3":"11.6","4":"1.7","5":"19.25000","6":"19.25000","7":"2","_rn_":"2"},{"1":"1601757","2":"56.8","3":"8.8","4":"1.5","5":"19.41667","6":"19.41667","7":"3","_rn_":"3"},{"1":"1601758","2":"47.9","3":"7.2","4":"1.3","5":"19.58333","6":"19.58333","7":"4","_rn_":"4"},{"1":"1601759","2":"41.5","3":"6.1","4":"1.3","5":"19.75000","6":"19.75000","7":"5","_rn_":"5"},{"1":"1601760","2":"36.1","3":"5.0","4":"1.2","5":"19.91667","6":"19.91667","7":"6","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 
 ```r
@@ -1500,19 +1263,11 @@ transl=group_by(trans,lon,lat)%>%
 head(transl)
 ```
 
-```
-## Source: local data frame [6 x 6]
-## Groups: lon, lat [6]
-## 
-##      cell      lon      lat order variable value
-##     <dbl>    <dbl>    <dbl> <int>    <chr> <dbl>
-## 1 1601755 19.08333 19.08333     1    bio12  81.4
-## 2 1601756 19.25000 19.25000     2    bio12  71.9
-## 3 1601757 19.41667 19.41667     3    bio12  56.8
-## 4 1601758 19.58333 19.58333     4    bio12  47.9
-## 5 1601759 19.75000 19.75000     5    bio12  41.5
-## 6 1601760 19.91667 19.91667     6    bio12  36.1
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["cell"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["lon"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["lat"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["order"],"name":[4],"type":["int"],"align":["right"]},{"label":["variable"],"name":[5],"type":["chr"],"align":["left"]},{"label":["value"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"1601755","2":"19.08333","3":"19.08333","4":"1","5":"bio12","6":"81.4"},{"1":"1601756","2":"19.25000","3":"19.25000","4":"2","5":"bio12","6":"71.9"},{"1":"1601757","2":"19.41667","3":"19.41667","4":"3","5":"bio12","6":"56.8"},{"1":"1601758","2":"19.58333","3":"19.58333","4":"4","5":"bio12","6":"47.9"},{"1":"1601759","2":"19.75000","3":"19.75000","4":"5","5":"bio12","6":"41.5"},{"1":"1601760","2":"19.91667","3":"19.91667","4":"6","5":"bio12","6":"36.1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 
 ```r
@@ -1523,7 +1278,7 @@ ggplot(transl,aes(x=lon,y=value,
   geom_line()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-64-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-61-1.png)<!-- -->
 
 
 
@@ -1536,40 +1291,6 @@ rsp=raster::extract(x=r1,
                     y=za,
                     fun=mean,
                     sp=T)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 #spplot(rsp,zcol="bio1")
 ```
 
@@ -1605,26 +1326,6 @@ ggplot(rsp@data, aes(map_id = id, fill=bio1)) +
 ```r
 country=getData('GADM', country='TUN', level=1)
 tmax=getData('worldclim', var='tmax', res=10)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 gain(tmax)=0.1
 names(tmax)
 ```
@@ -1688,28 +1389,10 @@ See `?sprintf` for details
 names(tmax)=sprintf("%02d",1:12)
 
 tmax_crop=crop(tmax,country)
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 tmaxave_crop=mean(tmax_crop)  # calculate mean annual maximum temperature 
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 tmaxavefocal_crop=focal(tmaxave_crop,
                         fun=median,
                         w=matrix(1,11,11))
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
 ```
 
 > Only a few datasets are available usig `getData()` in the raster package, but you can download almost any file on the web with `file.download()`.
@@ -1768,36 +1451,16 @@ trans=raster::extract(tmax_crop,
                       along=T,
                       cellnumbers=T)%>% 
   as.data.frame()
-```
-
-```
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-```
-
-```r
 trans[,c("lon","lat")]=coordinates(tmax_crop)[trans$cell]
 trans$order=as.integer(rownames(trans))
 head(trans)
 ```
 
-```
-##   cell  X01  X02  X03  X04  X05  X06  X07  X08  X09  X10  X11  X12
-## 1  229 12.0 13.3 16.7 20.4 24.5 30.4 34.5 33.9 29.4 23.0 17.3 13.0
-## 2  230 12.6 14.1 17.4 21.1 25.3 31.4 35.5 34.9 30.3 23.8 18.0 13.8
-## 3  231 12.8 14.3 17.6 21.3 25.6 31.8 36.1 35.4 30.7 24.1 18.2 14.0
-## 4  232 11.8 13.3 16.8 20.6 25.0 31.1 35.7 34.8 30.0 23.4 17.4 13.1
-## 5  233 11.6 13.1 16.6 20.4 25.0 30.9 35.7 34.7 29.9 23.3 17.4 13.0
-## 6  234 11.3 12.7 16.3 20.0 24.8 30.5 35.4 34.4 29.6 23.2 17.3 12.8
-##        lon      lat order
-## 1 8.083333 8.083333     1
-## 2 8.250000 8.250000     2
-## 3 8.416667 8.416667     3
-## 4 8.583333 8.583333     4
-## 5 8.750000 8.750000     5
-## 6 8.916667 8.916667     6
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["cell"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["X01"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["X02"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["X03"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["X04"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["X05"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["X06"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["X07"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["X08"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["X09"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["X10"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["X11"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["X12"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["lon"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["lat"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["order"],"name":[16],"type":["int"],"align":["right"]}],"data":[{"1":"229","2":"12.0","3":"13.3","4":"16.7","5":"20.4","6":"24.5","7":"30.4","8":"34.5","9":"33.9","10":"29.4","11":"23.0","12":"17.3","13":"13.0","14":"8.083333","15":"8.083333","16":"1","_rn_":"1"},{"1":"230","2":"12.6","3":"14.1","4":"17.4","5":"21.1","6":"25.3","7":"31.4","8":"35.5","9":"34.9","10":"30.3","11":"23.8","12":"18.0","13":"13.8","14":"8.250000","15":"8.250000","16":"2","_rn_":"2"},{"1":"231","2":"12.8","3":"14.3","4":"17.6","5":"21.3","6":"25.6","7":"31.8","8":"36.1","9":"35.4","10":"30.7","11":"24.1","12":"18.2","13":"14.0","14":"8.416667","15":"8.416667","16":"3","_rn_":"3"},{"1":"232","2":"11.8","3":"13.3","4":"16.8","5":"20.6","6":"25.0","7":"31.1","8":"35.7","9":"34.8","10":"30.0","11":"23.4","12":"17.4","13":"13.1","14":"8.583333","15":"8.583333","16":"4","_rn_":"4"},{"1":"233","2":"11.6","3":"13.1","4":"16.6","5":"20.4","6":"25.0","7":"30.9","8":"35.7","9":"34.7","10":"29.9","11":"23.3","12":"17.4","13":"13.0","14":"8.750000","15":"8.750000","16":"5","_rn_":"5"},{"1":"234","2":"11.3","3":"12.7","4":"16.3","5":"20.0","6":"24.8","7":"30.5","8":"35.4","9":"34.4","10":"29.6","11":"23.2","12":"17.3","13":"12.8","14":"8.916667","15":"8.916667","16":"6","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 Reformat to 'long' format.
 
@@ -1809,19 +1472,11 @@ transl=group_by(trans,lon,lat)%>%
 head(transl)
 ```
 
-```
-## Source: local data frame [6 x 8]
-## Groups: lon, lat [6]
-## 
-##    cell      lon      lat order     X month value monthname
-##   <dbl>    <dbl>    <dbl> <int> <chr> <dbl> <dbl>     <ord>
-## 1   229 8.083333 8.083333     1     X     1  12.0   January
-## 2   230 8.250000 8.250000     2     X     1  12.6   January
-## 3   231 8.416667 8.416667     3     X     1  12.8   January
-## 4   232 8.583333 8.583333     4     X     1  11.8   January
-## 5   233 8.750000 8.750000     5     X     1  11.6   January
-## 6   234 8.916667 8.916667     6     X     1  11.3   January
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["cell"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["lon"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["lat"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["order"],"name":[4],"type":["int"],"align":["right"]},{"label":["X"],"name":[5],"type":["chr"],"align":["left"]},{"label":["month"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["value"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["monthname"],"name":[8],"type":["ord"],"align":["right"]}],"data":[{"1":"229","2":"8.083333","3":"8.083333","4":"1","5":"X","6":"1","7":"12.0","8":"January"},{"1":"230","2":"8.250000","3":"8.250000","4":"2","5":"X","6":"1","7":"12.6","8":"January"},{"1":"231","2":"8.416667","3":"8.416667","4":"3","5":"X","6":"1","7":"12.8","8":"January"},{"1":"232","2":"8.583333","3":"8.583333","4":"4","5":"X","6":"1","7":"11.8","8":"January"},{"1":"233","2":"8.750000","3":"8.750000","4":"5","5":"X","6":"1","7":"11.6","8":"January"},{"1":"234","2":"8.916667","3":"8.916667","4":"6","5":"X","6":"1","7":"11.3","8":"January"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 ## Plot the transect data
 
@@ -1838,7 +1493,7 @@ ggplot(transl,
     geom_line()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-75-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-72-1.png)<!-- -->
 
 Or the same data in a levelplot:
 
@@ -1853,7 +1508,7 @@ ggplot(transl,
     geom_raster()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-76-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-73-1.png)<!-- -->
 
 
 <!--

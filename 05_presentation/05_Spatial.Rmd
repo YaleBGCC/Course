@@ -24,35 +24,60 @@ library(rasterVis)  #visualization library for raster
 
 ## Overview
 
-- Spatial Objects
 - Points
+- Vectors
 - Rasters
 - Workflow
 
-## Spatial objects
-```{r,echo=FALSE,results='hide'}
-coords = data.frame(
-  x=rnorm(100),
-  y=rnorm(100)
-)
-str(coords)
-```
+## Points
 
 ```{r, echo=TRUE}
+coords = data.frame(x=rnorm(100),y=rnorm(100))
 sp = SpatialPoints(coords)
 str(sp)
 ```
 
 <!-- <img src="09_assets//TerraLaunch.png" alt="alt text" width="75%"> -->
 
+## Vectors (ShapeFiles)
+
+```{r,echo=TRUE}
+za=getData('GADM', country='ZAF', level=1)
+plot(za)
+```
+
+## Vectors (ShapeFiles) {.smaller}
+
+
+```{r,echo=TRUE}
+za
+```
+<!-- <img src="../05_assets/gadm25.png" alt="alt text" width="50%"> -->
+
+
 ## Rasters 
-* Elevation (SRTM 90m resolution raster)
-* World Climate (Tmin, Tmax, Precip, BioClim rasters)
-* Countries from CIA factsheet (vector!)
-* Global Administrative boundaries (vector!)
 
-<img src="../05_assets/gadm25.png" alt="alt text" width="50%">
+```{r, echo=TRUE}
+clim=getData('worldclim', var='bio', res=10) 
+plot(clim[[1]])
+```
 
+## Rasters {.smaller}
+
+```{r}
+clim
+```
+
+
+<!-- * Elevation (SRTM 90m resolution raster) -->
+<!-- * World Climate (Tmin, Tmax, Precip, BioClim rasters) -->
+<!-- * Countries from CIA factsheet (vector!) -->
+<!-- * Global Administrative boundaries (vector!) -->
+
+
+## Workflow
+
+<img src="../05_assets/expert_map_transect.png" alt="alt text" width="70%">
 
 ## Workflow
 
@@ -62,7 +87,10 @@ str(sp)
 - Calculate the focal median with an 11x11 window 
 - Create a transect across the region and extract the temperature data.
 
+
+
 ## Using this tutorial
+
 <img src="../img/ScreenLayout_Arrows.png" alt="alt text" width="95%">
 
 

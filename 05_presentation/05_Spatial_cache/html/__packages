@@ -1,0 +1,13 @@
+base
+dplyr
+tidyr
+sp
+ggplot2
+rgeos
+maptools
+rgdal
+raster
+lattice
+RColorBrewer
+latticeExtra
+rasterVis
