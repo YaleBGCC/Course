@@ -618,13 +618,10 @@ head(pts_data)
 #' 
 #' ### Plot the global dataset with the random points
 ## ------------------------------------------------------------------------
-gplot(clim[[1]])+
-  geom_raster(aes(fill=value))+
-  geom_point(
-    data=as.data.frame(pts),
-    aes(x=x,y=y),col="red")+
-  coord_equal()
+plot(clim[[1]])
+points(pts,col='red')
 
+#' 
 #' 
 #' <!-- ### Summarize climate data at point locations -->
 #' <!-- Use `gather()` to reshape the climate data for easy plotting with ggplot. -->
@@ -700,35 +697,35 @@ ggplot(transl,aes(x=lon,y=value,
 #' 
 #' 
 #' 
-#' ### _Zonal_ statistics
-#' Calculate mean annual temperature averaged by province (polygons).
+#' <!-- ### _Zonal_ statistics -->
+#' <!-- Calculate mean annual temperature averaged by province (polygons). -->
 #' 
-## ------------------------------------------------------------------------
-rsp=raster::extract(x=r1,
-                    y=za,
-                    fun=mean,
-                    sp=T)
-#spplot(rsp,zcol="bio1")
-
+#' <!-- ```{r} -->
+#' <!-- rsp=raster::extract(x=r1, -->
+#' <!--                     y=za, -->
+#' <!--                     fun=mean, -->
+#' <!--                     sp=T) -->
+#' <!-- #spplot(rsp,zcol="bio1") -->
+#' <!-- ``` -->
 #' 
-## ----eval=FALSE----------------------------------------------------------
-## ## add the ID to the dataframe itself for easier indexing in the map
-## rsp$id=as.numeric(rownames(rsp@data))
-## ## create fortified version for plotting with ggplot()
-## frsp=fortify(rsp,region="id")
-## 
-## ggplot(rsp@data, aes(map_id = id, fill=bio1)) +
-##     expand_limits(x = frsp$long, y = frsp$lat)+
-##     scale_fill_gradientn(
-##       colours = c("grey","goldenrod","darkgreen","green"))+
-##     coord_map()+
-##     geom_map(map = frsp)
-## 
-
-#' <img src="05_assets//slow_zonal_plot.png" alt="alt text" width="75%"> 
+#' <!-- ```{r,eval=FALSE} -->
+#' <!-- ## add the ID to the dataframe itself for easier indexing in the map -->
+#' <!-- rsp$id=as.numeric(rownames(rsp@data)) -->
+#' <!-- ## create fortified version for plotting with ggplot() -->
+#' <!-- frsp=fortify(rsp,region="id") -->
+#' 
+#' <!-- ggplot(rsp@data, aes(map_id = id, fill=bio1)) + -->
+#' <!--     expand_limits(x = frsp$long, y = frsp$lat)+ -->
+#' <!--     scale_fill_gradientn( -->
+#' <!--       colours = c("grey","goldenrod","darkgreen","green"))+ -->
+#' <!--     coord_map()+ -->
+#' <!--     geom_map(map = frsp) -->
+#' 
+#' <!-- ``` -->
+#' <!-- <img src="05_assets//slow_zonal_plot.png" alt="alt text" width="75%">  -->
 #' 
 #' 
-#' > Not a very exciting plot, but then again, we did just ask for the mean value across the province. For more details about plotting spatialPolygons, see [here](https://github.com/hadley/ggplot2/wiki/plotting-polygon-shapefiles)
+#' <!-- > Not a very exciting plot, but then again, we did just ask for the mean value across the province. For more details about plotting spatialPolygons, see [here](https://github.com/hadley/ggplot2/wiki/plotting-polygon-shapefiles) -->
 #' 
 #' ## Example Workflow
 #' 

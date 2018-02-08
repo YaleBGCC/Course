@@ -1168,12 +1168,8 @@ head(pts_data)</code></pre>
 </div>
 <div id="plot-the-global-dataset-with-the-random-points" class="section level3">
 <h3><span class="header-section-number">5.9.3</span> Plot the global dataset with the random points</h3>
-<pre class="r"><code>gplot(clim[[1]])+
-  geom_raster(aes(fill=value))+
-  geom_point(
-    data=as.data.frame(pts),
-    aes(x=x,y=y),col=&quot;red&quot;)+
-  coord_equal()</code></pre>
+<pre class="r"><code>plot(clim[[1]])
+points(pts,col=&#39;red&#39;)</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-56-1.png" /><!-- --></p>
 <!-- ### Summarize climate data at point locations -->
 <!-- Use `gather()` to reshape the climate data for easy plotting with ggplot. -->
@@ -1246,31 +1242,30 @@ head(transl)</code></pre>
                   order=order))+
   geom_line()</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-61-1.png" /><!-- --></p>
+<!-- ### _Zonal_ statistics -->
+<!-- Calculate mean annual temperature averaged by province (polygons). -->
+<!-- ```{r} -->
+<!-- rsp=raster::extract(x=r1, -->
+<!--                     y=za, -->
+<!--                     fun=mean, -->
+<!--                     sp=T) -->
+<!-- #spplot(rsp,zcol="bio1") -->
+<!-- ``` -->
+<!-- ```{r,eval=FALSE} -->
+<!-- ## add the ID to the dataframe itself for easier indexing in the map -->
+<!-- rsp$id=as.numeric(rownames(rsp@data)) -->
+<!-- ## create fortified version for plotting with ggplot() -->
+<!-- frsp=fortify(rsp,region="id") -->
+<!-- ggplot(rsp@data, aes(map_id = id, fill=bio1)) + -->
+<!--     expand_limits(x = frsp$long, y = frsp$lat)+ -->
+<!--     scale_fill_gradientn( -->
+<!--       colours = c("grey","goldenrod","darkgreen","green"))+ -->
+<!--     coord_map()+ -->
+<!--     geom_map(map = frsp) -->
+<!-- ``` -->
+<!-- <img src="05_assets/slow_zonal_plot.png" alt="alt text" width="75%">  -->
+<!-- > Not a very exciting plot, but then again, we did just ask for the mean value across the province. For more details about plotting spatialPolygons, see [here](https://github.com/hadley/ggplot2/wiki/plotting-polygon-shapefiles) -->
 </div>
-</div>
-<div id="zonal-statistics" class="section level3">
-<h3><span class="header-section-number">5.9.6</span> <em>Zonal</em> statistics</h3>
-<p>Calculate mean annual temperature averaged by province (polygons).</p>
-<pre class="r"><code>rsp=raster::extract(x=r1,
-                    y=za,
-                    fun=mean,
-                    sp=T)
-#spplot(rsp,zcol=&quot;bio1&quot;)</code></pre>
-<pre class="r"><code>## add the ID to the dataframe itself for easier indexing in the map
-rsp$id=as.numeric(rownames(rsp@data))
-## create fortified version for plotting with ggplot()
-frsp=fortify(rsp,region=&quot;id&quot;)
-
-ggplot(rsp@data, aes(map_id = id, fill=bio1)) +
-    expand_limits(x = frsp$long, y = frsp$lat)+
-    scale_fill_gradientn(
-      colours = c(&quot;grey&quot;,&quot;goldenrod&quot;,&quot;darkgreen&quot;,&quot;green&quot;))+
-    coord_map()+
-    geom_map(map = frsp)</code></pre>
-<p><img src="05_assets/slow_zonal_plot.png" alt="alt text" width="75%"></p>
-<blockquote>
-<p>Not a very exciting plot, but then again, we did just ask for the mean value across the province. For more details about plotting spatialPolygons, see <a href="https://github.com/hadley/ggplot2/wiki/plotting-polygon-shapefiles">here</a></p>
-</blockquote>
 </div>
 </div>
 <div id="example-workflow" class="section level2">
@@ -1390,7 +1385,7 @@ head(transl)</code></pre>
       colors=c(&quot;blue&quot;,&quot;green&quot;,&quot;red&quot;),
       name=&quot;Month&quot;)+
     geom_line()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-72-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-70-1.png" /><!-- --></p>
 <p>Or the same data in a levelplot:</p>
 <pre class="r"><code>ggplot(transl,
        aes(x=lon,y=monthname,
@@ -1400,7 +1395,7 @@ head(transl)</code></pre>
       palette=&quot;PuBuGn&quot;,
       name=&quot;Tmax&quot;)+
     geom_raster()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-73-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-71-1.png" /><!-- --></p>
 <!--
 ## Raster Processing
 
