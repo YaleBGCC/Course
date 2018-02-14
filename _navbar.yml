@@ -22,6 +22,9 @@ left:
       - text: "2.1 Spatial Data"
         href: 05_Raster.html
       - text: "-----------------"
+      - text: "Module 3: Species Distribution Models"
+      - text: "3.1 Basic SDMS"
+        href: 101SDMs.html
       - text: "-----------------"
   - text: "Resources"
     href: Head3_Resources.html
