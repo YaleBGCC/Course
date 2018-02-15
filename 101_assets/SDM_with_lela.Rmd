@@ -1,0 +1,339 @@
+---
+title: "Introduction to Species Distribution Modeling"
+author: "[Cory Merow](cmerow.github.io)"
+---
+
+```{r, echo=FALSE, message=FALSE, results='hide', purl=FALSE}
+## This chunk automatically generates a text .R version of this script when running within knitr.  You do not need to run this...
+input  = knitr::current_input()  # filename of input document
+output = paste(tools::file_path_sans_ext(input), 'R', sep = '.')
+knitr::purl(input,output,documentation=2,quiet=T)
+source("knitr_header.R")
+#knitr::opts_chunk$set(eval=T)
+knitr::opts_chunk$set(cache=FALSE)
+```
+
+<!-- <div> -->
+<!-- <iframe src="05_presentation/05_Spatial.html" width="100%" height="700px"> </iframe> -->
+<!-- </div> -->
+
+[<i class="fa fa-file-code-o fa-3x" aria-hidden="true"></i> The R Script associated with this page is available here](`r output`).  Download this file and open it (or copy-paste into a new script) with RStudio so you can follow along.  
+
+# Setup
+
+```{r}
+library(spocc)
+library(raster)
+library(sp)
+library(rgdal)
+library(ROCR)
+library(corrplot)
+library(maxnet)
+library(spThin)
+```
+
+
+# The worst SDM ever
+
+The goal of this is to use the simplest possible set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user, especially if s/he is not big on reading help files. So before getting into the fancy tools, let's see what the bare minimum looks like.
+
+> This is not the simplest possible code, because it requires some familiarity with the internal components of different spatial objects. The tradeoff is that none of the key operations are performed behind the scenes by specialized SDM functions. I realize this is not always pretty, but I hope for that reason it can demonstrate some coding gynmastics for beginners.
+
+
+## Get presence data
+```{r}
+# get presence data
+# pres=occ('Alliaria petiolata',from='gbif',limit=5000) # this can be slow
+#write.csv(pres$gbif$data[[1]],file='/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/AP_gbif.csv')
+# so just read in the result of me running this earlier
+#pres=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv')[,c('longitude','latitude')]
+
+#pres=read.csv('/Users/ctg/Dropbox/Projects/IPMs/Invasives_IPMs/Data/Cleaned/AP_all_occ.csv')
+#names(pres)=c('longitude','latitude')
+
+#pres=occ('Berberis thunbergii',from='gbif',limit=5000) # this can be slow
+# so just read in the result of me running this earlier
+#write.csv(pres$gbif$data[[1]],file='/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/BT_gbif.csv')
+#pres=read.csv('~/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/BT_gbif.csv')[,c('longitude','latitude')]
+#pres=pres[complete.cases(pres),] # toss records without coords
+# for direct download
+# pres=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv')
+#pres=occ('Acer rubrum',from='gbif',limit=500) # this can be slow
+#write.csv(pres$gbif$data[[1]],file='/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/AR_gbif.csv')
+#pres=read.csv('~/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/AR_gbif.csv')[,c('longitude','latitude')]
+
+pres=read.csv(file.path('/Users/ctg/Dropbox/Projects/MoL/Expert_Range_Priors/Cleaned_Data/Presences/lela_All.csv'))[,c('X','Y')]
+
+pres=pres[complete.cases(pres),] # toss records without coords
+# a=thin(data.frame(SPEC='sp',pres),lat.col='latitude',long.col='longitude',thin.par=10,reps=10)
+```
+
+## Get environmental data
+
+> Decision: Worldclim data describes the environmentl well in this region. The 'bioclim' variables are biologically relevant summaries of climate.
+
+<!-- ```{r} -->
+<!-- # get climate data -->
+<!--   # the raster package has convenience function build in for worldclim -->
+<!-- clim=getData('worldclim', var='bio', res=10)  -->
+<!-- ``` -->
+
+<!-- The Bioclim variables in `clim.us` are: -->
+
+<!-- <small> -->
+
+<!-- Variable      Description -->
+<!-- -    - -->
+<!-- BIO1          Annual Mean Temperature -->
+<!-- BIO2          Mean Diurnal Range (Mean of monthly (max temp – min temp)) -->
+<!-- BIO3          Isothermality (BIO2/BIO7) (* 100) -->
+<!-- BIO4          Temperature Seasonality (standard deviation *100) -->
+<!-- BIO5          Max Temperature of Warmest Month -->
+<!-- BIO6          Min Temperature of Coldest Month -->
+<!-- BIO7          Temperature Annual Range (BIO5-BIO6) -->
+<!-- BIO8          Mean Temperature of Wettest Quarter -->
+<!-- BIO9          Mean Temperature of Driest Quarter -->
+<!-- BIO10         Mean Temperature of Warmest Quarter -->
+<!-- BIO11         Mean Temperature of Coldest Quarter -->
+<!-- BIO12         Annual Precipitation -->
+<!-- BIO13         Precipitation of Wettest Month -->
+<!-- BIO14         Precipitation of Driest Month -->
+<!-- BIO15         Precipitation Seasonality (Coefficient of Variation) -->
+<!-- BIO16         Precipitation of Wettest Quarter -->
+<!-- BIO17         Precipitation of Driest Quarter -->
+<!-- BIO18         Precipitation of Warmest Quarter -->
+<!-- BIO19         Precipitation of Coldest Quarter -->
+
+<!-- </small> -->
+
+
+<!-- ##  Choose domain -->
+
+<!-- > Decision: We are only asking about invasion in New England, so we constrain the domain to a bounding box around New England -->
+
+<!-- ```{r} -->
+<!-- # choose domain (just the Eastern US) -->
+<!-- #clim.us=raster::crop(clim,c(-100,-50,25,50)) # trim to a smaller region -->
+<!-- clim.us=raster::crop(clim,c(-81.4, -62.96667, -18.56667, 11.225)) -->
+<!-- #clim.us=raster::crop(clim,c(-76,-65,40,50)) # trim to a smaller region -->
+<!-- plot(clim.us[[1]]) # plot just the 1st variable to see domain -->
+<!-- ``` -->
+
+<!-- ##  Prep data -->
+
+<!-- > Decision: Correlated predictors can make it difficult to interpret model coefficients or response curves. So we'll remove the most correlated predictores -->
+
+<!-- ```{r} -->
+<!-- # check for correlated predictors -->
+<!-- cors=cor(values(clim.us),use='complete.obs') # evaluate correlations -->
+<!-- corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6) # plot correlations -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- clim=clim[[c('bio1','bio2','bio14')]] # keep just reasonably uncorrelated ones -->
+<!-- clim.us=clim.us[[c('bio1','bio2','bio14')]] # keep just reasonably uncorrelated ones -->
+<!-- cors=cor(values(clim.us),use='complete.obs') # evaluate correlations -->
+<!-- corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)# plot correlations -->
+<!-- ``` -->
+
+```{r}
+#clim=stack(list.files('/Users/ctg/Dropbox/Projects/MoL/Expert_Range_Priors/Cleaned_data/Env_ASCIIs/SA','asc',full.names=T))[[-c(1,5)]] # toss alt and mask
+#clim=raster::aggregate(clim,fact=8,mean)
+#names(clim.us)=names(clim)
+#writeRaster(clim.us,file='/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/present_env.grd',overwrite=T)
+clim.us=stack('/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/present_env.grd')
+
+```
+
+
+Ok, tolerable.
+
+
+```{r}
+# scale each predictor to mean=0, variance=1
+clim.means=apply(values(clim.us),2,mean,na.rm=T) # means
+clim.sds=apply(values(clim.us),2,sd,na.rm=T) # standard devations
+name=names(clim.us)
+values(clim.us)=sapply(1:nlayers(clim.us),function(x) (values(clim.us)[,x]-clim.means[x])/clim.sds[x]) 
+# z-scores
+names(clim.us)=name
+
+# get environment at pres points
+coordinates(pres)=c('X','Y') # set coords to allow extraction (next line)
+#coordinates(pres)=c('longitude','latitude') # set coords to allow extraction (next line)
+pres.data=data.frame(raster::extract(clim.us,pres)) # extract data at pres locations
+coordinates(pres.data)=coordinates(pres) # make sure the data have coords associated
+pres.data=pres.data[complete.cases(pres.data@data),] # toss points without env data
+```
+
+```{r}
+plot(clim.us) # view 
+```
+
+##  Sample background
+
+> Decision: The species is equally likely to be anywhere on the landscapes, so we'll compare presences to a random sample of background points.
+
+```{r}
+pres=cbind.data.frame(pres=1,extract(clim.us,pres,df=T,ID=F))
+abs=cbind.data.frame(pres=0,ID=1:1000,sampleRandom(clim.us,size=10000))
+all.data=rbind.data.frame(pres,abs)
+	## save the data table
+# # sample background (to compare against presences)
+# all.background=which(complete.cases(values(clim.us))) # find cells on land
+# bg.index=sample(all.background,min(length(all.background),10000)) # take random sample of land
+# bg.data=data.frame(values(clim.us)[bg.index,]) # get the env at these cells
+# coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object
+```
+
+> Decision: Linear and quadratic terms are sufficient to describe the species' response to the environment. 
+
+```{r}
+# prep data for use in glm()
+#all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data))
+
+# specify formula (quickly to avoid writing out every name)
+# (form=paste('pres/weight~', # lhs of eqn.
+#             paste(names(all.data)[-1], collapse = " + "),'+', # linear terms
+#             paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + "))) # qudratic terms
+best.var=names(clim)
+(form=paste("pres/weight ~ ", paste0(sapply(best.var, function(ii) {sapply(best.var, function(jj) {paste0(ii,"*",jj)})}),collapse='+'),'+', paste0('I(',best.var,'^2)',collapse='+'),'+', paste0(best.var,collapse=':')))
+
+```
+
+
+## Statistical model
+
+```{r}
+# fit model
+all.data$weight=1e-6
+all.data$weight[all.data$presence == 0] = ncell(clim.us)/sum(all.data$presence == 0)
+
+#all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
+mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model
+#mod.worst=maxnet(all.data$pres,all.data[-1])
+summary(mod.worst) # show coefficients
+```
+
+
+## Inspect response curves
+
+```{r,results='hide'}
+# check response curves
+  # these marginal response curves are evaluated at the means of the non-focal predictor
+clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
+dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
+response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.worst,newdata=newdata) # predictions
+  return(data.frame(xs=xs,ys=ys)) # define outputs
+})# ignore warnings
+```
+
+```{r}
+str(response.curves) #structure of the object used for plotting
+```
+
+```{r}
+  # plot the curves
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim.us)){ # loop over layers
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
+       type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
+  abline(v=pres.env.range,col='red',lty=2)
+}
+```
+
+
+## Map predictions
+
+> Decision: When predicting, its ok to extrapolate beyond 
+
+```{r}
+# predict to US
+pred.r=raster::predict(clim.us,mod.worst, index=1:2,type="response")
+
+#pred=predict(mod.worst,newdata=data.frame(values(clim.us)),clamp=T) 
+pred.r=pred/sum(pred,na.rm=T) # normalize prediction (sum to 1)
+#pred.r=clim.us[[1]] # dummy raster with right structure
+#not.nas=!is.na(values(pred.r))
+#values(pred.r)[not.nas]=0
+#values(pred.r)[not.nas]=pred # plug in predictions to dummy raster
+#values(pred.r)=pred # plug in predictions to dummy raster
+plot(pred.r) # plot raster
+points(pres) # plot points
+```
+
+
+## Evaluate performance
+```{r}
+# evaluate
+pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
+pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
+rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
+                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
+perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") # calculate perfomance 
+plot(perf.fit) # plot ROC curve
+abline(0,1) # 1:1 line indicate random predictions 
+(auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
+```
+
+## Transfer to new conditions
+```{r}
+# transfer to Europe
+# choose domain (just europe)
+clim.eu=raster::crop(clim,c(-10,55,30,75))
+values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x]) # z-scores (to make values comparable to the scaeld values for fitting)
+transfer=predict(mod.worst,newdata=data.frame(values(clim.eu))) 
+transfer=transfer/sum(transfer,na.rm=T) # normalize
+transfer.r=clim.eu[[1]] # dummy raster
+not.nas.transfer=!is.na(values(transfer.r))
+values(transfer.r)[not.nas.transfer]=transfer # p
+#values(transfer.r)=transfer # plug predicitons into dummy raster
+plot(transfer.r) # plot preds
+plot(pres,add=T) # plot presences 
+```
+
+<!-- # # evaluate transfer -->
+<!-- # pred.at.transfer.pres=raster::extract(transfer.r,pres.data) -->
+<!-- #   # sample background in transfer region -->
+<!-- # all.background=which(complete.cases(values(clim.us))) -->
+<!-- # bg.index=sample(all.background,10000) -->
+<!-- # bg.data=data.frame(values(clim.us)[bg.index,]) -->
+<!-- # coordinates(bg.data)=coordinates(clim.us)[bg.index,] -->
+<!-- #  -->
+<!-- # transfer.bg= -->
+<!-- # pred.at.fitting.bg=raster::extract(transfer.r,bg.data) -->
+<!-- # rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg), -->
+<!-- #                           labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) -->
+<!-- # perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") -->
+<!-- # plot(perf.fit) -->
+<!-- # abline(0,1) -->
+<!-- # (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) -->
+<!-- #  -->
+
+
+
+
+# Improvements
+
+## Thin presences, Stratify sampling
+
+## Sampling bias
+
+```{r}
+bias.bg=read.csv('/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv')
+coordinates(bias.bg)=c(2,3)
+```
+
+
+## Model comparison
+
+## Other algorithms: glmnet
+
+
+

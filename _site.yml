@@ -3,19 +3,19 @@ output:
   html_document:
     theme: readable
     highlight: textmate
-    mathjax: null
-    toc: true
+    mathjax: ~
+    toc: yes
     toc_depth: 3
-    toc_float: true
-    number_sections: true
+    toc_float: yes
+    number_sections: yes
     includes:
       after_body: include/after_body.html
     css: cm_yeti_bootswatch.css
-    keep_md: true
+    keep_md: yes
     code_folding: show
     df_print: paged
     fig_caption: yes
-      
+    lib_dir: site_libs
+    self_contained: no
+name: YaleBGCCourses
 
-    
-    

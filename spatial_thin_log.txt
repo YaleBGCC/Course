@@ -1,0 +1,15 @@
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Thu Feb 15 09:48:34 2018
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Thu Feb 15 09:49:01 2018
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Thu Feb 15 09:49:09 2018
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Thu Feb 15 09:49:55 2018
+
+Thinning Parameter Used (in km): 10
+Number of replicates of thinning script: 10

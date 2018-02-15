@@ -1,0 +1,25 @@
+[general]
+creator=R package 'raster'
+created=2018-02-15 10:25:16
+[georeference]
+nrows=447
+ncols=277
+xmin=-81.4
+ymin=-18.5750000003331
+xmax=-62.9333333336673
+ymax=11.224999999
+projection=NA
+[data]
+datatype=FLT4S
+byteorder=little
+nbands=4
+bandorder=BIL
+minvalue=-3.34916666456923:-3.31684395542693:-1.69948494067757:-4.6533983140516
+maxvalue=1.61529525367427:1.62777700197808:3.88894197635986:0.947767824030376
+nodatavalue=-3.4e+38
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=CLDJAN:CLDJUL:CLDSEAS:MAT

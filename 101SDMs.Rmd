@@ -10,7 +10,7 @@ output = paste(tools::file_path_sans_ext(input), 'R', sep = '.')
 knitr::purl(input,output,documentation=2,quiet=T)
 source("knitr_header.R")
 #knitr::opts_chunk$set(eval=T)
-knitr::opts_chunk$set(cache=TRUE)
+knitr::opts_chunk$set(cache=FALSE)
 ```
 
 <!-- <div> -->
@@ -28,6 +28,8 @@ library(sp)
 library(rgdal)
 library(ROCR)
 library(corrplot)
+library(maxnet)
+library(spThin)
 ```
 
 
@@ -38,26 +40,23 @@ The goal of this is to use the simplest possible set of operations to build an S
 > This is not the simplest possible code, because it requires some familiarity with the internal components of different spatial objects. The tradeoff is that none of the key operations are performed behind the scenes by specialized SDM functions. I realize this is not always pretty, but I hope for that reason it can demonstrate some coding gynmastics for beginners.
 
 
-## Get data
+## Get presence data
 ```{r}
 # get presence data
 # pres=occ('Alliaria petiolata',from='gbif',limit=5000) # this can be slow
-# so just read in the result of me running this earlier
-#write.csv(pres$gbif$data[[1]],file='/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/AP_gbif.csv')
-pres=read.csv('~/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/AP_gbif.csv')[,c('longitude','latitude')]
+  # so just read in the result of me running this earlier
+pres=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv')[,c('longitude','latitude')]
 pres=pres[complete.cases(pres),] # toss records without coords
-# for direct download
-# pres=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv')
-
-# get climate data
-clim=getData('worldclim', var='bio', res=10) 
 ```
 
+## Get environmental data
 
-##  Choose domain
+> Decision: Worldclim data describes the environmentl well in this region. The 'bioclim' variables are biologically relevant summaries of climate.
+
 ```{r}
-# choose domain (just the Eastern US)
-clim.us=raster::crop(clim,c(-100,-50,25,50)) # trim to a smaller region
+# get climate data
+  # the raster package has convenience function build in for worldclim
+clim=getData('worldclim', var='bio', res=10)
 ```
 
 The Bioclim variables in `clim.us` are:
@@ -89,7 +88,19 @@ BIO19         Precipitation of Coldest Quarter
 </small>
 
 
+##  Choose domain
+
+> Decision: We are only asking about invasion in New England, so we constrain the domain to a bounding box around New England
+
+```{r}
+# choose domain (just the Eastern US)
+clim.us=raster::crop(clim,c(-76,-65,40,50)) # trim to a smaller region
+plot(clim.us[[1]]) # plot just the 1st variable to see domain
+```
+
 ##  Prep data
+
+> Decision: Correlated predictors can make it difficult to interpret model coefficients or response curves. So we'll remove the most correlated predictores
 
 ```{r}
 # check for correlated predictors
@@ -98,8 +109,8 @@ corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6) # plot correlat
 ```
 
 ```{r}
-clim=clim[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
-clim.us=clim.us[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
+clim=clim[[c('bio1','bio2','bio14')]] # keep just reasonably uncorrelated ones
+clim.us=clim.us[[c('bio1','bio2','bio14')]] # keep just reasonably uncorrelated ones
 cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
 corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)# plot correlations
 ```
@@ -111,7 +122,10 @@ Ok, tolerable.
 # scale each predictor to mean=0, variance=1
 clim.means=apply(values(clim.us),2,mean,na.rm=T) # means
 clim.sds=apply(values(clim.us),2,sd,na.rm=T) # standard devations
-values(clim.us)=sapply(1:nlayers(clim.us),function(x) (values(clim.us)[,x]-clim.means[x])/clim.sds[x]) # z-scores
+name=names(clim.us)
+values(clim.us)=sapply(1:nlayers(clim.us),function(x) (values(clim.us)[,x]-clim.means[x])/clim.sds[x]) 
+# z-scores
+names(clim.us)=name
 
 # get environment at pres points
 coordinates(pres)=c('longitude','latitude') # set coords to allow extraction (next line)
@@ -125,20 +139,26 @@ plot(clim.us) # view
 ```
 
 ##  Sample background
+
+> Decision: The species is equally likely to be anywhere on the landscapes, so we'll compare presences to a random sample of background points.
+
 ```{r}
+	## save the data table
 # sample background (to compare against presences)
 all.background=which(complete.cases(values(clim.us))) # find cells on land
-bg.index=sample(all.background,10000) # take random sample of land
+bg.index=sample(all.background,min(length(all.background),10000)) # take random sample of land
 bg.data=data.frame(values(clim.us)[bg.index,]) # get the env at these cells
 coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object
 ```
+
+> Decision: Linear and quadratic terms are sufficient to describe the species' response to the environment. 
 
 ```{r}
 # prep data for use in glm()
 all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data))
 
 # specify formula (quickly to avoid writing out every name)
-(form=paste('pres~', # lhs of eqn.
+(form=paste('pres/weight~', # lhs of eqn.
             paste(names(all.data)[-1], collapse = " + "),'+', # linear terms
             paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + "))) # qudratic terms
 ```
@@ -147,9 +167,9 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
 ## Statistical model
 
 ```{r}
-# fit model
 all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
 mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model
+#mod.worst=maxnet(all.data$pres,all.data[-1])
 summary(mod.worst) # show coefficients
 ```
 
@@ -178,22 +198,24 @@ str(response.curves) #structure of the object used for plotting
 ```{r}
   # plot the curves
 par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
-for(i in 1:nlayers(clim)){ # loop over layers
+for(i in 1:nlayers(clim.us)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
+  abline(v=pres.env.range,col='red',lty=2)
 }
 ```
 
 
 ## Map predictions
 
+> Decision: When predicting, its ok to extrapolate beyond 
+
 ```{r}
 # predict to US
-pred=predict(mod.worst,newdata=data.frame(values(clim.us))) 
-pred=pred/sum(pred,na.rm=T) # normalize prediction (sum to 1)
-pred.r=clim.us[[1]] # dummy raster with right structure
-values(pred.r)=pred # plug in predictions to dummy raster
-plot(pred.r) # plot raster
+pred.r=raster::predict(clim.us,mod.worst, index=1,type="response")
+pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(pred.r)) # plot raster
 plot(pres,add=T) # plot points
 ```
 
@@ -216,14 +238,33 @@ abline(0,1) # 1:1 line indicate random predictions
 # transfer to Europe
 # choose domain (just europe)
 clim.eu=raster::crop(clim,c(-10,55,30,75))
-values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x]) # z-scores (to make values comparable to the scaeld values for fitting)
-transfer=predict(mod.worst,newdata=data.frame(values(clim.eu))) 
-transfer=transfer/sum(transfer,na.rm=T) # normalize
-transfer.r=clim.eu[[1]] # dummy raster
-values(transfer.r)=transfer # plug predicitons into dummy raster
-plot(transfer.r) # plot preds
+values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x])
+names(clim.eu)=names(clim.us)
+# z-scores (to make values comparable to the scaeld values for fitting)
+transfer.r=raster::predict(clim.eu,mod.worst, index=1,type="response")
+transfer.r=transfer.r/sum(values(transfer.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(transfer.r)) # plot preds
 plot(pres,add=T) # plot presences 
 ```
+
+
+
+# Improvements
+
+## Thin presences, Stratify sampling
+
+## Sampling bias
+
+```{r}
+bias.bg=read.csv('/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv')
+coordinates(bias.bg)=c(2,3)
+```
+
+
+## Model comparison
+
+## Other algorithms: glmnet
+
 
 <!-- # # evaluate transfer -->
 <!-- # pred.at.transfer.pres=raster::extract(transfer.r,pres.data) -->
@@ -242,19 +283,4 @@ plot(pres,add=T) # plot presences
 <!-- # abline(0,1) -->
 <!-- # (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) -->
 <!-- #  -->
-
-
-
-
-# Improvements
-
-## Thin presences, Stratify sampling
-
-## Sampling bias
-
-## Model comparison
-
-## Other algorithms: glmnet
-
-
 

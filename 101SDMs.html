@@ -370,11 +370,44 @@ div.tocify {
 <div id="setup" class="section level1">
 <h1><span class="header-section-number">1</span> Setup</h1>
 <pre class="r"><code>library(spocc)
-library(raster)
-library(sp)
-library(rgdal)
-library(ROCR)
-library(corrplot)</code></pre>
+library(raster)</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre class="r"><code>library(sp)
+library(rgdal)</code></pre>
+<pre><code>## rgdal: version: 1.2-16, (SVN revision 701)
+##  Geospatial Data Abstraction Library extensions to R successfully loaded
+##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
+##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/gdal
+##  GDAL binary built with GEOS: FALSE 
+##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/proj
+##  Linking to sp version: 1.2-5</code></pre>
+<pre class="r"><code>library(ROCR)</code></pre>
+<pre><code>## Loading required package: gplots</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>library(corrplot)</code></pre>
+<pre><code>## corrplot 0.84 loaded</code></pre>
+<pre class="r"><code>library(maxnet)
+library(spThin)</code></pre>
+<pre><code>## Loading required package: spam</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre><code>## Spam version 1.4-0 (2016-08-29) is loaded.
+## Type &#39;help( Spam)&#39; or &#39;demo( spam)&#39; for a short introduction 
+## and overview of this package.
+## Help for individual functions is also obtained by adding the
+## suffix &#39;.spam&#39; to the function name, e.g. &#39;help( chol.spam)&#39;.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;spam&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     backsolve, forwardsolve</code></pre>
+<pre><code>## Loading required package: fields</code></pre>
+<pre><code>## Loading required package: maps</code></pre>
+<pre><code>## Loading required package: knitr</code></pre>
 </div>
 <div id="the-worst-sdm-ever" class="section level1">
 <h1><span class="header-section-number">2</span> The worst SDM ever</h1>
@@ -382,24 +415,22 @@ library(corrplot)</code></pre>
 <blockquote>
 <p>This is not the simplest possible code, because it requires some familiarity with the internal components of different spatial objects. The tradeoff is that none of the key operations are performed behind the scenes by specialized SDM functions. I realize this is not always pretty, but I hope for that reason it can demonstrate some coding gynmastics for beginners.</p>
 </blockquote>
-<div id="get-data" class="section level2">
-<h2><span class="header-section-number">2.1</span> Get data</h2>
+<div id="get-presence-data" class="section level2">
+<h2><span class="header-section-number">2.1</span> Get presence data</h2>
 <pre class="r"><code># get presence data
 # pres=occ(&#39;Alliaria petiolata&#39;,from=&#39;gbif&#39;,limit=5000) # this can be slow
-# so just read in the result of me running this earlier
-#write.csv(pres$gbif$data[[1]],file=&#39;/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/AP_gbif.csv&#39;)
-pres=read.csv(&#39;~/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/AP_gbif.csv&#39;)[,c(&#39;longitude&#39;,&#39;latitude&#39;)]
-pres=pres[complete.cases(pres),] # toss records without coords
-# for direct download
-# pres=read.csv(&#39;https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv&#39;)
-
-# get climate data
-clim=getData(&#39;worldclim&#39;, var=&#39;bio&#39;, res=10) </code></pre>
+  # so just read in the result of me running this earlier
+pres=read.csv(&#39;https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv&#39;)[,c(&#39;longitude&#39;,&#39;latitude&#39;)]
+pres=pres[complete.cases(pres),] # toss records without coords</code></pre>
 </div>
-<div id="choose-domain" class="section level2">
-<h2><span class="header-section-number">2.2</span> Choose domain</h2>
-<pre class="r"><code># choose domain (just the Eastern US)
-clim.us=raster::crop(clim,c(-100,-50,25,50)) # trim to a smaller region</code></pre>
+<div id="get-environmental-data" class="section level2">
+<h2><span class="header-section-number">2.2</span> Get environmental data</h2>
+<blockquote>
+<p>Decision: Worldclim data describes the environmentl well in this region. The ‘bioclim’ variables are biologically relevant summaries of climate.</p>
+</blockquote>
+<pre class="r"><code># get climate data
+  # the raster package has convenience function build in for worldclim
+clim=getData(&#39;worldclim&#39;, var=&#39;bio&#39;, res=10)</code></pre>
 <p>The Bioclim variables in <code>clim.us</code> are:</p>
 <p><small></p>
 <table>
@@ -490,22 +521,38 @@ clim.us=raster::crop(clim,c(-100,-50,25,50)) # trim to a smaller region</code></
 </table>
 <p></small></p>
 </div>
+<div id="choose-domain" class="section level2">
+<h2><span class="header-section-number">2.3</span> Choose domain</h2>
+<blockquote>
+<p>Decision: We are only asking about invasion in New England, so we constrain the domain to a bounding box around New England</p>
+</blockquote>
+<pre class="r"><code># choose domain (just the Eastern US)
+clim.us=raster::crop(clim,c(-76,-65,40,50)) # trim to a smaller region
+plot(clim.us[[1]]) # plot just the 1st variable to see domain</code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+</div>
 <div id="prep-data" class="section level2">
-<h2><span class="header-section-number">2.3</span> Prep data</h2>
+<h2><span class="header-section-number">2.4</span> Prep data</h2>
+<blockquote>
+<p>Decision: Correlated predictors can make it difficult to interpret model coefficients or response curves. So we’ll remove the most correlated predictores</p>
+</blockquote>
 <pre class="r"><code># check for correlated predictors
 cors=cor(values(clim.us),use=&#39;complete.obs&#39;) # evaluate correlations
 corrplot(cors,order = &quot;AOE&quot;, addCoef.col = &quot;grey&quot;,number.cex=.6) # plot correlations</code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
-<pre class="r"><code>clim=clim[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio13&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
-clim.us=clim.us[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio13&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<pre class="r"><code>clim=clim[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
+clim.us=clim.us[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
 cors=cor(values(clim.us),use=&#39;complete.obs&#39;) # evaluate correlations
 corrplot(cors,order = &quot;AOE&quot;, addCoef.col = &quot;grey&quot;,number.cex=.6)# plot correlations</code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
 <p>Ok, tolerable.</p>
 <pre class="r"><code># scale each predictor to mean=0, variance=1
 clim.means=apply(values(clim.us),2,mean,na.rm=T) # means
 clim.sds=apply(values(clim.us),2,sd,na.rm=T) # standard devations
-values(clim.us)=sapply(1:nlayers(clim.us),function(x) (values(clim.us)[,x]-clim.means[x])/clim.sds[x]) # z-scores
+name=names(clim.us)
+values(clim.us)=sapply(1:nlayers(clim.us),function(x) (values(clim.us)[,x]-clim.means[x])/clim.sds[x]) 
+# z-scores
+names(clim.us)=name
 
 # get environment at pres points
 coordinates(pres)=c(&#39;longitude&#39;,&#39;latitude&#39;) # set coords to allow extraction (next line)
@@ -513,31 +560,37 @@ pres.data=data.frame(raster::extract(clim.us,pres)) # extract data at pres locat
 coordinates(pres.data)=coordinates(pres) # make sure the data have coords associated
 pres.data=pres.data[complete.cases(pres.data@data),] # toss points without env data</code></pre>
 <pre class="r"><code>plot(clim.us) # view </code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-8-1.png" /><!-- --></p>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
 </div>
 <div id="sample-background" class="section level2">
-<h2><span class="header-section-number">2.4</span> Sample background</h2>
-<pre class="r"><code># sample background (to compare against presences)
+<h2><span class="header-section-number">2.5</span> Sample background</h2>
+<blockquote>
+<p>Decision: The species is equally likely to be anywhere on the landscapes, so we’ll compare presences to a random sample of background points.</p>
+</blockquote>
+<pre class="r"><code>    ## save the data table
+# sample background (to compare against presences)
 all.background=which(complete.cases(values(clim.us))) # find cells on land
-bg.index=sample(all.background,10000) # take random sample of land
+bg.index=sample(all.background,min(length(all.background),10000)) # take random sample of land
 bg.data=data.frame(values(clim.us)[bg.index,]) # get the env at these cells
 coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object</code></pre>
+<blockquote>
+<p>Decision: Linear and quadratic terms are sufficient to describe the species’ response to the environment.</p>
+</blockquote>
 <pre class="r"><code># prep data for use in glm()
 all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data))
 
 # specify formula (quickly to avoid writing out every name)
-(form=paste(&#39;pres~&#39;, # lhs of eqn.
+(form=paste(&#39;pres/weight~&#39;, # lhs of eqn.
             paste(names(all.data)[-1], collapse = &quot; + &quot;),&#39;+&#39;, # linear terms
             paste(&quot;I(&quot;, names(all.data)[-1], &quot;^2)&quot;, sep = &quot;&quot;, collapse = &quot; + &quot;))) # qudratic terms</code></pre>
-<pre><code>## [1] &quot;pres~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)&quot;</code></pre>
+<pre><code>## [1] &quot;pres/weight~ bio1 + bio2 + bio14 + I(bio1^2) + I(bio2^2) + I(bio14^2)&quot;</code></pre>
 </div>
 <div id="statistical-model" class="section level2">
-<h2><span class="header-section-number">2.5</span> Statistical model</h2>
-<pre class="r"><code># fit model
-all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
-mod.worst=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model</code></pre>
-<pre><code>## Warning: glm.fit: fitted rates numerically 0 occurred</code></pre>
-<pre class="r"><code>summary(mod.worst) # show coefficients</code></pre>
+<h2><span class="header-section-number">2.6</span> Statistical model</h2>
+<pre class="r"><code>all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
+mod.worst=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model
+#mod.worst=maxnet(all.data$pres,all.data[-1])
+summary(mod.worst) # show coefficients</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = form, family = poisson(link = &quot;log&quot;), data = all.data, 
@@ -545,32 +598,30 @@ mod.worst=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weig
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.6034  -0.3527  -0.0760  -0.0085   5.4305  
+## -3.7578  -0.2080  -0.0770  -0.0355   5.1352  
 ## 
 ## Coefficients:
-##              Estimate Std. Error  z value Pr(&gt;|z|)    
-## (Intercept) -10.98450    0.09478 -115.890  &lt; 2e-16 ***
-## bio1          0.84060    0.11940    7.040 1.92e-12 ***
-## bio2         -1.03840    0.08262  -12.569  &lt; 2e-16 ***
-## bio13        -1.82338    0.16567  -11.006  &lt; 2e-16 ***
-## bio14         0.87704    0.05456   16.075  &lt; 2e-16 ***
-## I(bio1^2)    -3.64250    0.22202  -16.406  &lt; 2e-16 ***
-## I(bio2^2)    -0.67693    0.06445  -10.504  &lt; 2e-16 ***
-## I(bio13^2)   -0.90963    0.14142   -6.432 1.26e-10 ***
-## I(bio14^2)    0.38650    0.05817    6.645 3.03e-11 ***
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -15.20385    0.28785 -52.819  &lt; 2e-16 ***
+## bio1          2.33396    0.27664   8.437  &lt; 2e-16 ***
+## bio2          0.92237    0.07316  12.607  &lt; 2e-16 ***
+## bio14        -0.86362    0.07654 -11.283  &lt; 2e-16 ***
+## I(bio1^2)     0.28801    0.09338   3.084  0.00204 ** 
+## I(bio2^2)     0.26184    0.04068   6.436 1.23e-10 ***
+## I(bio14^2)    0.42733    0.05970   7.158 8.19e-13 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
-##     Null deviance: 19592  on 10837  degrees of freedom
-## Residual deviance: 17281  on 10829  degrees of freedom
-## AIC: 18975
+##     Null deviance: 8340.1  on 3353  degrees of freedom
+## Residual deviance: 6854.8  on 3347  degrees of freedom
+## AIC: 7606.8
 ## 
-## Number of Fisher Scoring iterations: 18</code></pre>
+## Number of Fisher Scoring iterations: 17</code></pre>
 </div>
 <div id="inspect-response-curves" class="section level2">
-<h2><span class="header-section-number">2.6</span> Inspect response curves</h2>
+<h2><span class="header-section-number">2.7</span> Inspect response curves</h2>
 <pre class="r"><code># check response curves
   # these marginal response curves are evaluated at the means of the non-focal predictor
 clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
@@ -584,40 +635,40 @@ response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
   return(data.frame(xs=xs,ys=ys)) # define outputs
 })# ignore warnings</code></pre>
 <pre class="r"><code>str(response.curves) #structure of the object used for plotting</code></pre>
-<pre><code>## List of 4
+<pre><code>## List of 3
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -1.74 -1.7 -1.66 -1.62 -1.58 ...
-##   ..$ ys: num [1:100] -18.9 -18.3 -17.8 -17.2 -16.7 ...
+##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
+##   ..$ ys: num [1:100] -18.5 -18.4 -18.3 -18.3 -18.2 ...
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -4.31 -4.24 -4.17 -4.1 -4.03 ...
-##   ..$ ys: num [1:100] -14.5 -14.1 -13.8 -13.5 -13.2 ...
+##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
+##   ..$ ys: num [1:100] -13.7 -13.8 -13.9 -14 -14.1 ...
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -1.93 -1.86 -1.79 -1.71 -1.64 ...
-##   ..$ ys: num [1:100] -6.25 -6.13 -6.02 -5.92 -5.84 ...
-##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -1.84 -1.78 -1.72 -1.66 -1.6 ...
-##   ..$ ys: num [1:100] -6.69 -6.72 -6.75 -6.77 -6.8 ...</code></pre>
+##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
+##   ..$ ys: num [1:100] -10.3 -10.5 -10.7 -10.9 -11 ...</code></pre>
 <pre class="r"><code>  # plot the curves
 par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
-for(i in 1:nlayers(clim)){ # loop over layers
+for(i in 1:nlayers(clim.us)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
+  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)
 }</code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
-</div>
-<div id="map-predictions" class="section level2">
-<h2><span class="header-section-number">2.7</span> Map predictions</h2>
-<pre class="r"><code># predict to US
-pred=predict(mod.worst,newdata=data.frame(values(clim.us))) 
-pred=pred/sum(pred,na.rm=T) # normalize prediction (sum to 1)
-pred.r=clim.us[[1]] # dummy raster with right structure
-values(pred.r)=pred # plug in predictions to dummy raster
-plot(pred.r) # plot raster
-plot(pres,add=T) # plot points</code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
 </div>
+<div id="map-predictions" class="section level2">
+<h2><span class="header-section-number">2.8</span> Map predictions</h2>
+<blockquote>
+<p>Decision: When predicting, its ok to extrapolate beyond</p>
+</blockquote>
+<pre class="r"><code># predict to US
+pred.r=raster::predict(clim.us,mod.worst, index=1,type=&quot;response&quot;)
+pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(pred.r)) # plot raster
+plot(pres,add=T) # plot points</code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+</div>
 <div id="evaluate-performance" class="section level2">
-<h2><span class="header-section-number">2.8</span> Evaluate performance</h2>
+<h2><span class="header-section-number">2.9</span> Evaluate performance</h2>
 <pre class="r"><code># evaluate
 pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
 pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
@@ -626,23 +677,40 @@ rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg
 perf.fit=performance(rocr.pred,measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;) # calculate perfomance 
 plot(perf.fit) # plot ROC curve
 abline(0,1) # 1:1 line indicate random predictions </code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
 <pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
-<pre><code>## [1] 0.09439851</code></pre>
+<pre><code>## [1] 0.9431062</code></pre>
 </div>
 <div id="transfer-to-new-conditions" class="section level2">
-<h2><span class="header-section-number">2.9</span> Transfer to new conditions</h2>
+<h2><span class="header-section-number">2.10</span> Transfer to new conditions</h2>
 <pre class="r"><code># transfer to Europe
 # choose domain (just europe)
 clim.eu=raster::crop(clim,c(-10,55,30,75))
-values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x]) # z-scores (to make values comparable to the scaeld values for fitting)
-transfer=predict(mod.worst,newdata=data.frame(values(clim.eu))) 
-transfer=transfer/sum(transfer,na.rm=T) # normalize
-transfer.r=clim.eu[[1]] # dummy raster
-values(transfer.r)=transfer # plug predicitons into dummy raster
-plot(transfer.r) # plot preds
+values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x])
+names(clim.eu)=names(clim.us)
+# z-scores (to make values comparable to the scaeld values for fitting)
+transfer.r=raster::predict(clim.eu,mod.worst, index=1,type=&quot;response&quot;)
+transfer.r=transfer.r/sum(values(transfer.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(transfer.r)) # plot preds
 plot(pres,add=T) # plot presences </code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
+</div>
+</div>
+<div id="improvements" class="section level1">
+<h1><span class="header-section-number">3</span> Improvements</h1>
+<div id="thin-presences-stratify-sampling" class="section level2">
+<h2><span class="header-section-number">3.1</span> Thin presences, Stratify sampling</h2>
+</div>
+<div id="sampling-bias" class="section level2">
+<h2><span class="header-section-number">3.2</span> Sampling bias</h2>
+<pre class="r"><code>bias.bg=read.csv(&#39;/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv&#39;)
+coordinates(bias.bg)=c(2,3)</code></pre>
+</div>
+<div id="model-comparison" class="section level2">
+<h2><span class="header-section-number">3.3</span> Model comparison</h2>
+</div>
+<div id="other-algorithms-glmnet" class="section level2">
+<h2><span class="header-section-number">3.4</span> Other algorithms: glmnet</h2>
 <!-- # # evaluate transfer -->
 <!-- # pred.at.transfer.pres=raster::extract(transfer.r,pres.data) -->
 <!-- #   # sample background in transfer region -->
@@ -660,21 +728,6 @@ plot(pres,add=T) # plot presences </code></pre>
 <!-- # abline(0,1) -->
 <!-- # (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) -->
 <!-- #  -->
-</div>
-</div>
-<div id="improvements" class="section level1">
-<h1><span class="header-section-number">3</span> Improvements</h1>
-<div id="thin-presences-stratify-sampling" class="section level2">
-<h2><span class="header-section-number">3.1</span> Thin presences, Stratify sampling</h2>
-</div>
-<div id="sampling-bias" class="section level2">
-<h2><span class="header-section-number">3.2</span> Sampling bias</h2>
-</div>
-<div id="model-comparison" class="section level2">
-<h2><span class="header-section-number">3.3</span> Model comparison</h2>
-</div>
-<div id="other-algorithms-glmnet" class="section level2">
-<h2><span class="header-section-number">3.4</span> Other algorithms: glmnet</h2>
 </div>
 </div>
 
