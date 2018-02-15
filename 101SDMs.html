@@ -740,8 +740,9 @@ plot(pres,add=T) # plot presences </code></pre>
 <h2><span class="header-section-number">3.1</span> Sampling bias</h2>
 <div id="sample-background-1" class="section level3">
 <h3><span class="header-section-number">3.1.1</span> Sample background</h3>
+<p><img src="101_assets/Phillips_bias.png" style="width: 100"/></p>
 <blockquote>
-<p>Decision: Presences are most likelt to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled.</p>
+<p>Decision: Presences are most likely to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled.</p>
 </blockquote>
 <p>The data in <code>bias.bg</code> are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base.</p>
 <pre class="r"><code>bias.bg=read.csv(&#39;/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv&#39;)[,-1]

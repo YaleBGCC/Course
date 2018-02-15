@@ -296,7 +296,9 @@ plot(pres,add=T) # plot presences
 #' 
 #' ###  Sample background
 #' 
-#' > Decision: Presences are most likelt to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled. 
+#' <img src="101_assets/Phillips_bias.png" style="width: 100"/>
+#' 
+#' > Decision: Presences are most likely to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled. 
 #' 
 #' The data in `bias.bg` are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base.
 #' 
