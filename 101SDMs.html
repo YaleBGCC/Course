@@ -540,8 +540,8 @@ plot(clim.us[[1]]) # plot just the 1st variable to see domain</code></pre>
 cors=cor(values(clim.us),use=&#39;complete.obs&#39;) # evaluate correlations
 corrplot(cors,order = &quot;AOE&quot;, addCoef.col = &quot;grey&quot;,number.cex=.6) # plot correlations</code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
-<pre class="r"><code>clim=clim[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
-clim.us=clim.us[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
+<pre class="r"><code>clim=clim[[c(&quot;bio1&quot;,&quot;bio2&quot;,&quot;bio13&quot;,&quot;bio14&quot;)]] # keep just reasonably uncorrelated ones
+clim.us=clim.us[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio13&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
 cors=cor(values(clim.us),use=&#39;complete.obs&#39;) # evaluate correlations
 corrplot(cors,order = &quot;AOE&quot;, addCoef.col = &quot;grey&quot;,number.cex=.6)# plot correlations</code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
@@ -583,13 +583,12 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
 (form=paste(&#39;pres/weight~&#39;, # lhs of eqn.
             paste(names(all.data)[-1], collapse = &quot; + &quot;),&#39;+&#39;, # linear terms
             paste(&quot;I(&quot;, names(all.data)[-1], &quot;^2)&quot;, sep = &quot;&quot;, collapse = &quot; + &quot;))) # qudratic terms</code></pre>
-<pre><code>## [1] &quot;pres/weight~ bio1 + bio2 + bio14 + I(bio1^2) + I(bio2^2) + I(bio14^2)&quot;</code></pre>
+<pre><code>## [1] &quot;pres/weight~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)&quot;</code></pre>
 </div>
 <div id="statistical-model" class="section level2">
 <h2><span class="header-section-number">2.6</span> Statistical model</h2>
 <pre class="r"><code>all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
 mod.worst=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model
-#mod.worst=maxnet(all.data$pres,all.data[-1])
 summary(mod.worst) # show coefficients</code></pre>
 <pre><code>## 
 ## Call:
@@ -598,25 +597,27 @@ summary(mod.worst) # show coefficients</code></pre>
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -3.7578  -0.2080  -0.0770  -0.0355   5.1352  
+## -4.0280  -0.2408  -0.0706  -0.0308   5.1147  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -15.20385    0.28785 -52.819  &lt; 2e-16 ***
-## bio1          2.33396    0.27664   8.437  &lt; 2e-16 ***
-## bio2          0.92237    0.07316  12.607  &lt; 2e-16 ***
-## bio14        -0.86362    0.07654 -11.283  &lt; 2e-16 ***
-## I(bio1^2)     0.28801    0.09338   3.084  0.00204 ** 
-## I(bio2^2)     0.26184    0.04068   6.436 1.23e-10 ***
-## I(bio14^2)    0.42733    0.05970   7.158 8.19e-13 ***
+## (Intercept) -15.37924    0.30294 -50.766  &lt; 2e-16 ***
+## bio1          2.58714    0.30915   8.369  &lt; 2e-16 ***
+## bio2          0.88788    0.07252  12.243  &lt; 2e-16 ***
+## bio13         0.32046    0.09170   3.495 0.000475 ***
+## bio14        -0.96095    0.09545 -10.067  &lt; 2e-16 ***
+## I(bio1^2)     0.21355    0.10382   2.057 0.039705 *  
+## I(bio2^2)     0.23243    0.03706   6.272 3.57e-10 ***
+## I(bio13^2)    0.22246    0.06308   3.526 0.000421 ***
+## I(bio14^2)    0.41497    0.05867   7.073 1.52e-12 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
 ##     Null deviance: 8340.1  on 3353  degrees of freedom
-## Residual deviance: 6854.8  on 3347  degrees of freedom
-## AIC: 7606.8
+## Residual deviance: 6823.3  on 3345  degrees of freedom
+## AIC: 7579.3
 ## 
 ## Number of Fisher Scoring iterations: 17</code></pre>
 </div>
@@ -635,13 +636,16 @@ response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
   return(data.frame(xs=xs,ys=ys)) # define outputs
 })# ignore warnings</code></pre>
 <pre class="r"><code>str(response.curves) #structure of the object used for plotting</code></pre>
-<pre><code>## List of 3
+<pre><code>## List of 4
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
-##   ..$ ys: num [1:100] -18.5 -18.4 -18.3 -18.3 -18.2 ...
+##   ..$ ys: num [1:100] -19.3 -19.2 -19.2 -19.1 -19 ...
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
-##   ..$ ys: num [1:100] -13.7 -13.8 -13.9 -14 -14.1 ...
+##   ..$ ys: num [1:100] -14.3 -14.4 -14.5 -14.6 -14.7 ...
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
+##   ..$ ys: num [1:100] -14.5 -14.6 -14.6 -14.7 -14.7 ...
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
 ##   ..$ ys: num [1:100] -10.3 -10.5 -10.7 -10.9 -11 ...</code></pre>
@@ -679,7 +683,10 @@ plot(perf.fit) # plot ROC curve
 abline(0,1) # 1:1 line indicate random predictions </code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
 <pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
-<pre><code>## [1] 0.9431062</code></pre>
+<pre><code>## [1] 0.9412932</code></pre>
+<blockquote>
+<p>Decision: The occurrence-environment relationship fit in New England also describes the species response to environment in Europe.</p>
+</blockquote>
 </div>
 <div id="transfer-to-new-conditions" class="section level2">
 <h2><span class="header-section-number">2.10</span> Transfer to new conditions</h2>
@@ -698,19 +705,218 @@ plot(pres,add=T) # plot presences </code></pre>
 </div>
 <div id="improvements" class="section level1">
 <h1><span class="header-section-number">3</span> Improvements</h1>
-<div id="thin-presences-stratify-sampling" class="section level2">
-<h2><span class="header-section-number">3.1</span> Thin presences, Stratify sampling</h2>
-</div>
+<!-- #========================================================================= -->
 <div id="sampling-bias" class="section level2">
-<h2><span class="header-section-number">3.2</span> Sampling bias</h2>
-<pre class="r"><code>bias.bg=read.csv(&#39;/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv&#39;)
-coordinates(bias.bg)=c(2,3)</code></pre>
+<h2><span class="header-section-number">3.1</span> Sampling bias</h2>
+<div id="sample-background-1" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Sample background</h3>
+<blockquote>
+<p>Decision: Presences are most likelt to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled.</p>
+</blockquote>
+<p>The data in <code>bias.bg</code> are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base.</p>
+<pre class="r"><code>bias.bg=read.csv(&#39;/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv&#39;)[,-1]
+coordinates(bias.bg)=c(1,2)
+bias.bg.data=data.frame(raster::extract(clim.us,bias.bg))
+coordinates(bias.bg.data)=coordinates(bias.bg)
+bias.bg.data=bias.bg.data[complete.cases(bias.bg.data@data),]</code></pre>
+<pre class="r"><code># prep data for use in glm()
+all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bias.bg.data@data))
+
+# specify formula (quickly to avoid writing out every name)
+(form=paste(&#39;pres/weight~&#39;, # lhs of eqn.
+            paste(names(all.data)[-1], collapse = &quot; + &quot;),&#39;+&#39;, # linear terms
+            paste(&quot;I(&quot;, names(all.data)[-1], &quot;^2)&quot;, sep = &quot;&quot;, collapse = &quot; + &quot;))) # qudratic terms</code></pre>
+<pre><code>## [1] &quot;pres/weight~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)&quot;</code></pre>
+<p><em>From this point on, the code is exactly the same as the previous example, except that the model is given a new name, <code>mod.bias</code> instead of <code>mod.worst</code></em></p>
 </div>
-<div id="model-comparison" class="section level2">
-<h2><span class="header-section-number">3.3</span> Model comparison</h2>
+</div>
+<div id="statistical-model-1" class="section level2">
+<h2><span class="header-section-number">3.2</span> Statistical model</h2>
+<pre class="r"><code>all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
+mod.bias=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model
+summary(mod.bias) # show coefficients</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = form, family = poisson(link = &quot;log&quot;), data = all.data, 
+##     weights = weight)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7729  -0.2560  -0.1099  -0.0320   6.3131  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -17.31494    0.28372 -61.028  &lt; 2e-16 ***
+## bio1         -5.04764    0.31736 -15.905  &lt; 2e-16 ***
+## bio2          2.59214    0.07989  32.446  &lt; 2e-16 ***
+## bio13         1.15896    0.09228  12.560  &lt; 2e-16 ***
+## bio14        -2.61444    0.07388 -35.389  &lt; 2e-16 ***
+## I(bio1^2)     5.08107    0.12202  41.641  &lt; 2e-16 ***
+## I(bio2^2)     0.66814    0.05442  12.277  &lt; 2e-16 ***
+## I(bio13^2)    0.79904    0.10116   7.899 2.81e-15 ***
+## I(bio14^2)   -0.08801    0.08161  -1.078    0.281    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 8805.4  on 5976  degrees of freedom
+## Residual deviance: 5167.8  on 5968  degrees of freedom
+## AIC: 5923.8
+## 
+## Number of Fisher Scoring iterations: 18</code></pre>
+</div>
+<div id="inspect-response-curves-1" class="section level2">
+<h2><span class="header-section-number">3.3</span> Inspect response curves</h2>
+<pre class="r"><code># check response curves
+  # these marginal response curves are evaluated at the means of the non-focal predictor
+clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
+dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
+response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.bias,newdata=newdata) # predictions
+  return(data.frame(xs=xs,ys=ys)) # define outputs
+})# ignore warnings</code></pre>
+<pre class="r"><code>str(response.curves) #structure of the object used for plotting</code></pre>
+<pre><code>## List of 4
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
+##   ..$ ys: num [1:100] 7.92 6.89 5.88 4.89 3.92 ...
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
+##   ..$ ys: num [1:100] -14.5 -14.8 -15.1 -15.3 -15.6 ...
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
+##   ..$ ys: num [1:100] -14.2 -14.4 -14.6 -14.8 -15 ...
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
+##   ..$ ys: num [1:100] -11.3 -11.4 -11.6 -11.7 -11.8 ...</code></pre>
+<pre class="r"><code>  # plot the curves
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim.us)){ # loop over layers
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
+       type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
+  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)
+}</code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
+<div id="map-predictions-1" class="section level3">
+<h3><span class="header-section-number">3.3.1</span> Map predictions</h3>
+<pre class="r"><code># predict to US
+pred.r=raster::predict(clim.us,mod.bias, index=1,type=&quot;response&quot;)
+pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(pred.r)) # plot raster
+plot(pres,add=T) # plot points</code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+</div>
+<div id="evaluate-performance-1" class="section level3">
+<h3><span class="header-section-number">3.3.2</span> Evaluate performance</h3>
+<pre class="r"><code># evaluate
+pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
+pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
+rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
+                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
+perf.fit=performance(rocr.pred,measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;) # calculate perfomance 
+plot(perf.fit) # plot ROC curve
+abline(0,1) # 1:1 line indicate random predictions </code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
+<pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
+<pre><code>## [1] 0.6737413</code></pre>
+<p>Oh, Snap!</p>
+<!-- #========================================================================= -->
+<!-- #========================================================================= -->
+</div>
 </div>
 <div id="other-algorithms-glmnet" class="section level2">
 <h2><span class="header-section-number">3.4</span> Other algorithms: glmnet</h2>
+</div>
+<div id="statistical-model-2" class="section level2">
+<h2><span class="header-section-number">3.5</span> Statistical model</h2>
+<pre class="r"><code>mod.maxnet=maxnet(p=all.data[,&#39;pres&#39;],data=all.data[,c(&quot;bio1&quot;,&quot;bio2&quot;,&quot;bio13&quot;,&quot;bio14&quot;)])
+summary(mod.maxnet) # show coefficients</code></pre>
+<pre><code>##                Length Class     Mode     
+## a0               200  -none-    numeric  
+## beta           81200  dgCMatrix S4       
+## df               200  -none-    numeric  
+## dim                2  -none-    numeric  
+## lambda           200  -none-    numeric  
+## dev.ratio        200  -none-    numeric  
+## nulldev            1  -none-    numeric  
+## npasses            1  -none-    numeric  
+## jerr               1  -none-    numeric  
+## offset             1  -none-    logical  
+## classnames         2  -none-    character
+## call               8  -none-    call     
+## nobs               1  -none-    numeric  
+## betas             24  -none-    numeric  
+## alpha              1  -none-    numeric  
+## entropy            1  -none-    numeric  
+## penalty.factor   406  -none-    numeric  
+## featuremins      406  -none-    numeric  
+## featuremaxs      406  -none-    numeric  
+## varmin             4  -none-    numeric  
+## varmax             4  -none-    numeric  
+## samplemeans        4  -none-    list     
+## levels             4  -none-    list</code></pre>
+<p><em>From this point on, the code is exactly the same as the previous example, except that the model is given a new name, <code>mod.maxnet</code> instead of <code>mod.bias</code></em></p>
+</div>
+<div id="inspect-response-curves-2" class="section level2">
+<h2><span class="header-section-number">3.6</span> Inspect response curves</h2>
+<pre class="r"><code># check response curves
+  # these marginal response curves are evaluated at the means of the non-focal predictor
+clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
+dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
+response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.maxnet,newdata=newdata) # predictions
+  return(data.frame(xs=xs,ys=ys)) # define outputs
+})# ignore warnings</code></pre>
+<pre class="r"><code>  # plot the curves
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim.us)){ # loop over layers
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
+       type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
+  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)
+}</code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-29-1.png" /><!-- --></p>
+<div id="map-predictions-2" class="section level3">
+<h3><span class="header-section-number">3.6.1</span> Map predictions</h3>
+<pre class="r"><code># predict to US
+pred.r=raster::predict(clim.us,mod.maxnet, index=1,type=&quot;exponential&quot;)
+pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(pred.r)) # plot raster
+plot(pres,add=T) # plot points</code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
+</div>
+<div id="evaluate-performance-2" class="section level3">
+<h3><span class="header-section-number">3.6.2</span> Evaluate performance</h3>
+<pre class="r"><code># evaluate
+pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
+pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
+rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
+                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
+perf.fit=performance(rocr.pred,measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;) # calculate perfomance 
+plot(perf.fit) # plot ROC curve
+abline(0,1) # 1:1 line indicate random predictions </code></pre>
+<p><img src="101SDMs_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
+<pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
+<pre><code>## [1] 0.789735</code></pre>
+<!-- #========================================================================= -->
+<!-- ## Thin presences, Stratify sampling -->
+<!-- ```{r} -->
+<!-- all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process -->
+<!-- mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model -->
+<!-- #mod.worst=maxnet(all.data$pres,all.data[-1]) -->
+<!-- summary(mod.worst) # show coefficients -->
+<!-- ``` -->
+<!-- ## Model Comparison -->
 <!-- # # evaluate transfer -->
 <!-- # pred.at.transfer.pres=raster::extract(transfer.r,pres.data) -->
 <!-- #   # sample background in transfer region -->
@@ -728,6 +934,7 @@ coordinates(bias.bg)=c(2,3)</code></pre>
 <!-- # abline(0,1) -->
 <!-- # (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) -->
 <!-- #  -->
+</div>
 </div>
 </div>
 

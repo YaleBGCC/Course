@@ -196,8 +196,8 @@ corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6) # plot correlat
 
 
 ```r
-clim=clim[[c('bio1','bio2','bio14')]] # keep just reasonably uncorrelated ones
-clim.us=clim.us[[c('bio1','bio2','bio14')]] # keep just reasonably uncorrelated ones
+clim=clim[[c("bio1","bio2","bio13","bio14")]] # keep just reasonably uncorrelated ones
+clim.us=clim.us[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
 cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
 corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)# plot correlations
 ```
@@ -259,7 +259,7 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
 ```
 
 ```
-## [1] "pres/weight~ bio1 + bio2 + bio14 + I(bio1^2) + I(bio2^2) + I(bio14^2)"
+## [1] "pres/weight~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)"
 ```
 
 
@@ -269,7 +269,6 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
 ```r
 all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
 mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model
-#mod.worst=maxnet(all.data$pres,all.data[-1])
 summary(mod.worst) # show coefficients
 ```
 
@@ -281,25 +280,27 @@ summary(mod.worst) # show coefficients
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -3.7578  -0.2080  -0.0770  -0.0355   5.1352  
+## -4.0280  -0.2408  -0.0706  -0.0308   5.1147  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)    
-## (Intercept) -15.20385    0.28785 -52.819  < 2e-16 ***
-## bio1          2.33396    0.27664   8.437  < 2e-16 ***
-## bio2          0.92237    0.07316  12.607  < 2e-16 ***
-## bio14        -0.86362    0.07654 -11.283  < 2e-16 ***
-## I(bio1^2)     0.28801    0.09338   3.084  0.00204 ** 
-## I(bio2^2)     0.26184    0.04068   6.436 1.23e-10 ***
-## I(bio14^2)    0.42733    0.05970   7.158 8.19e-13 ***
+## (Intercept) -15.37924    0.30294 -50.766  < 2e-16 ***
+## bio1          2.58714    0.30915   8.369  < 2e-16 ***
+## bio2          0.88788    0.07252  12.243  < 2e-16 ***
+## bio13         0.32046    0.09170   3.495 0.000475 ***
+## bio14        -0.96095    0.09545 -10.067  < 2e-16 ***
+## I(bio1^2)     0.21355    0.10382   2.057 0.039705 *  
+## I(bio2^2)     0.23243    0.03706   6.272 3.57e-10 ***
+## I(bio13^2)    0.22246    0.06308   3.526 0.000421 ***
+## I(bio14^2)    0.41497    0.05867   7.073 1.52e-12 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
 ##     Null deviance: 8340.1  on 3353  degrees of freedom
-## Residual deviance: 6854.8  on 3347  degrees of freedom
-## AIC: 7606.8
+## Residual deviance: 6823.3  on 3345  degrees of freedom
+## AIC: 7579.3
 ## 
 ## Number of Fisher Scoring iterations: 17
 ```
@@ -329,13 +330,16 @@ str(response.curves) #structure of the object used for plotting
 ```
 
 ```
-## List of 3
+## List of 4
 ##  $ :'data.frame':	100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
-##   ..$ ys: num [1:100] -18.5 -18.4 -18.3 -18.3 -18.2 ...
+##   ..$ ys: num [1:100] -19.3 -19.2 -19.2 -19.1 -19 ...
 ##  $ :'data.frame':	100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
-##   ..$ ys: num [1:100] -13.7 -13.8 -13.9 -14 -14.1 ...
+##   ..$ ys: num [1:100] -14.3 -14.4 -14.5 -14.6 -14.7 ...
+##  $ :'data.frame':	100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
+##   ..$ ys: num [1:100] -14.5 -14.6 -14.6 -14.7 -14.7 ...
 ##  $ :'data.frame':	100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
 ##   ..$ ys: num [1:100] -10.3 -10.5 -10.7 -10.9 -11 ...
@@ -392,8 +396,11 @@ abline(0,1) # 1:1 line indicate random predictions
 ```
 
 ```
-## [1] 0.9431062
+## [1] 0.9412932
 ```
+
+> Decision: The occurrence-environment relationship fit in New England also describes the species response to environment in Europe.
+
 
 ## Transfer to new conditions
 
@@ -416,22 +423,305 @@ plot(pres,add=T) # plot presences
 
 # Improvements
 
-## Thin presences, Stratify sampling
-
+<!-- #========================================================================= -->
 ## Sampling bias
+
+###  Sample background
+
+> Decision: Presences are most likelt to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled. 
+
+The data in `bias.bg` are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base.
 
 
 ```r
-bias.bg=read.csv('/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv')
-coordinates(bias.bg)=c(2,3)
+bias.bg=read.csv('/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv')[,-1]
+coordinates(bias.bg)=c(1,2)
+bias.bg.data=data.frame(raster::extract(clim.us,bias.bg))
+coordinates(bias.bg.data)=coordinates(bias.bg)
+bias.bg.data=bias.bg.data[complete.cases(bias.bg.data@data),]
 ```
 
 
-## Model comparison
 
+```r
+# prep data for use in glm()
+all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bias.bg.data@data))
+
+# specify formula (quickly to avoid writing out every name)
+(form=paste('pres/weight~', # lhs of eqn.
+            paste(names(all.data)[-1], collapse = " + "),'+', # linear terms
+            paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + "))) # qudratic terms
+```
+
+```
+## [1] "pres/weight~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)"
+```
+
+*From this point on, the code is exactly the same as the previous example, except that the model is given a new name, `mod.bias` instead of `mod.worst`*
+
+## Statistical model
+
+
+```r
+all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
+mod.bias=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model
+summary(mod.bias) # show coefficients
+```
+
+```
+## 
+## Call:
+## glm(formula = form, family = poisson(link = "log"), data = all.data, 
+##     weights = weight)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7729  -0.2560  -0.1099  -0.0320   6.3131  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(>|z|)    
+## (Intercept) -17.31494    0.28372 -61.028  < 2e-16 ***
+## bio1         -5.04764    0.31736 -15.905  < 2e-16 ***
+## bio2          2.59214    0.07989  32.446  < 2e-16 ***
+## bio13         1.15896    0.09228  12.560  < 2e-16 ***
+## bio14        -2.61444    0.07388 -35.389  < 2e-16 ***
+## I(bio1^2)     5.08107    0.12202  41.641  < 2e-16 ***
+## I(bio2^2)     0.66814    0.05442  12.277  < 2e-16 ***
+## I(bio13^2)    0.79904    0.10116   7.899 2.81e-15 ***
+## I(bio14^2)   -0.08801    0.08161  -1.078    0.281    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 8805.4  on 5976  degrees of freedom
+## Residual deviance: 5167.8  on 5968  degrees of freedom
+## AIC: 5923.8
+## 
+## Number of Fisher Scoring iterations: 18
+```
+
+
+## Inspect response curves
+
+
+```r
+# check response curves
+  # these marginal response curves are evaluated at the means of the non-focal predictor
+clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
+dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
+response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.bias,newdata=newdata) # predictions
+  return(data.frame(xs=xs,ys=ys)) # define outputs
+})# ignore warnings
+```
+
+
+```r
+str(response.curves) #structure of the object used for plotting
+```
+
+```
+## List of 4
+##  $ :'data.frame':	100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
+##   ..$ ys: num [1:100] 7.92 6.89 5.88 4.89 3.92 ...
+##  $ :'data.frame':	100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
+##   ..$ ys: num [1:100] -14.5 -14.8 -15.1 -15.3 -15.6 ...
+##  $ :'data.frame':	100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
+##   ..$ ys: num [1:100] -14.2 -14.4 -14.6 -14.8 -15 ...
+##  $ :'data.frame':	100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
+##   ..$ ys: num [1:100] -11.3 -11.4 -11.6 -11.7 -11.8 ...
+```
+
+
+```r
+  # plot the curves
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim.us)){ # loop over layers
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
+       type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
+  abline(v=pres.env.range,col='red',lty=2)
+}
+```
+
+![](101SDMs_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+
+
+### Map predictions
+
+
+
+```r
+# predict to US
+pred.r=raster::predict(clim.us,mod.bias, index=1,type="response")
+pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(pred.r)) # plot raster
+plot(pres,add=T) # plot points
+```
+
+![](101SDMs_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+
+
+### Evaluate performance
+
+```r
+# evaluate
+pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
+pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
+rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
+                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
+perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") # calculate perfomance 
+plot(perf.fit) # plot ROC curve
+abline(0,1) # 1:1 line indicate random predictions 
+```
+
+![](101SDMs_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+
+```r
+(auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
+```
+
+```
+## [1] 0.6737413
+```
+
+Oh, Snap!
+
+<!-- #========================================================================= -->
+<!-- #========================================================================= -->
 ## Other algorithms: glmnet
 
+## Statistical model
 
+
+```r
+mod.maxnet=maxnet(p=all.data[,'pres'],data=all.data[,c("bio1","bio2","bio13","bio14")])
+summary(mod.maxnet) # show coefficients
+```
+
+```
+##                Length Class     Mode     
+## a0               200  -none-    numeric  
+## beta           81200  dgCMatrix S4       
+## df               200  -none-    numeric  
+## dim                2  -none-    numeric  
+## lambda           200  -none-    numeric  
+## dev.ratio        200  -none-    numeric  
+## nulldev            1  -none-    numeric  
+## npasses            1  -none-    numeric  
+## jerr               1  -none-    numeric  
+## offset             1  -none-    logical  
+## classnames         2  -none-    character
+## call               8  -none-    call     
+## nobs               1  -none-    numeric  
+## betas             24  -none-    numeric  
+## alpha              1  -none-    numeric  
+## entropy            1  -none-    numeric  
+## penalty.factor   406  -none-    numeric  
+## featuremins      406  -none-    numeric  
+## featuremaxs      406  -none-    numeric  
+## varmin             4  -none-    numeric  
+## varmax             4  -none-    numeric  
+## samplemeans        4  -none-    list     
+## levels             4  -none-    list
+```
+
+*From this point on, the code is exactly the same as the previous example, except that the model is given a new name, `mod.maxnet` instead of `mod.bias`*
+
+## Inspect response curves
+
+
+```r
+# check response curves
+  # these marginal response curves are evaluated at the means of the non-focal predictor
+clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
+dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
+response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.maxnet,newdata=newdata) # predictions
+  return(data.frame(xs=xs,ys=ys)) # define outputs
+})# ignore warnings
+```
+
+
+```r
+  # plot the curves
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim.us)){ # loop over layers
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
+       type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
+  abline(v=pres.env.range,col='red',lty=2)
+}
+```
+
+![](101SDMs_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+
+
+### Map predictions
+
+
+
+```r
+# predict to US
+pred.r=raster::predict(clim.us,mod.maxnet, index=1,type="exponential")
+pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(pred.r)) # plot raster
+plot(pres,add=T) # plot points
+```
+
+![](101SDMs_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+
+
+### Evaluate performance
+
+```r
+# evaluate
+pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
+pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
+rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
+                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
+perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") # calculate perfomance 
+plot(perf.fit) # plot ROC curve
+abline(0,1) # 1:1 line indicate random predictions 
+```
+
+![](101SDMs_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+
+```r
+(auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
+```
+
+```
+## [1] 0.789735
+```
+
+
+<!-- #========================================================================= -->
+<!-- ## Thin presences, Stratify sampling -->
+
+<!-- ```{r} -->
+<!-- all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process -->
+<!-- mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model -->
+<!-- #mod.worst=maxnet(all.data$pres,all.data[-1]) -->
+<!-- summary(mod.worst) # show coefficients -->
+<!-- ``` -->
+
+
+
+<!-- ## Model Comparison -->
 <!-- # # evaluate transfer -->
 <!-- # pred.at.transfer.pres=raster::extract(transfer.r,pres.data) -->
 <!-- #   # sample background in transfer region -->
