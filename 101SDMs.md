@@ -1,7 +1,6 @@
 ---
 title: "Introduction to Species Distribution Modeling"
 author: "[Cory Merow](cmerow.github.io)"
-date: "[Yale Center for Global Change](bgc.yale.edu)"
 ---
 
 
@@ -54,10 +53,7 @@ clim=getData('worldclim', var='bio', res=10)
 ```r
 # choose domain (just the Eastern US)
 clim.us=raster::crop(clim,c(-100,-50,25,50)) # trim to a smaller region
-plot(clim.us) # view 
 ```
-
-![](101SDMs_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 The Bioclim variables in `clim.us` are:
 
@@ -93,18 +89,18 @@ BIO19         Precipitation of Coldest Quarter
 
 ```r
 # check for correlated predictors
-cors=cor(values(clim.us),use='complete.obs')
-corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)
+cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
+corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6) # plot correlations
 ```
 
 ![](101SDMs_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 
 ```r
-clim=clim[[c('bio1','bio2','bio13','bio14')]]
-clim.us=clim.us[[c('bio1','bio2','bio13','bio14')]]
-cors=cor(values(clim.us),use='complete.obs')
-corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)
+clim=clim[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
+clim.us=clim.us[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
+cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
+corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)# plot correlations
 ```
 
 ![](101SDMs_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
@@ -127,6 +123,12 @@ pres.data=pres.data[complete.cases(pres.data@data),] # toss points without env d
 ```
 
 
+```r
+plot(clim.us) # view 
+```
+
+![](101SDMs_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
 ##  Sample background
 
 ```r
@@ -143,9 +145,9 @@ coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object
 all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data))
 
 # specify formula (quickly to avoid writing out every name)
-(form=paste('pres~', 
-            paste(names(all.data)[-1], collapse = " + "),'+',
-            paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + ")))
+(form=paste('pres~', # lhs of eqn.
+            paste(names(all.data)[-1], collapse = " + "),'+', # linear terms
+            paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + "))) # qudratic terms
 ```
 
 ```
@@ -158,8 +160,8 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
 
 ```r
 # fit model
-all.data$weight = all.data$pres + (1 - all.data$pres) * 100 # these allow you to fit a Point Process
-mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight)
+all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
+mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model
 ```
 
 ```
@@ -167,7 +169,7 @@ mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight)
 ```
 
 ```r
-summary(mod.worst)
+summary(mod.worst) # show coefficients
 ```
 
 ```
@@ -178,29 +180,29 @@ summary(mod.worst)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.5855  -0.3526  -0.0762  -0.0086   4.5013  
+## -2.6034  -0.3527  -0.0760  -0.0085   5.4305  
 ## 
 ## Coefficients:
-##             Estimate Std. Error z value Pr(>|z|)    
-## (Intercept) -6.38136    0.09481 -67.306  < 2e-16 ***
-## bio1         0.83602    0.11945   6.999 2.58e-12 ***
-## bio2        -1.03475    0.08266 -12.518  < 2e-16 ***
-## bio13       -1.81910    0.16570 -10.978  < 2e-16 ***
-## bio14        0.87422    0.05456  16.023  < 2e-16 ***
-## I(bio1^2)   -3.63591    0.22200 -16.378  < 2e-16 ***
-## I(bio2^2)   -0.67464    0.06435 -10.484  < 2e-16 ***
-## I(bio13^2)  -0.90681    0.14148  -6.410 1.46e-10 ***
-## I(bio14^2)   0.38417    0.05821   6.599 4.13e-11 ***
+##              Estimate Std. Error  z value Pr(>|z|)    
+## (Intercept) -10.98450    0.09478 -115.890  < 2e-16 ***
+## bio1          0.84060    0.11940    7.040 1.92e-12 ***
+## bio2         -1.03840    0.08262  -12.569  < 2e-16 ***
+## bio13        -1.82338    0.16567  -11.006  < 2e-16 ***
+## bio14         0.87704    0.05456   16.075  < 2e-16 ***
+## I(bio1^2)    -3.64250    0.22202  -16.406  < 2e-16 ***
+## I(bio2^2)    -0.67693    0.06445  -10.504  < 2e-16 ***
+## I(bio13^2)   -0.90963    0.14142   -6.432 1.26e-10 ***
+## I(bio14^2)    0.38650    0.05817    6.645 3.03e-11 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
-##     Null deviance: 11875.0  on 10837  degrees of freedom
-## Residual deviance:  9571.7  on 10829  degrees of freedom
-## AIC: 11266
+##     Null deviance: 19592  on 10837  degrees of freedom
+## Residual deviance: 17281  on 10829  degrees of freedom
+## AIC: 18975
 ## 
-## Number of Fisher Scoring iterations: 13
+## Number of Fisher Scoring iterations: 18
 ```
 
 
@@ -212,19 +214,19 @@ summary(mod.worst)
   # these marginal response curves are evaluated at the means of the non-focal predictor
 clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
 dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
-names(dummy.mean.matrix)=colnames(clim.ranges)
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
 response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
-  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100)
-  newdata=dummy.mean.matrix
-  newdata[,x]=xs
-  ys=predict(mod.worst,newdata=newdata)
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.worst,newdata=newdata) # predictions
   return(data.frame(xs=xs,ys=ys)) # define outputs
 })# ignore warnings
 ```
 
 
 ```r
-str(response.curves)
+str(response.curves) #structure of the object used for plotting
 ```
 
 ```
@@ -246,14 +248,14 @@ str(response.curves)
 
 ```r
   # plot the curves
-par(mfrow=c(4,5),mar=c(4,5,.5,.5))
-for(i in 1:nlayers(clim)){
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
 }
 ```
 
-![](101SDMs_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](101SDMs_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 
 ## Map predictions
@@ -261,34 +263,34 @@ for(i in 1:nlayers(clim)){
 
 ```r
 # predict to US
-pred=predict(mod.worst,newdata=data.frame(values(clim.us)))
-pred=pred/sum(pred,na.rm=T)
+pred=predict(mod.worst,newdata=data.frame(values(clim.us))) 
+pred=pred/sum(pred,na.rm=T) # normalize prediction (sum to 1)
 pred.r=clim.us[[1]] # dummy raster with right structure
-values(pred.r)=pred 
-plot(pred.r)
-plot(pres,add=T)
+values(pred.r)=pred # plug in predictions to dummy raster
+plot(pred.r) # plot raster
+plot(pres,add=T) # plot points
 ```
 
-![](101SDMs_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](101SDMs_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 
 ## Evaluate performance
 
 ```r
 # evaluate
-pred.at.fitting.pres=raster::extract(pred.r,pres.data)
-pred.at.fitting.bg=raster::extract(pred.r,bg.data)
+pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
+pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
 rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
-                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg))))
-perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr")
-plot(perf.fit)
-abline(0,1)
+                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
+perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") # calculate perfomance 
+plot(perf.fit) # plot ROC curve
+abline(0,1) # 1:1 line indicate random predictions 
 ```
 
-![](101SDMs_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](101SDMs_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 ```r
-(auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]])
+(auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
 ```
 
 ```
@@ -299,18 +301,18 @@ abline(0,1)
 
 ```r
 # transfer to Europe
-# choose domain (just the europe)
+# choose domain (just europe)
 clim.eu=raster::crop(clim,c(-10,55,30,75))
-values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x]) # z-scores
-transfer=predict(mod.worst,newdata=data.frame(values(clim.eu)))
-transfer=transfer/sum(transfer,na.rm=T)
-transfer.r=clim.eu[[1]]
-values(transfer.r)=transfer
-plot(transfer.r)
-plot(pres,add=T)
+values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x]) # z-scores (to make values comparable to the scaeld values for fitting)
+transfer=predict(mod.worst,newdata=data.frame(values(clim.eu))) 
+transfer=transfer/sum(transfer,na.rm=T) # normalize
+transfer.r=clim.eu[[1]] # dummy raster
+values(transfer.r)=transfer # plug predicitons into dummy raster
+plot(transfer.r) # plot preds
+plot(pres,add=T) # plot presences 
 ```
 
-![](101SDMs_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](101SDMs_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 <!-- # # evaluate transfer -->
 <!-- # pred.at.transfer.pres=raster::extract(transfer.r,pres.data) -->

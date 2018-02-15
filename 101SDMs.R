@@ -1,7 +1,6 @@
 #' ---
 #' title: "Introduction to Species Distribution Modeling"
 #' author: "[Cory Merow](cmerow.github.io)"
-#' date: "[Yale Center for Global Change](bgc.yale.edu)"
 #' ---
 #' 
 #' 
@@ -50,7 +49,6 @@ clim=getData('worldclim', var='bio', res=10)
 ## ------------------------------------------------------------------------
 # choose domain (just the Eastern US)
 clim.us=raster::crop(clim,c(-100,-50,25,50)) # trim to a smaller region
-plot(clim.us) # view 
 
 #' 
 #' The Bioclim variables in `clim.us` are:
@@ -86,15 +84,15 @@ plot(clim.us) # view
 #' 
 ## ------------------------------------------------------------------------
 # check for correlated predictors
-cors=cor(values(clim.us),use='complete.obs')
-corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)
+cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
+corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6) # plot correlations
 
 #' 
 ## ------------------------------------------------------------------------
-clim=clim[[c('bio1','bio2','bio13','bio14')]]
-clim.us=clim.us[[c('bio1','bio2','bio13','bio14')]]
-cors=cor(values(clim.us),use='complete.obs')
-corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)
+clim=clim[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
+clim.us=clim.us[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
+cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
+corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)# plot correlations
 
 #' 
 #' Ok, tolerable.
@@ -113,6 +111,9 @@ coordinates(pres.data)=coordinates(pres) # make sure the data have coords associ
 pres.data=pres.data[complete.cases(pres.data@data),] # toss points without env data
 
 #' 
+## ------------------------------------------------------------------------
+plot(clim.us) # view 
+
 #' 
 #' ##  Sample background
 ## ------------------------------------------------------------------------
@@ -128,9 +129,9 @@ coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object
 all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data))
 
 # specify formula (quickly to avoid writing out every name)
-(form=paste('pres~', 
-            paste(names(all.data)[-1], collapse = " + "),'+',
-            paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + ")))
+(form=paste('pres~', # lhs of eqn.
+            paste(names(all.data)[-1], collapse = " + "),'+', # linear terms
+            paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + "))) # qudratic terms
 
 #' 
 #' 
@@ -138,9 +139,9 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
 #' 
 ## ------------------------------------------------------------------------
 # fit model
-all.data$weight = all.data$pres + (1 - all.data$pres) * 100 # these allow you to fit a Point Process
-mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight)
-summary(mod.worst)
+all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
+mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model
+summary(mod.worst) # show coefficients
 
 #' 
 #' 
@@ -151,24 +152,24 @@ summary(mod.worst)
   # these marginal response curves are evaluated at the means of the non-focal predictor
 clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
 dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
-names(dummy.mean.matrix)=colnames(clim.ranges)
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
 response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
-  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100)
-  newdata=dummy.mean.matrix
-  newdata[,x]=xs
-  ys=predict(mod.worst,newdata=newdata)
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.worst,newdata=newdata) # predictions
   return(data.frame(xs=xs,ys=ys)) # define outputs
 })# ignore warnings
 
 #' 
 ## ------------------------------------------------------------------------
-str(response.curves)
+str(response.curves) #structure of the object used for plotting
 
 #' 
 ## ------------------------------------------------------------------------
   # plot the curves
-par(mfrow=c(4,5),mar=c(4,5,.5,.5))
-for(i in 1:nlayers(clim)){
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
 }
@@ -179,40 +180,40 @@ for(i in 1:nlayers(clim)){
 #' 
 ## ------------------------------------------------------------------------
 # predict to US
-pred=predict(mod.worst,newdata=data.frame(values(clim.us)))
-pred=pred/sum(pred,na.rm=T)
+pred=predict(mod.worst,newdata=data.frame(values(clim.us))) 
+pred=pred/sum(pred,na.rm=T) # normalize prediction (sum to 1)
 pred.r=clim.us[[1]] # dummy raster with right structure
-values(pred.r)=pred 
-plot(pred.r)
-plot(pres,add=T)
+values(pred.r)=pred # plug in predictions to dummy raster
+plot(pred.r) # plot raster
+plot(pres,add=T) # plot points
 
 #' 
 #' 
 #' ## Evaluate performance
 ## ------------------------------------------------------------------------
 # evaluate
-pred.at.fitting.pres=raster::extract(pred.r,pres.data)
-pred.at.fitting.bg=raster::extract(pred.r,bg.data)
+pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
+pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
 rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
-                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg))))
-perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr")
-plot(perf.fit)
-abline(0,1)
-(auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]])
+                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
+perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") # calculate perfomance 
+plot(perf.fit) # plot ROC curve
+abline(0,1) # 1:1 line indicate random predictions 
+(auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
 
 #' 
 #' ## Transfer to new conditions
 ## ------------------------------------------------------------------------
 # transfer to Europe
-# choose domain (just the europe)
+# choose domain (just europe)
 clim.eu=raster::crop(clim,c(-10,55,30,75))
-values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x]) # z-scores
-transfer=predict(mod.worst,newdata=data.frame(values(clim.eu)))
-transfer=transfer/sum(transfer,na.rm=T)
-transfer.r=clim.eu[[1]]
-values(transfer.r)=transfer
-plot(transfer.r)
-plot(pres,add=T)
+values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x]) # z-scores (to make values comparable to the scaeld values for fitting)
+transfer=predict(mod.worst,newdata=data.frame(values(clim.eu))) 
+transfer=transfer/sum(transfer,na.rm=T) # normalize
+transfer.r=clim.eu[[1]] # dummy raster
+values(transfer.r)=transfer # plug predicitons into dummy raster
+plot(transfer.r) # plot preds
+plot(pres,add=T) # plot presences 
 
 #' 
 #' <!-- # # evaluate transfer -->
