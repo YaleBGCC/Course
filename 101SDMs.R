@@ -26,23 +26,30 @@ library(spThin)
 #' 
 #' # The worst SDM ever
 #' 
-#' The goal of this is to use the simplest possible set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user, especially if s/he is not big on reading help files. So before getting into the fancy tools, let's see what the bare minimum looks like.
+#' The goal of this is to use the simplest possible set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user. So before getting into fancier tools, let's see what the bare minimum looks like.
 #' 
 #' > This is not the simplest possible code, because it requires some familiarity with the internal components of different spatial objects. The tradeoff is that none of the key operations are performed behind the scenes by specialized SDM functions. I realize this is not always pretty, but I hope for that reason it can demonstrate some coding gynmastics for beginners.
 #' 
 #' 
 #' ## Get presence data
+#' The `spocc` package allows you to hit a number of the larger databases for presence-only data within R. They provide a number of useful pieces of metadata, if your'e into that sort of this. For this, we're not; we just want lat and lon.
+#' 
+#' > Decision: You assume the database of choice has sufficiently checked for errors in biology or typos. You know what happens when you assume...
+#' 
 ## ------------------------------------------------------------------------
 # get presence data
-# pres=occ('Alliaria petiolata',from='gbif',limit=5000) # this can be slow
+# pres=spocc::occ('Alliaria petiolata',from='gbif',limit=5000) # this can be slow
   # so just read in the result of me running this earlier
 pres=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv')[,c('longitude','latitude')]
 pres=pres[complete.cases(pres),] # toss records without coords
 
 #' 
+#' 
 #' ## Get environmental data
 #' 
-#' > Decision: Worldclim data describes the environmentl well in this region. The 'bioclim' variables are biologically relevant summaries of climate.
+#' The `raster` package has a convenience function to get some types of data. To see more about [Worldclim](http://worldclim.org/version2)
+#' 
+#' > Decision: Worldclim data describes the environmental well in this region. The 'bioclim' variables are biologically relevant summaries of climate.
 #' 
 ## ------------------------------------------------------------------------
 # get climate data
@@ -81,6 +88,8 @@ clim=getData('worldclim', var='bio', res=10)
 #' 
 #' ##  Choose domain
 #' 
+#' The 'domain' is the region of interest. It can be a political region, a biome, a park, a watershed, etc. It should include locations where the species is present and absent. Choosing relevent locations were the species does not occur is part of the art of *presence-only* modeling (see slides above).
+#' 
 #' > Decision: We are only asking about invasion in New England, so we constrain the domain to a bounding box around New England
 #' 
 ## ------------------------------------------------------------------------
@@ -91,6 +100,8 @@ plot(clim.us[[1]]) # plot just the 1st variable to see domain
 #' 
 #' ##  Prep data
 #' 
+#' Many climate variables are highly correlated with one another, which can confound statistical analyses.
+#' 
 #' > Decision: Correlated predictors can make it difficult to interpret model coefficients or response curves. So we'll remove the most correlated predictores
 #' 
 ## ------------------------------------------------------------------------
@@ -99,6 +110,8 @@ cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
 corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6) # plot correlations
 
 #' 
+#' This plot nicely clumps groups of similar variables. Choose a representative variable from each clump.
+#' 
 ## ------------------------------------------------------------------------
 clim=clim[[c("bio1","bio2","bio13","bio14")]] # keep just reasonably uncorrelated ones
 clim.us=clim.us[[c('bio1','bio2','bio13','bio14')]] # keep just reasonably uncorrelated ones
@@ -106,8 +119,9 @@ cors=cor(values(clim.us),use='complete.obs') # evaluate correlations
 corrplot(cors,order = "AOE", addCoef.col = "grey",number.cex=.6)# plot correlations
 
 #' 
-#' Ok, tolerable.
+#' Ok, tolerable. Some people advocate that correlations should be <0.7. I prefer lower, like 0.3, or 0.4 because I often forecast (as we'll do below) and one must assume that those correlations hold in new scenarios hold to make meaningful forecasts.
 #' 
+#' Scaling each predictor to zero mean and unit variance is a common statistical approach to make sure the coefficents you'll estimate are comparable (on the same scale) and prevents a few other wonky things from possibly happening.
 #' 
 ## ------------------------------------------------------------------------
 # scale each predictor to mean=0, variance=1
@@ -131,7 +145,11 @@ plot(clim.us) # view
 #' 
 #' ##  Sample background
 #' 
+#' In presence-only (PO) modeling, where absence data do not exist, so-called 'background' (==jargon) points are used. In PO models, one compares the environmental conditions at occupied locations (presences) to the conditions available in the region of interest. This corresponds to 'use-avialability' (==jargon) analysis and asks, 'how much does the species use environment x in proportion to its availability?' For example, if a landscape contains 10 cells with temperature < 20 degrees, and the species uses all of them, you would infer that cold locations are important (10 are used and 10 are available). In contrast, if the lanscape had 1000 cells with temperature <20 degrees, you'd infer the opposite, that cold cells are probably avoided (10 are used and 1000 are available). This is the essence of (this type of) presence-only modeling.
+#' 
 #' > Decision: The species is equally likely to be anywhere on the landscapes, so we'll compare presences to a random sample of background points.
+#' 
+#' (There's a lot of subtlties about background selection, just go with it for now...)
 #' 
 ## ------------------------------------------------------------------------
 	## save the data table
@@ -142,7 +160,11 @@ bg.data=data.frame(values(clim.us)[bg.index,]) # get the env at these cells
 coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object
 
 #' 
+#' ## Statistical model
+#' 
 #' > Decision: Linear and quadratic terms are sufficient to describe the species' response to the environment. 
+#' 
+#' Next, combine the data into a convenient form and specify a formula for the regression.
 #' 
 ## ------------------------------------------------------------------------
 # prep data for use in glm()
@@ -154,8 +176,8 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
             paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + "))) # qudratic terms
 
 #' 
-#' 
-#' ## Statistical model
+#' There are some subtle differences here compared to a regular old GLM. These weights allow one to fit a Poisson point process model with the `glm` function. If this sort of thing excites you, [this paper](http://onlinelibrary.wiley.com/doi/10.1111/2041-210X.12352/abstract)
+#' describes point process models well, and the appendix describes this weighting scheme. If it doesn't, just pretend this is a regular GLM for now. 
 #' 
 ## ------------------------------------------------------------------------
 all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
@@ -165,6 +187,8 @@ summary(mod.worst) # show coefficients
 #' 
 #' 
 #' ## Inspect response curves
+#' 
+#' Response curves describe how the species' occurrence (y-axis) depends on a single climate variable (x-axis). There's one for each environmental variable in the model. Usually this is done by making predictions with all the other predictors set at their means.
 #' 
 ## ----results='hide'------------------------------------------------------
 # check response curves
@@ -211,6 +235,10 @@ plot(pres,add=T) # plot points
 #' 
 #' 
 #' ## Evaluate performance
+#' 
+#' Reciever-operator characteristic (ROC) curves are often used to evaluation binary (presence/absence) predictions. Since the predictions are continuous (see previous map), we need to choose a threshold that distinguishes presence from absence. The ROC curve summarizes the results for all possible thresholds. Each point corresponds to a threshold, the y-axis describes the proportion of presences correctly predicted while the x-axis describes the proportion of background points where presence is predicted. There's a clear tradeoff in getting a lot of presences right without predicting presence everywhere. The AUC (area under the curve) describes the area under the ROC curve - a value of 1 is the best, and a value of 0.5 means you may as well flip a coin. More [here](https://en.wikipedia.org/wiki/Receiver_operating_characteristic).
+#' 
+#' 
 ## ------------------------------------------------------------------------
 # evaluate
 pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
@@ -223,10 +251,13 @@ abline(0,1) # 1:1 line indicate random predictions
 (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
 
 #' 
+#' ## Transfer to new conditions
+#' 
+#' A common goal of SDMing is to transfer the models to new locations.
+#' 
 #' > Decision: The occurrence-environment relationship fit in New England also describes the species response to environment in Europe.
 #' 
 #' 
-#' ## Transfer to new conditions
 ## ------------------------------------------------------------------------
 # transfer to Europe
 # choose domain (just europe)
