@@ -312,7 +312,7 @@ plot(pres,add=T) # plot presences
 The data in `bias.bg` are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base.
 
 ```{r}
-bias.bg=read.csv('/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv')[,-1]
+bias.bg=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv')[,-1]
 coordinates(bias.bg)=c(1,2)
 bias.bg.data=data.frame(raster::extract(clim.us,bias.bg))
 coordinates(bias.bg.data)=coordinates(bias.bg)

@@ -745,7 +745,7 @@ plot(pres,add=T) # plot presences </code></pre>
 <p>Decision: Presences are most likely to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled.</p>
 </blockquote>
 <p>The data in <code>bias.bg</code> are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base.</p>
-<pre class="r"><code>bias.bg=read.csv(&#39;/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv&#39;)[,-1]
+<pre class="r"><code>bias.bg=read.csv(&#39;https://cmerow.github.io/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv&#39;)[,-1]
 coordinates(bias.bg)=c(1,2)
 bias.bg.data=data.frame(raster::extract(clim.us,bias.bg))
 coordinates(bias.bg.data)=coordinates(bias.bg)
