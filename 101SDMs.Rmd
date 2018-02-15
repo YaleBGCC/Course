@@ -35,12 +35,13 @@ library(spThin)
 
 # The worst SDM ever
 
-The goal of this is to use the simplest possible set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user. So before getting into fancier tools, let's see what the bare minimum looks like.
+The goal of this section is to use the simplest possible set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user. So before getting into fancier tools, let's see what the bare minimum looks like.
 
 > This is not the simplest possible code, because it requires some familiarity with the internal components of different spatial objects. The tradeoff is that none of the key operations are performed behind the scenes by specialized SDM functions. I realize this is not always pretty, but I hope for that reason it can demonstrate some coding gynmastics for beginners.
 
 
 ## Get presence data
+
 The `spocc` package allows you to hit a number of the larger databases for presence-only data within R. They provide a number of useful pieces of metadata, if your'e into that sort of this. For this, we're not; we just want lat and lon.
 
 > Decision: You assume the database of choice has sufficiently checked for errors in biology or typos. You know what happens when you assume...
@@ -62,7 +63,7 @@ The `raster` package has a convenience function to get some types of data. To se
 
 ```{r}
 # get climate data
-  # the raster package has convenience function build in for worldclim
+  # the raster package has convenience function built in for worldclim
 clim=getData('worldclim', var='bio', res=10)
 ```
 
@@ -177,7 +178,7 @@ Next, combine the data into a convenient form and specify a formula for the regr
 
 ```{r}
 # prep data for use in glm()
-all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data))
+all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)) # line up pres & bg
 
 # specify formula (quickly to avoid writing out every name)
 (form=paste('pres/weight~', # lhs of eqn.
@@ -197,7 +198,7 @@ summary(mod.worst) # show coefficients
 
 ## Inspect response curves
 
-Response curves describe how the species' occurrence (y-axis) depends on a single climate variable (x-axis). There's one for each environmental variable in the model. Usually this is done by making predictions with all the other predictors set at their means.
+Response curves describe how the species' occurrence (y-axis) depends on a single climate variable (x-axis). There's one for each environmental variable in the model. Usually this is done by making predictions with all the other predictors set at their means. Most packages have 1-liners to make this instead, but this builds more character.
 
 ```{r,results='hide'}
 # check response curves
@@ -214,18 +215,23 @@ response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
 })# ignore warnings
 ```
 
+Check out the list of lists that store this.
+
 ```{r}
 str(response.curves) #structure of the object used for plotting
 ```
 
-```{r}
+```{r,width=7}
   # plot the curves
 par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
 for(i in 1:nlayers(clim.us)){ # loop over layers
-  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
-       type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
-  abline(v=pres.env.range,col='red',lty=2)
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys, # xs and ys
+       type='l', # line plot
+       bty='n',las=1, # decorations
+       ylim=c(-20,20), # y axis limits
+       xlab=colnames(clim.ranges)[i],ylab='occurence rate') # axis labels
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)  # find limits of fitting data
+  abline(v=pres.env.range,col='red',lty=2)  # plot limits of fitting data
 }
 ```
 
@@ -234,7 +240,7 @@ for(i in 1:nlayers(clim.us)){ # loop over layers
 
 > Decision: When predicting, its ok to extrapolate beyond 
 
-```{r}
+```{r, width=7}
 # predict to US
 pred.r=raster::predict(clim.us,mod.worst, index=1,type="response")
 pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
@@ -267,7 +273,7 @@ A common goal of SDMing is to transfer the models to new locations.
 > Decision: The occurrence-environment relationship fit in New England also describes the species response to environment in Europe.
 
 
-```{r}
+```{r,width=7}
 # transfer to Europe
 # choose domain (just europe)
 clim.eu=raster::crop(clim,c(-10,55,30,75))
@@ -344,14 +350,14 @@ response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
 str(response.curves) #structure of the object used for plotting
 ```
 
-```{r}
+```{r, width=7}
   # plot the curves
 par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
 for(i in 1:nlayers(clim.us)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
-  abline(v=pres.env.range,col='red',lty=2)
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data) # find limits of fitting data
+  abline(v=pres.env.range,col='red',lty=2) # plot limits of fitting data
 }
 ```
 
@@ -359,7 +365,7 @@ for(i in 1:nlayers(clim.us)){ # loop over layers
 ### Map predictions
 
 
-```{r}
+```{r, width=7}
 # predict to US
 pred.r=raster::predict(clim.us,mod.bias, index=1,type="response")
 pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
@@ -369,7 +375,7 @@ plot(pres,add=T) # plot points
 
 
 ### Evaluate performance
-```{r}
+```{r,width=7}
 # evaluate
 pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
 pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
@@ -381,7 +387,7 @@ abline(0,1) # 1:1 line indicate random predictions
 (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
 ```
 
-Oh, Snap!
+Oh, Snap! Not nearly as good as the model that ignored bias. This is common when accounting for bias; you've removed something that structured the observations from the model. So you evaluation on the *fitting* data will be worse. Performance on new data sets will often be better (conditional on the rest of the model being well designed), so long as those don't suffer from the same sampling bias patterns.
 
 <!-- #========================================================================= -->
 <!-- #========================================================================= -->
@@ -419,8 +425,8 @@ par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
 for(i in 1:nlayers(clim.us)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
-  abline(v=pres.env.range,col='red',lty=2)
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)  # find limits of fitting data
+  abline(v=pres.env.range,col='red',lty=2)  # plot limits of fitting data
 }
 ```
 
@@ -430,7 +436,7 @@ for(i in 1:nlayers(clim.us)){ # loop over layers
 
 ```{r}
 # predict to US
-pred.r=raster::predict(clim.us,mod.maxnet, index=1,type="exponential")
+pred.r=raster::predict(clim.us,mod.maxnet, index=1,type="exponential") # note 'type' differs from glm
 pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
 plot(log(pred.r)) # plot raster
 plot(pres,add=T) # plot points
@@ -450,7 +456,26 @@ abline(0,1) # 1:1 line indicate random predictions
 (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC
 ```
 
+Great, we've recovered some of the predictive accuracy lost when the sampling bias was factored out. By picking up more complex responses, we're better able to describe the distribution. An important caveat is that we should check for overfitting, wherein we've fit to idiosyncracies of the particular fitting data set. To check this, we'd need to evaluate on independent data, which we won't get to here *but is a critical step on any SDM you intend to publish.*
 
+## Other options
+
+Within the framework described above:
+
+* Thin presences to remove spatial autocorrelation
+* Subsample presences to evaluate model on independent data (e.g., k-fold cross validation)
+* Use remotely sensed data (removing artefacts of interpolation)
+* More informative performance statistics (Boyce, partial AUC)
+* Other algorithms (GAMs, Tree-based methods, Envelope methods)
+* Model selection to find better suites of predictors
+
+Somewhat different frameworks:
+
+* Model space explicitly (accounting for spatial autocorrelation)
+* Borrow strength from other species (Joint SDMs)
+* Bayesian models for more complete treatment of uncertainty or hierarchical structure, among other things
+* Ensemble approaches to combine the results of multiple models
+* Combine data from different parts of the distribution (e.g. native range)
 <!-- #========================================================================= -->
 <!-- ## Thin presences, Stratify sampling -->
 

@@ -411,7 +411,7 @@ library(spThin)</code></pre>
 </div>
 <div id="the-worst-sdm-ever" class="section level1">
 <h1><span class="header-section-number">2</span> The worst SDM ever</h1>
-<p>The goal of this is to use the simplest possible set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user. So before getting into fancier tools, let’s see what the bare minimum looks like.</p>
+<p>The goal of this section is to use the simplest possible set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user. So before getting into fancier tools, let’s see what the bare minimum looks like.</p>
 <blockquote>
 <p>This is not the simplest possible code, because it requires some familiarity with the internal components of different spatial objects. The tradeoff is that none of the key operations are performed behind the scenes by specialized SDM functions. I realize this is not always pretty, but I hope for that reason it can demonstrate some coding gynmastics for beginners.</p>
 </blockquote>
@@ -434,7 +434,7 @@ pres=pres[complete.cases(pres),] # toss records without coords</code></pre>
 <p>Decision: Worldclim data describes the environmental well in this region. The ‘bioclim’ variables are biologically relevant summaries of climate.</p>
 </blockquote>
 <pre class="r"><code># get climate data
-  # the raster package has convenience function build in for worldclim
+  # the raster package has convenience function built in for worldclim
 clim=getData(&#39;worldclim&#39;, var=&#39;bio&#39;, res=10)</code></pre>
 <p>The Bioclim variables in <code>clim.us</code> are:</p>
 <p><small></p>
@@ -592,7 +592,7 @@ coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object</co
 </blockquote>
 <p>Next, combine the data into a convenient form and specify a formula for the regression.</p>
 <pre class="r"><code># prep data for use in glm()
-all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data))
+all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)) # line up pres &amp; bg
 
 # specify formula (quickly to avoid writing out every name)
 (form=paste(&#39;pres/weight~&#39;, # lhs of eqn.
@@ -636,7 +636,7 @@ summary(mod.worst) # show coefficients</code></pre>
 </div>
 <div id="inspect-response-curves" class="section level2">
 <h2><span class="header-section-number">2.7</span> Inspect response curves</h2>
-<p>Response curves describe how the species’ occurrence (y-axis) depends on a single climate variable (x-axis). There’s one for each environmental variable in the model. Usually this is done by making predictions with all the other predictors set at their means.</p>
+<p>Response curves describe how the species’ occurrence (y-axis) depends on a single climate variable (x-axis). There’s one for each environmental variable in the model. Usually this is done by making predictions with all the other predictors set at their means. Most packages have 1-liners to make this instead, but this builds more character.</p>
 <pre class="r"><code># check response curves
   # these marginal response curves are evaluated at the means of the non-focal predictor
 clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
@@ -649,6 +649,7 @@ response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
   ys=predict(mod.worst,newdata=newdata) # predictions
   return(data.frame(xs=xs,ys=ys)) # define outputs
 })# ignore warnings</code></pre>
+<p>Check out the list of lists that store this.</p>
 <pre class="r"><code>str(response.curves) #structure of the object used for plotting</code></pre>
 <pre><code>## List of 4
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
@@ -666,10 +667,13 @@ response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
 <pre class="r"><code>  # plot the curves
 par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
 for(i in 1:nlayers(clim.us)){ # loop over layers
-  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
-       type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
-  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys, # xs and ys
+       type=&#39;l&#39;, # line plot
+       bty=&#39;n&#39;,las=1, # decorations
+       ylim=c(-20,20), # y axis limits
+       xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;) # axis labels
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)  # find limits of fitting data
+  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)  # plot limits of fitting data
 }</code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
 </div>
@@ -815,8 +819,8 @@ par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
 for(i in 1:nlayers(clim.us)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
-  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data) # find limits of fitting data
+  abline(v=pres.env.range,col=&#39;red&#39;,lty=2) # plot limits of fitting data
 }</code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
 <div id="map-predictions-1" class="section level3">
@@ -841,7 +845,7 @@ abline(0,1) # 1:1 line indicate random predictions </code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
 <pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
 <pre><code>## [1] 0.6737413</code></pre>
-<p>Oh, Snap!</p>
+<p>Oh, Snap! Not nearly as good as the model that ignored bias. This is common when accounting for bias; you’ve removed something that structured the observations from the model. So you evaluation on the <em>fitting</em> data will be worse. Performance on new data sets will often be better (conditional on the rest of the model being well designed), so long as those don’t suffer from the same sampling bias patterns.</p>
 <!-- #========================================================================= -->
 <!-- #========================================================================= -->
 </div>
@@ -898,14 +902,14 @@ par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
 for(i in 1:nlayers(clim.us)){ # loop over layers
   plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
        type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data)
-  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)  # find limits of fitting data
+  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)  # plot limits of fitting data
 }</code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-29-1.png" /><!-- --></p>
 <div id="map-predictions-2" class="section level3">
 <h3><span class="header-section-number">3.6.1</span> Map predictions</h3>
 <pre class="r"><code># predict to US
-pred.r=raster::predict(clim.us,mod.maxnet, index=1,type=&quot;exponential&quot;)
+pred.r=raster::predict(clim.us,mod.maxnet, index=1,type=&quot;exponential&quot;) # note &#39;type&#39; differs from glm
 pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
 plot(log(pred.r)) # plot raster
 plot(pres,add=T) # plot points</code></pre>
@@ -924,8 +928,28 @@ abline(0,1) # 1:1 line indicate random predictions </code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
 <pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
 <pre><code>## [1] 0.789735</code></pre>
-<!-- #========================================================================= -->
-<!-- ## Thin presences, Stratify sampling -->
+<p>Great, we’ve recovered some of the predictive accuracy lost when the sampling bias was factored out. By picking up more complex responses, we’re better able to describe the distribution. An important caveat is that we should check for overfitting, wherein we’ve fit to idiosyncracies of the particular fitting data set. To check this, we’d need to evaluate on independent data, which we won’t get to here <em>but is a critical step on any SDM you intend to publish.</em></p>
+</div>
+</div>
+<div id="other-options" class="section level2">
+<h2><span class="header-section-number">3.7</span> Other options</h2>
+<p>Within the framework described above:</p>
+<ul>
+<li>Thin presences to remove spatial autocorrelation</li>
+<li>Subsample presences to evaluate model on independent data (e.g., k-fold cross validation)</li>
+<li>Use remotely sensed data (removing artefacts of interpolation)</li>
+<li>More informative performance statistics (Boyce, partial AUC)</li>
+<li>Other algorithms (GAMs, Tree-based methods, Envelope methods)</li>
+<li>Model selection to find better suites of predictors</li>
+</ul>
+<p>Somewhat different frameworks:</p>
+<ul>
+<li>Model space explicitly (accounting for spatial autocorrelation)</li>
+<li>Borrow strength from other species (Joint SDMs)</li>
+<li>Bayesian models for more complete treatment of uncertainty or hierarchical structure, among other things</li>
+<li>Ensemble approaches to combine the results of multiple models</li>
+<li>Combine data from different parts of the distribution (e.g. native range) <!-- #========================================================================= --> <!-- ## Thin presences, Stratify sampling --></li>
+</ul>
 <!-- ```{r} -->
 <!-- all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process -->
 <!-- mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model -->
@@ -950,7 +974,6 @@ abline(0,1) # 1:1 line indicate random predictions </code></pre>
 <!-- # abline(0,1) -->
 <!-- # (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) -->
 <!-- #  -->
-</div>
 </div>
 </div>
 
