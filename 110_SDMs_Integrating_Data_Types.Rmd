@@ -10,7 +10,7 @@ output = paste(tools::file_path_sans_ext(input), 'R', sep = '.')
 knitr::purl(input,output,documentation=2,quiet=T)
 source("knitr_header.R")
 #knitr::opts_chunk$set(eval=T)
-knitr::opts_chunk$set(cache=FALSE)
+knitr::opts_chunk$set(cache=TRUE)
 ```
 
 <!-- <div> -->
@@ -170,11 +170,13 @@ site.area = resolution^2
 n.samples = 6
 thinning.radius = resolution*1000*2^0.5 # this is in m
 
-workspace = "/Users/Cody/Dropbox/YIBS exercise/"
-predictors.folder = paste0("/Users/Cody/Dropbox/YIBS exercise/","predictors")
-
-presenceData_all = read.csv(paste0(workspace,"presence_only_proj.csv"))
-paData_all = read.csv(paste0(workspace,"detection_histories_proj_10samples.csv"))
+#workspace = "/Users/Cody/Dropbox/YIBS exercise/"
+#predictors.folder = paste0("/Users/Cody/Dropbox/YIBS exercise/","predictors")
+predictors.folder = paste0('https://cmerow.github.io/YaleBGCCourses/110_assets/predictors')
+#presenceData_all = read.csv(paste0(workspace,"presence_only_proj.csv"))
+presenceData_all = read.csv('https://cmerow.github.io/YaleBGCCourses/110_assets/presence_only_proj.csv')
+#paData_all = read.csv(paste0(workspace,"detection_histories_proj_10samples.csv"))
+paData_all = read.csv('https://cmerow.github.io/YaleBGCCourses/110_assets/detection_histories_proj_10samples.csv')
 
 presenceData = rarefy(presenceData_all,thinning.radius)[[1]]
 paData = rarefy(paData_all,thinning.radius)[[1]]
