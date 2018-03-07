@@ -172,6 +172,13 @@ thinning.radius = resolution*1000*2^0.5 # this is in m
 
 #workspace = "/Users/Cody/Dropbox/YIBS exercise/"
 #predictors.folder = paste0("/Users/Cody/Dropbox/YIBS exercise/","predictors")
+# !!!NOTE: you must set predictors.folder to a path on your computer
+predictors.folder='/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/110_assets'
+isDownloaded=list.files(predictors.folder,pattern='predictors.zip',fixed=T)
+if(!file.exists(isDownloaded)){}
+  download.file('https://cmerow.github.io/YaleBGCCourses/110_assets/predictors.zip',
+                paste0(predictors.folder,'predictors.zip'))
+}
 predictors.folder = paste0('https://cmerow.github.io/YaleBGCCourses/110_assets/predictors')
 #presenceData_all = read.csv(paste0(workspace,"presence_only_proj.csv"))
 presenceData_all = read.csv('https://cmerow.github.io/YaleBGCCourses/110_assets/presence_only_proj.csv')
