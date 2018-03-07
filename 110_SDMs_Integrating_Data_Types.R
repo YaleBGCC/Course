@@ -24,7 +24,9 @@
 #' 
 #' Load the functions, and library (make sure 'dismo' is installed)
 #' 
-## ---- echo=F-------------------------------------------------------------
+#' > Note that you don't need to wade through these functions to start, just run them and more to the next chunk where we begin using them.
+#' 
+## ---- echo=T-------------------------------------------------------------
 library(dismo)
 
 logit = function(pp) { log(pp) - log(1-pp) }
@@ -154,6 +156,7 @@ rarefy = function(pointSample,r){
 #' 
 #' Prepare the data (First try running the models on the thinned presence data)
 #' 
+#' Model settings
 ## ------------------------------------------------------------------------
 minrecipCondNum = 1e-6
 resolution = 4 # this is in km
@@ -161,20 +164,38 @@ site.area = resolution^2
 n.samples = 6
 thinning.radius = resolution*1000*2^0.5 # this is in m
 
+#' 
+#' Download data
+#' 
+#' > Read the the Notes in this section, or stuff will break, and we won't feel bad for you...
+#' 
+## ------------------------------------------------------------------------
 #workspace = "/Users/Cody/Dropbox/YIBS exercise/"
 #predictors.folder = paste0("/Users/Cody/Dropbox/YIBS exercise/","predictors")
+# !!!NOTE: you must set predictors.folder to a path on your computer
+predictors.folder='/Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/110_assets'
+isDownloaded=list.files(predictors.folder,pattern='predictors.zip',full.names=T)
+if(!file.exists(isDownloaded)){
+  download.file('https://cmerow.github.io/YaleBGCCourses/110_assets/predictors.zip',
+                paste0(predictors.folder,'/predictors.zip'))
+}
+# !!! NOTE: you must go to the download folder and unzip the file before proceeding
 
 #presenceData_all = read.csv(paste0(workspace,"presence_only_proj.csv"))
 presenceData_all = read.csv('https://cmerow.github.io/YaleBGCCourses/110_assets/presence_only_proj.csv')
 #paData_all = read.csv(paste0(workspace,"detection_histories_proj_10samples.csv"))
 paData_all = read.csv('https://cmerow.github.io/YaleBGCCourses/110_assets/detection_histories_proj_10samples.csv')
 
+#' 
+#' Prep for modeling
+#' 
+## ------------------------------------------------------------------------
 presenceData = rarefy(presenceData_all,thinning.radius)[[1]]
 paData = rarefy(paData_all,thinning.radius)[[1]]
 #paData = paData_all
 #presenceData = presenceData_all
 
-allStack.files = list.files(predictors.folder,full.names=TRUE,pattern=".tif")
+allStack.files = list.files(paste0(predictors.folder,'/predictors'),full.names=TRUE,pattern=".tif")
 allStack = stack(allStack.files)
 
 names.x.po.covs = c("chelsa_temp_seasonality","chelsa_precip_seasonality","chelsa_max_temp_warmest_month","chelsa_annual_precip",
