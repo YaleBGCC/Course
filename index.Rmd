@@ -3,12 +3,15 @@ title: "Concepts and methods in global biodiversity change research in the age o
 toc: false
 ---
 
-EEB 713, Spring 2018
+EEB 713, Spring 2019
 
-<a > Walter Jetz</a><br>
+<a href="https://jetzlab.yale.edu/people/walter-jetz"> Walter Jetz</a><br>
+<a href="https://efstuber.wixsite.com/xscaleeco"> Erica Stuber </a><br>
 <a href="https://cmerow.github.io"> Cory Merow</a><br>
-<a > Marta Jarzyna</a><br>
-<a >Marius Somveille</a><br>
+<a href="https://scottrinnan.wordpress.com"> Scott Rinnan</a><br>
+<a > Brett Jesmer</a><br>
+<a > Gabriel Reygondeau</a><br>
+<a > Ruth Oliver</a><br>
 
 Department of Ecology and Evolutionary Biology <br> 
 Yale University, New Haven, CT
