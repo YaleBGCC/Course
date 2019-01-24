@@ -28,7 +28,8 @@
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
-<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -98,8 +99,14 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -115,7 +122,6 @@ body {
   padding-top: 71px;
   margin-top: -71px;
 }
-
 .section h2 {
   padding-top: 71px;
   margin-top: -71px;
@@ -135,6 +141,43 @@ body {
 .section h6 {
   padding-top: 71px;
   margin-top: -71px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -156,13 +199,73 @@ $(document).ready(function () {
 });
 </script>
 
-
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
@@ -175,7 +278,6 @@ $(document).ready(function () {
   window.initializeCodeFolding("show" === "show");
 });
 </script>
-
 
 
 
@@ -450,7 +552,7 @@ str(spdf)</code></pre>
 <div id="promote-a-data-frame-with-coordinates-to-a-spatialpoints-object" class="section level2">
 <h2><span class="header-section-number">2.4</span> Promote a data frame with <code>coordinates()</code> to a <code>SpatialPoints</code> object</h2>
 <pre class="r"><code>coordinates(data) = cbind(coords$x, coords$y) </code></pre>
-<pre class="r"><code>str(spdf)</code></pre>
+<pre class="r"><code>str(data)</code></pre>
 <pre><code>## Formal class &#39;SpatialPointsDataFrame&#39; [package &quot;sp&quot;] with 5 slots
 ##   ..@ data       :&#39;data.frame&#39;:  100 obs. of  2 variables:
 ##   .. ..$ ID   : int [1:100] 1 2 3 4 5 6 7 8 9 10 ...
@@ -459,10 +561,15 @@ str(spdf)</code></pre>
 ##   ..@ coords     : num [1:100, 1:2] 1.015 -0.766 -1.031 -1.128 -1.285 ...
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : NULL
+<<<<<<< HEAD
 ##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
 ##   ..@ bbox       : num [1:2, 1:2] -3.11 -2.83 2.84 3.11
+=======
+##   .. .. ..$ : chr [1:2] &quot;coords.x1&quot; &quot;coords.x2&quot;
+##   ..@ bbox       : num [1:2, 1:2] -2.29 -1.83 2.37 2.35
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
-##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
+##   .. .. ..$ : chr [1:2] &quot;coords.x1&quot; &quot;coords.x2&quot;
 ##   .. .. ..$ : chr [1:2] &quot;min&quot; &quot;max&quot;
 ##   ..@ proj4string:Formal class &#39;CRS&#39; [package &quot;sp&quot;] with 1 slot
 ##   .. .. ..@ projargs: chr NA</code></pre>
@@ -785,17 +892,22 @@ x</code></pre>
 <pre class="r"><code>x &lt;- raster(ncol=36, nrow=18, xmn=-1000, xmx=1000, ymn=-100, ymx=900)
 res(x)</code></pre>
 <pre><code>## [1] 55.55556 55.55556</code></pre>
-<pre class="r"><code>res(x) &lt;- 100
-res(x)</code></pre>
-<pre><code>## [1] 100 100</code></pre>
 <pre class="r"><code>ncol(x)</code></pre>
-<pre><code>## [1] 20</code></pre>
-<pre class="r"><code># change the numer of columns (affects resolution)
-ncol(x) &lt;- 18
-ncol(x)</code></pre>
-<pre><code>## [1] 18</code></pre>
-<pre class="r"><code>res(x)</code></pre>
-<pre><code>## [1] 111.1111 100.0000</code></pre>
+<pre><code>## [1] 36</code></pre>
+<pre class="r"><code>extent(x)</code></pre>
+<pre><code>## class       : Extent 
+## xmin        : -1000 
+## xmax        : 1000 
+## ymin        : -100 
+## ymax        : 900</code></pre>
+<pre class="r"><code>head(values(x))</code></pre>
+<pre><code>## [1] NA NA NA NA NA NA</code></pre>
+<!-- ```{r} -->
+<!-- # change the numer of columns (affects resolution) -->
+<!-- ncol(x) <- 18 -->
+<!-- ncol(x) -->
+<!-- res(x) -->
+<!-- ``` -->
 </div>
 <div id="raster-data-storage" class="section level2">
 <h2><span class="header-section-number">4.2</span> Raster data storage</h2>
@@ -832,31 +944,40 @@ plot(x)</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
 </div>
 </div>
-</div>
-<div id="raster-memory-usage" class="section level2">
-<h2><span class="header-section-number">4.3</span> Raster memory usage</h2>
-<p>Raster data files can be very large, especially when cells are at high resolution, so it becomes important to think about how much RAM is required to work with a raster to avoid slowing your computer to a crawl. The <code>raster</code> package cleverly avoids reading full rasters into memory to instead just provides pointers to the relevant raster files.</p>
-<pre class="r"><code>inMemory(r)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<blockquote>
-<p>You can change the memory options using the <code>maxmemory</code> option in <code>rasterOptions()</code></p>
-</blockquote>
+<!-- ## Raster memory usage -->
+<!-- Raster data files can be very large, especially when cells are at high resolution, so it becomes important to think about how much RAM is required to work with a raster to avoid slowing your computer to a crawl. The `raster` package cleverly avoids reading full rasters into memory to instead just provides pointers to the relevant raster files. -->
+<!-- ```{r} -->
+<!-- inMemory(r) -->
+<!-- ``` -->
+<!-- > You can change the memory options using the `maxmemory` option in `rasterOptions()`  -->
 </div>
 <div id="raster-plotting" class="section level2">
-<h2><span class="header-section-number">4.4</span> Raster Plotting</h2>
+<h2><span class="header-section-number">4.3</span> Raster Plotting</h2>
 <p>Plotting is easy (but slow) with <code>plot</code>.</p>
 <pre class="r"><code>plot(r, main=&#39;Raster with 100 cells&#39;)</code></pre>
+<<<<<<< HEAD
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+=======
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 <div id="ggplot-and-rastervis" class="section level3">
-<h3><span class="header-section-number">4.4.1</span> ggplot and rasterVis</h3>
+<h3><span class="header-section-number">4.3.1</span> ggplot and rasterVis</h3>
 <p>rasterVis package has <code>gplot()</code> for plotting raster data in the <code>ggplot()</code> framework.</p>
 <pre class="r"><code>gplot(r,maxpixels=50000)+ # reference the data
   geom_raster(aes(fill=value)) # cell&#39;s data value determines its color</code></pre>
+<<<<<<< HEAD
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
 <p>Adjust <code>maxpixels</code> for faster plotting of large datasets.</p>
 <pre class="r"><code>gplot(r,maxpixels=10)+
   geom_raster(aes(fill=value))</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
+=======
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<p>Adjust <code>maxpixels</code> for faster plotting of large datasets.</p>
+<pre class="r"><code>gplot(r,maxpixels=10)+
+  geom_raster(aes(fill=value))</code></pre>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 <!-- Can use all the `ggplot` color ramps, etc. -->
 <!-- ```{r} -->
 <!-- gplot(r)+ # reference the data -->
@@ -866,11 +987,22 @@ plot(x)</code></pre>
 </div>
 </div>
 <div id="spatial-projections" class="section level2">
-<h2><span class="header-section-number">4.5</span> Spatial Projections</h2>
+<h2><span class="header-section-number">4.4</span> Spatial Projections</h2>
 <p>Raster package uses standard <a href="http://www.spatialreference.org">coordinate reference system (CRS)</a>.</p>
 <p>For example, see the projection format for the <a href="http://www.spatialreference.org/ref/epsg/4326/"><em>standard</em> WGS84</a>.</p>
 <pre class="r"><code>projection(r)</code></pre>
 <pre><code>## [1] &quot;+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
+</div>
+<div id="useful-functions" class="section level2">
+<h2><span class="header-section-number">4.5</span> Useful functions</h2>
+<p>The following are some of the more useful functions in the raster package when building species’ range models (as we’ll be doing next time.) I list them here so you can get an idea of the types of common spatial operations. Try running the examples in their help files; raster’s help files are very well done.</p>
+<ul>
+<li><code>projectRaster</code> - switch between projections. E.g., sometimes you’ll download data from different sources that use differnt projections. Equal area projections are often useful.</li>
+<li><code>aggregate</code> - make a coarser resolution raster. E.g., explore scale dependence.</li>
+<li><code>resample</code> - transfer values between non-matching rasters. e.g., the cells are different sizes.</li>
+<li><code>crop</code> - change the extent of a raster, e.g., to get two rasters to line up with one another.</li>
+<li><code>rasterize</code> - turn another type of spatial object (points, polygons) into a raster</li>
+</ul>
 </div>
 </div>
 <div id="worldclim" class="section level1">
@@ -992,7 +1124,7 @@ plot(x)</code></pre>
 <div id="plot-with-plot" class="section level3">
 <h3><span class="header-section-number">5.3.2</span> Plot with <code>plot()</code></h3>
 <pre class="r"><code>plot(clim[[1:3]]) # just the first 3, since its slow</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
 </div>
 </div>
 <div id="faceting-in-ggplot" class="section level2">
@@ -1004,17 +1136,21 @@ plot(x)</code></pre>
   coord_equal()</code></pre>
 <pre><code>## Warning in self$trans$transform(x): NaNs produced</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in discrete y-axis</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-42-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
 <p>Let’s dig a little deeper into the data object:</p>
 <pre class="r"><code>## is it held in RAM?
 inMemory(clim)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 <pre class="r"><code>## How big is it?
 object.size(clim)</code></pre>
+<<<<<<< HEAD
 <pre><code>## 245688 bytes</code></pre>
+=======
+<pre><code>## 248024 bytes</code></pre>
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 <pre class="r"><code>## can we work with it directly in RAM?
 canProcessInMemory(clim)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
+<pre><code>## [1] FALSE</code></pre>
 </div>
 <div id="subsetting-and-spatial-cropping" class="section level2">
 <h2><span class="header-section-number">5.5</span> Subsetting and spatial cropping</h2>
@@ -1033,14 +1169,14 @@ r1 &lt;- crop(clim[[1]], bbox(za))</code></pre>
 ## names       : bio1 
 ## values      : 5.8, 24.6  (min, max)</code></pre>
 <pre class="r"><code>plot(r1)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-45-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-44-1.png" /><!-- --></p>
 </div>
 <div id="spatial-aggregation" class="section level2">
 <h2><span class="header-section-number">5.6</span> Spatial aggregation</h2>
 <pre class="r"><code>## aggregate using a function
 aggregate(r1, 3, fun=mean) %&gt;%
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-46-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-45-1.png" /><!-- --></p>
 <div class="well">
 <h2 id="your-turn-4"><span class="header-section-number">5.6</span> Your turn</h2>
 <p>Create a new raster by aggregating to the minimum (<code>min</code>) value of <code>r1</code> within a 10 pixel window</p>
@@ -1050,7 +1186,7 @@ Show Solution
 <div id="demo3" class="collapse">
 <pre class="r"><code>aggregate(r1, 10, fun=min) %&gt;%
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-47-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-46-1.png" /><!-- --></p>
 </div>
 </div>
 </div>
@@ -1059,7 +1195,7 @@ Show Solution
 <pre class="r"><code>## apply a function over a moving window
 focal(r1, w=matrix(1,3,3), fun=mean) %&gt;% 
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-48-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-47-1.png" /><!-- --></p>
 <pre class="r"><code>## apply a function over a moving window
 rf_min &lt;- focal(r1, w=matrix(1,11,11), fun=min)
 rf_max &lt;- focal(r1, w=matrix(1,11,11), fun=max)
@@ -1068,7 +1204,7 @@ rf_range=rf_max-rf_min
 ## or just use the range function
 rf_range2 &lt;- focal(r1, w=matrix(1,11,11), fun=range)
 plot(rf_range2)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-49-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-48-1.png" /><!-- --></p>
 <div class="well">
 <h2 id="your-turn-5"><span class="header-section-number">5.7</span> Your turn</h2>
 <p>Plot the focal standard deviation of <code>r1</code> over a 3x3 window.</p>
@@ -1078,7 +1214,7 @@ Show Solution
 <div id="demo4" class="collapse">
 <pre class="r"><code>focal(r1,w=matrix(1,3,3),fun=sd)%&gt;%
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-50-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-49-1.png" /><!-- --></p>
 </div>
 </div>
 </div>
@@ -1103,7 +1239,7 @@ cellStats(r,range)</code></pre>
 <pre class="r"><code># find cells with values less than 15 degrees C
 r = r1 &lt; 15
 plot(r)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-52-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-51-1.png" /><!-- --></p>
 <div id="apply-algebraic-functions" class="section level3">
 <h3><span class="header-section-number">5.8.1</span> Apply algebraic functions</h3>
 <pre class="r"><code># multiply s times r and add 5
@@ -1129,7 +1265,7 @@ cellStats(s,range)</code></pre>
 <pre class="r"><code>## define a new dataset of points to play with
 pts=sampleRandom(clim,100,xy=T,sp=T)
 plot(pts);axis(1);axis(2)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-54-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-53-1.png" /><!-- --></p>
 </div>
 <div id="extract-data-using-a-spatialpoints-object" class="section level3">
 <h3><span class="header-section-number">5.9.2</span> Extract data using a <code>SpatialPoints</code> object</h3>
@@ -1138,7 +1274,11 @@ plot(pts);axis(1);axis(2)</code></pre>
 head(pts_data)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
+<<<<<<< HEAD
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["bio4"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"25.6","3":"15.1","4":"6.9","5":"139.8","_rn_":"1"},{"1":"2","2":"-1.3","3":"7.9","4":"2.5","5":"728.0","_rn_":"2"},{"1":"3","2":"-22.7","3":"7.3","4":"2.0","5":"1055.5","_rn_":"3"},{"1":"4","2":"-18.7","3":"7.1","4":"1.8","5":"1136.7","_rn_":"4"},{"1":"5","2":"-14.4","3":"6.7","4":"1.5","5":"1377.1","_rn_":"5"},{"1":"6","2":"8.2","3":"11.6","4":"2.9","5":"971.1","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+=======
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["bio4"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"2.0","3":"6.7","4":"2.9","5":"574.4","_rn_":"1"},{"1":"2","2":"24.5","3":"10.0","4":"7.8","5":"63.0","_rn_":"2"},{"1":"3","2":"25.7","3":"8.5","4":"8.5","5":"41.3","_rn_":"3"},{"1":"4","2":"6.8","3":"14.5","4":"2.9","5":"1242.0","_rn_":"4"},{"1":"5","2":"12.9","3":"9.9","4":"3.0","5":"783.4","_rn_":"5"},{"1":"6","2":"23.1","3":"11.7","4":"5.8","5":"284.2","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
   </script>
 </div>
 <blockquote>
@@ -1149,7 +1289,7 @@ head(pts_data)</code></pre>
 <h3><span class="header-section-number">5.9.3</span> Plot the global dataset with the random points</h3>
 <pre class="r"><code>plot(clim[[1]])
 points(pts,col=&#39;red&#39;)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-56-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-55-1.png" /><!-- --></p>
 <!-- ### Summarize climate data at point locations -->
 <!-- Use `gather()` to reshape the climate data for easy plotting with ggplot. -->
 <!-- ```{r,warning=F} -->
@@ -1182,7 +1322,7 @@ transect=SpatialLinesDataFrame(
 
 gplot(r1)+geom_tile(aes(fill=value))+
   geom_line(aes(x=long,y=lat),data=fortify(transect),col=&quot;red&quot;)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-57-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-56-1.png" /><!-- --></p>
 </div>
 <div id="plot-transect" class="section level3">
 <h3><span class="header-section-number">5.9.5</span> Plot Transect</h3>
@@ -1220,7 +1360,7 @@ head(transl)</code></pre>
                   group=variable,
                   order=order))+
   geom_line()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-61-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-60-1.png" /><!-- --></p>
 <!-- ### _Zonal_ statistics -->
 <!-- Calculate mean annual temperature averaged by province (polygons). -->
 <!-- ```{r} -->
@@ -1364,7 +1504,7 @@ head(transl)</code></pre>
       colors=c(&quot;blue&quot;,&quot;green&quot;,&quot;red&quot;),
       name=&quot;Month&quot;)+
     geom_line()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-70-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-69-1.png" /><!-- --></p>
 <p>Or the same data in a levelplot:</p>
 <pre class="r"><code>ggplot(transl,
        aes(x=lon,y=monthname,
@@ -1374,7 +1514,7 @@ head(transl)</code></pre>
       palette=&quot;PuBuGn&quot;,
       name=&quot;Tmax&quot;)+
     geom_raster()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-71-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-70-1.png" /><!-- --></p>
 <!--
 ## Raster Processing
 

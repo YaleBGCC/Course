@@ -134,7 +134,7 @@ coordinates(data) = cbind(coords$x, coords$y)
 
 
 ```r
-str(spdf)
+str(data)
 ```
 
 ```
@@ -146,10 +146,15 @@ str(spdf)
 ##   ..@ coords     : num [1:100, 1:2] 1.015 -0.766 -1.031 -1.128 -1.285 ...
 ##   .. ..- attr(*, "dimnames")=List of 2
 ##   .. .. ..$ : NULL
+<<<<<<< HEAD
 ##   .. .. ..$ : chr [1:2] "x" "y"
 ##   ..@ bbox       : num [1:2, 1:2] -3.11 -2.83 2.84 3.11
+=======
+##   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+##   ..@ bbox       : num [1:2, 1:2] -2.29 -1.83 2.37 2.35
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 ##   .. ..- attr(*, "dimnames")=List of 2
-##   .. .. ..$ : chr [1:2] "x" "y"
+##   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
 ##   .. .. ..$ : chr [1:2] "min" "max"
 ##   ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slot
 ##   .. .. ..@ projargs: chr NA
@@ -571,40 +576,40 @@ res(x)
 ```
 
 ```r
-res(x) <- 100
-res(x)
-```
-
-```
-## [1] 100 100
-```
-
-```r
 ncol(x)
 ```
 
 ```
-## [1] 20
+## [1] 36
 ```
 
 
 ```r
-# change the numer of columns (affects resolution)
-ncol(x) <- 18
-ncol(x)
+extent(x)
 ```
 
 ```
-## [1] 18
+## class       : Extent 
+## xmin        : -1000 
+## xmax        : 1000 
+## ymin        : -100 
+## ymax        : 900
 ```
 
 ```r
-res(x)
+head(values(x))
 ```
 
 ```
-## [1] 111.1111 100.0000
+## [1] NA NA NA NA NA NA
 ```
+
+<!-- ```{r} -->
+<!-- # change the numer of columns (affects resolution) -->
+<!-- ncol(x) <- 18 -->
+<!-- ncol(x) -->
+<!-- res(x) -->
+<!-- ``` -->
 
 ## Raster data storage
 
@@ -678,19 +683,14 @@ plot(x)
 
 
 
-## Raster memory usage
+<!-- ## Raster memory usage -->
 
-Raster data files can be very large, especially when cells are at high resolution, so it becomes important to think about how much RAM is required to work with a raster to avoid slowing your computer to a crawl. The `raster` package cleverly avoids reading full rasters into memory to instead just provides pointers to the relevant raster files.
+<!-- Raster data files can be very large, especially when cells are at high resolution, so it becomes important to think about how much RAM is required to work with a raster to avoid slowing your computer to a crawl. The `raster` package cleverly avoids reading full rasters into memory to instead just provides pointers to the relevant raster files. -->
 
-
-```r
-inMemory(r)
-```
-
-```
-## [1] TRUE
-```
-> You can change the memory options using the `maxmemory` option in `rasterOptions()` 
+<!-- ```{r} -->
+<!-- inMemory(r) -->
+<!-- ``` -->
+<!-- > You can change the memory options using the `maxmemory` option in `rasterOptions()`  -->
 
 ## Raster Plotting
 
@@ -701,7 +701,11 @@ Plotting is easy (but slow) with `plot`.
 plot(r, main='Raster with 100 cells')
 ```
 
+<<<<<<< HEAD
 ![](05_Raster_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+=======
+![](05_Raster_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 
 
 
@@ -715,7 +719,11 @@ gplot(r,maxpixels=50000)+ # reference the data
   geom_raster(aes(fill=value)) # cell's data value determines its color
 ```
 
+<<<<<<< HEAD
 ![](05_Raster_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+=======
+![](05_Raster_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 
 
 Adjust `maxpixels` for faster plotting of large datasets.
@@ -726,7 +734,11 @@ gplot(r,maxpixels=10)+
   geom_raster(aes(fill=value))
 ```
 
+<<<<<<< HEAD
 ![](05_Raster_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+=======
+![](05_Raster_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 
 
 
@@ -751,6 +763,16 @@ projection(r)
 ```
 ## [1] "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
 ```
+
+## Useful functions
+
+The following are some of the more useful functions in the raster package when building species' range models (as we'll be doing next time.) I list them here so you can get an idea of the types of common spatial operations. Try running the examples in their help files; raster's help files are very well done.
+
+* `projectRaster`  - switch between projections. E.g., sometimes you'll download data from different sources that use differnt projections. Equal area projections are often useful.
+* `aggregate` - make a coarser resolution raster. E.g., explore scale dependence.
+* `resample` - transfer values between non-matching rasters. e.g., the cells are different sizes.
+* `crop` - change the extent of a raster, e.g., to get two rasters to line up with one another.
+* `rasterize` - turn another type of spatial object (points, polygons) into a raster
 
 
 # WorldClim
@@ -836,7 +858,7 @@ gain(clim)=0.1
 plot(clim[[1:3]]) # just the first 3, since its slow
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
  
 
@@ -859,7 +881,7 @@ gplot(clim[[1:3]])+geom_raster(aes(fill=value))+
 ## Warning: Transformation introduced infinite values in discrete y-axis
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
 
 
@@ -881,7 +903,11 @@ object.size(clim)
 ```
 
 ```
+<<<<<<< HEAD
 ## 245688 bytes
+=======
+## 248024 bytes
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
 ```
 
 ```r
@@ -890,7 +916,7 @@ canProcessInMemory(clim)
 ```
 
 ```
-## [1] TRUE
+## [1] FALSE
 ```
 
 
@@ -928,7 +954,7 @@ r1
 plot(r1)
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
 
 ## Spatial aggregation
 
@@ -938,7 +964,7 @@ aggregate(r1, 3, fun=mean) %>%
   plot()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
 
 <div class="well">
 ## Your turn
@@ -953,7 +979,7 @@ aggregate(r1, 10, fun=min) %>%
   plot()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
 </div>
 </div>
 
@@ -965,7 +991,7 @@ focal(r1, w=matrix(1,3,3), fun=mean) %>%
   plot()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
 
 
 ```r
@@ -979,7 +1005,7 @@ rf_range2 <- focal(r1, w=matrix(1,11,11), fun=range)
 plot(rf_range2)
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-49-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
 
 <div class="well">
 ## Your turn
@@ -995,7 +1021,7 @@ focal(r1,w=matrix(1,3,3),fun=sd)%>%
   plot()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-50-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-49-1.png)<!-- -->
 </div>
 </div>
 
@@ -1053,7 +1079,7 @@ r = r1 < 15
 plot(r)
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-52-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-51-1.png)<!-- -->
 
 
 
@@ -1092,7 +1118,7 @@ pts=sampleRandom(clim,100,xy=T,sp=T)
 plot(pts);axis(1);axis(2)
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-54-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-53-1.png)<!-- -->
 
 ### Extract data using a `SpatialPoints` object
 Often you will have some locations (points) for which you want data from a raster* object.  You can use the `extract` function here with the `pts` object (we'll pretend it's a new point dataset for which you want climate variables).
@@ -1104,7 +1130,11 @@ head(pts_data)
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
+<<<<<<< HEAD
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["bio4"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"25.6","3":"15.1","4":"6.9","5":"139.8","_rn_":"1"},{"1":"2","2":"-1.3","3":"7.9","4":"2.5","5":"728.0","_rn_":"2"},{"1":"3","2":"-22.7","3":"7.3","4":"2.0","5":"1055.5","_rn_":"3"},{"1":"4","2":"-18.7","3":"7.1","4":"1.8","5":"1136.7","_rn_":"4"},{"1":"5","2":"-14.4","3":"6.7","4":"1.5","5":"1377.1","_rn_":"5"},{"1":"6","2":"8.2","3":"11.6","4":"2.9","5":"971.1","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+=======
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["bio4"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"2.0","3":"6.7","4":"2.9","5":"574.4","_rn_":"1"},{"1":"2","2":"24.5","3":"10.0","4":"7.8","5":"63.0","_rn_":"2"},{"1":"3","2":"25.7","3":"8.5","4":"8.5","5":"41.3","_rn_":"3"},{"1":"4","2":"6.8","3":"14.5","4":"2.9","5":"1242.0","_rn_":"4"},{"1":"5","2":"12.9","3":"9.9","4":"3.0","5":"783.4","_rn_":"5"},{"1":"6","2":"23.1","3":"11.7","4":"5.8","5":"284.2","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+>>>>>>> 4f7979a4348b8de3b65c3af72c0aa4ff665e4020
   </script>
 </div>
 > Use `package::function` to avoid confusion with similar functions.
@@ -1117,7 +1147,7 @@ plot(clim[[1]])
 points(pts,col='red')
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-56-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-55-1.png)<!-- -->
 
 
 <!-- ### Summarize climate data at point locations -->
@@ -1159,7 +1189,7 @@ gplot(r1)+geom_tile(aes(fill=value))+
   geom_line(aes(x=long,y=lat),data=fortify(transect),col="red")
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-57-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-56-1.png)<!-- -->
 
 
 
@@ -1217,7 +1247,7 @@ ggplot(transl,aes(x=lon,y=value,
   geom_line()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-61-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-60-1.png)<!-- -->
 
 
 
@@ -1431,7 +1461,7 @@ ggplot(transl,
     geom_line()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-70-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-69-1.png)<!-- -->
 
 Or the same data in a levelplot:
 
@@ -1446,7 +1476,7 @@ ggplot(transl,
     geom_raster()
 ```
 
-![](05_Raster_files/figure-html/unnamed-chunk-71-1.png)<!-- -->
+![](05_Raster_files/figure-html/unnamed-chunk-70-1.png)<!-- -->
 
 
 <!--

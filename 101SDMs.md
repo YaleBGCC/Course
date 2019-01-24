@@ -39,14 +39,14 @@ library(rgdal)
 ```
 
 ```
-## rgdal: version: 1.2-16, (SVN revision 701)
+## rgdal: version: 1.3-6, (SVN revision 773)
 ##  Geospatial Data Abstraction Library extensions to R successfully loaded
 ##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
-##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/gdal
+##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/gdal
 ##  GDAL binary built with GEOS: FALSE 
 ##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
-##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/proj
-##  Linking to sp version: 1.2-5
+##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/proj
+##  Linking to sp version: 1.3-1
 ```
 
 ```r
@@ -86,11 +86,15 @@ library(spThin)
 ```
 
 ```
+## Loading required package: dotCall64
+```
+
+```
 ## Loading required package: grid
 ```
 
 ```
-## Spam version 1.4-0 (2016-08-29) is loaded.
+## Spam version 2.2-1 (2018-12-20) is loaded.
 ## Type 'help( Spam)' or 'demo( spam)' for a short introduction 
 ## and overview of this package.
 ## Help for individual functions is also obtained by adding the
@@ -114,6 +118,11 @@ library(spThin)
 
 ```
 ## Loading required package: maps
+```
+
+```
+## See www.image.ucar.edu/~nychka/Fields for
+##  a vignette and other supplements.
 ```
 
 ```

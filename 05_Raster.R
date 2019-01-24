@@ -79,7 +79,7 @@ coordinates(data) = cbind(coords$x, coords$y)
 
 #' 
 ## ------------------------------------------------------------------------
-str(spdf)
+str(data)
 
 #' 
 #' ## Subset data
@@ -281,17 +281,20 @@ str(x)
 ## ---- echo=T, results=T--------------------------------------------------
 x <- raster(ncol=36, nrow=18, xmn=-1000, xmx=1000, ymn=-100, ymx=900)
 res(x)
-res(x) <- 100
-res(x)
 ncol(x)
 
 #' 
 ## ------------------------------------------------------------------------
-# change the numer of columns (affects resolution)
-ncol(x) <- 18
-ncol(x)
-res(x)
+extent(x)
+head(values(x))
 
+#' 
+#' <!-- ```{r} -->
+#' <!-- # change the numer of columns (affects resolution) -->
+#' <!-- ncol(x) <- 18 -->
+#' <!-- ncol(x) -->
+#' <!-- res(x) -->
+#' <!-- ``` -->
 #' 
 #' ## Raster data storage
 #' 
@@ -332,14 +335,14 @@ values(r)[1:10]
 #' 
 #' 
 #' 
-#' ## Raster memory usage
+#' <!-- ## Raster memory usage -->
 #' 
-#' Raster data files can be very large, especially when cells are at high resolution, so it becomes important to think about how much RAM is required to work with a raster to avoid slowing your computer to a crawl. The `raster` package cleverly avoids reading full rasters into memory to instead just provides pointers to the relevant raster files.
+#' <!-- Raster data files can be very large, especially when cells are at high resolution, so it becomes important to think about how much RAM is required to work with a raster to avoid slowing your computer to a crawl. The `raster` package cleverly avoids reading full rasters into memory to instead just provides pointers to the relevant raster files. -->
 #' 
-## ------------------------------------------------------------------------
-inMemory(r)
-
-#' > You can change the memory options using the `maxmemory` option in `rasterOptions()` 
+#' <!-- ```{r} -->
+#' <!-- inMemory(r) -->
+#' <!-- ``` -->
+#' <!-- > You can change the memory options using the `maxmemory` option in `rasterOptions()`  -->
 #' 
 #' ## Raster Plotting
 #' 
@@ -386,6 +389,16 @@ gplot(r,maxpixels=10)+
 ## ------------------------------------------------------------------------
 projection(r)
 
+#' 
+#' ## Useful functions
+#' 
+#' The following are some of the more useful functions in the raster package when building species' range models (as we'll be doing next time.) I list them here so you can get an idea of the types of common spatial operations. Try running the examples in their help files; raster's help files are very well done.
+#' 
+#' * `projectRaster`  - switch between projections. E.g., sometimes you'll download data from different sources that use differnt projections. Equal area projections are often useful.
+#' * `aggregate` - make a coarser resolution raster. E.g., explore scale dependence.
+#' * `resample` - transfer values between non-matching rasters. e.g., the cells are different sizes.
+#' * `crop` - change the extent of a raster, e.g., to get two rasters to line up with one another.
+#' * `rasterize` - turn another type of spatial object (points, polygons) into a raster
 #' 
 #' 
 #' # WorldClim
