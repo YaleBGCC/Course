@@ -474,6 +474,7 @@ div.tocify {
 <p>This tutorial has been forked from awesome classes developed by Adam Wilson <a href="http://adamwilson.us/RDataScience/">here</a></p>
 <div id="setup" class="section level1">
 <h1><span class="header-section-number">1</span> Setup</h1>
+<p>Note that you may need to install some of these packages with, e.g., <code>install.packages(c('dplyr','tidyr'))</code>, etc.</p>
 <pre class="r"><code>library(dplyr)
 library(tidyr)
 library(sp)
@@ -482,7 +483,8 @@ library(rgeos)
 library(maptools)
 library(rgdal)
 library(raster)
-library(rasterVis)  #visualization library for raster</code></pre>
+library(rasterVis)  #visualization library for raster
+library(spocc)</code></pre>
 </div>
 <div id="point-data" class="section level1">
 <h1><span class="header-section-number">2</span> Point data</h1>
@@ -639,6 +641,62 @@ plot(df)</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
 </div>
 </div>
+<p>The main way we’ll use point data in this course is to describe where species occur. There are many large online data aggregators of species occurrence records; GBIF is surely the biggest. So let’s down load some records for garlic mustard (Alliaria petiolata).</p>
+<pre class="r"><code>pres=spocc::occ(&#39;Alliaria petiolata&#39;,from=&#39;gbif&#39;,limit=500)$gbif # this can take a sec
+head(pres$data)</code></pre>
+<pre><code>## $Alliaria_petiolata
+## # A tibble: 500 x 99
+##    name  longitude latitude issues prov     key datasetKey publishingOrgKey
+##    &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;           
+##  1 Alli…     -74.5     40.6 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  2 Alli…     -73.9     40.8 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  3 Alli…     -89.7     39.7 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  4 Alli…     -87.9     41.7 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  5 Alli…     -90.3     38.7 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  6 Alli…     -79.4     43.7 gass84 gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  7 Alli…     -76.6     39.6 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  8 Alli…     -73.8     40.6 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+##  9 Alli…     -79.8     43.2 gass84 gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+## 10 Alli…     -73.9     40.8 cdrou… gbif  1.99e9 50c9509d-… 28eb1a3f-1c15-4…
+## # … with 490 more rows, and 91 more variables: networkKeys &lt;list&gt;,
+## #   installationKey &lt;chr&gt;, publishingCountry &lt;chr&gt;, protocol &lt;chr&gt;,
+## #   lastCrawled &lt;chr&gt;, lastParsed &lt;chr&gt;, crawlId &lt;int&gt;,
+## #   basisOfRecord &lt;chr&gt;, taxonKey &lt;int&gt;, kingdomKey &lt;int&gt;,
+## #   phylumKey &lt;int&gt;, classKey &lt;int&gt;, orderKey &lt;int&gt;, familyKey &lt;int&gt;,
+## #   genusKey &lt;int&gt;, acceptedTaxonKey &lt;int&gt;, scientificName &lt;chr&gt;,
+## #   acceptedScientificName &lt;chr&gt;, kingdom &lt;chr&gt;, phylum &lt;chr&gt;,
+## #   order &lt;chr&gt;, family &lt;chr&gt;, genus &lt;chr&gt;, genericName &lt;chr&gt;,
+## #   specificEpithet &lt;chr&gt;, taxonRank &lt;chr&gt;, taxonomicStatus &lt;chr&gt;,
+## #   dateIdentified &lt;chr&gt;, coordinateUncertaintyInMeters &lt;dbl&gt;,
+## #   stateProvince &lt;chr&gt;, year &lt;int&gt;, month &lt;int&gt;, day &lt;int&gt;,
+## #   eventDate &lt;date&gt;, modified &lt;chr&gt;, lastInterpreted &lt;chr&gt;,
+## #   references &lt;chr&gt;, license &lt;chr&gt;, geodeticDatum &lt;chr&gt;, class &lt;chr&gt;,
+## #   countryCode &lt;chr&gt;, country &lt;chr&gt;, rightsHolder &lt;chr&gt;,
+## #   identifier &lt;chr&gt;, verbatimEventDate &lt;chr&gt;, datasetName &lt;chr&gt;,
+## #   gbifID &lt;chr&gt;, verbatimLocality &lt;chr&gt;, collectionCode &lt;chr&gt;,
+## #   occurrenceID &lt;chr&gt;, taxonID &lt;chr&gt;, catalogNumber &lt;chr&gt;,
+## #   recordedBy &lt;chr&gt;, `http://unknown.org/occurrenceDetails` &lt;chr&gt;,
+## #   institutionCode &lt;chr&gt;, rights &lt;chr&gt;, eventTime &lt;chr&gt;,
+## #   identificationID &lt;chr&gt;, individualCount &lt;int&gt;, continent &lt;chr&gt;,
+## #   vernacularName &lt;chr&gt;, dataGeneralizations &lt;chr&gt;, locality &lt;chr&gt;,
+## #   higherClassification &lt;chr&gt;, habitat &lt;chr&gt;, county &lt;chr&gt;,
+## #   municipality &lt;chr&gt;, identificationVerificationStatus &lt;chr&gt;,
+## #   language &lt;chr&gt;, type &lt;chr&gt;, occurrenceStatus &lt;chr&gt;,
+## #   taxonConceptID &lt;chr&gt;, informationWithheld &lt;chr&gt;, endDayOfYear &lt;chr&gt;,
+## #   startDayOfYear &lt;chr&gt;, datasetID &lt;chr&gt;, accessRights &lt;chr&gt;,
+## #   nomenclaturalCode &lt;chr&gt;, verbatimCoordinateSystem &lt;chr&gt;,
+## #   ownerInstitutionCode &lt;chr&gt;, bibliographicCitation &lt;chr&gt;,
+## #   samplingProtocol &lt;chr&gt;, occurrenceRemarks &lt;chr&gt;, identifiedBy &lt;chr&gt;,
+## #   recordNumber &lt;chr&gt;, verbatimSRS &lt;chr&gt;, georeferenceRemarks &lt;chr&gt;,
+## #   verbatimDepth &lt;chr&gt;, preparations &lt;chr&gt;,
+## #   identificationQualifier &lt;chr&gt;, verbatimElevation &lt;chr&gt;</code></pre>
+<pre class="r"><code># promote this to a spatial points object
+d=data.frame(pres$data$Alliaria_petiolata)
+# notice that some coords have misssing values
+d=d[complete.cases(d[,c(&#39;longitude&#39;,&#39;latitude&#39;)]),]
+coordinates(d)=c(&#39;longitude&#39;,&#39;latitude&#39;)
+plot(d)</code></pre>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-15-1.png" /><!-- --> As we’ll see in the SDM lesson, these two clumps correspond to North America and Europe.</p>
 </div>
 <div id="examine-topsoil-quality-in-the-meuse-river-data-set" class="section level2">
 <h2><span class="header-section-number">2.6</span> Examine topsoil quality in the Meuse river data set</h2>
@@ -702,7 +760,7 @@ str(meuse)</code></pre>
 <pre class="r"><code>  ggplot(as.data.frame(meuse),aes(x=x,y=y))+
     geom_point(col=&quot;red&quot;)+
     coord_equal()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
 <p>Note that <code>ggplot</code> works only with data.frames. Convert with <code>as.data.frame()</code> or <code>fortify()</code>.</p>
 </div>
 <div id="ggplot" class="section level2">
@@ -733,7 +791,7 @@ m + # reference the data
   geom_point() +  # add points
   stat_density2d(geom=&quot;contour&quot;) + # add a contour plot
   xlim(0.5, 6) + ylim(40, 110) # define plot limits</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
 <p>And now back to spatial data …</p>
 </div>
 </div>
@@ -763,8 +821,11 @@ m + # reference the data
 <pre class="r"><code>getData(&quot;ISO3&quot;)%&gt;%
   as.data.frame%&gt;%
   filter(NAME==&quot;South Africa&quot;)</code></pre>
-<pre><code>##   ISO3         NAME
-## 1  ZAF South Africa</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ISO3"],"name":[1],"type":["chr"],"align":["left"]},{"label":["NAME"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"ZAF","2":"South Africa"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <blockquote>
 <p>Note that <code>%&gt;%</code> is a <em>pipe</em>, defined by the <code>dplyr</code> package that says ’Use the previous thing as the first argument in this function. So this is equivalent to <code>temp1 = getData(&quot;ISO3&quot;)</code> followed by <code>temp2 = as.data.frame(temp1)</code> followed by <code>output=filter(temp2,NAME==South Africa')</code>.</p>
 </blockquote>
@@ -776,36 +837,11 @@ m + # reference the data
 <div id="check-out-attribute-table" class="section level3">
 <h3><span class="header-section-number">3.2.1</span> Check out attribute table</h3>
 <pre class="r"><code>za@data</code></pre>
-<pre><code>##   OBJECTID ID_0 ISO       NAME_0 ID_1        NAME_1 HASC_1 CCN_1 CCA_1
-## 1        1  211 ZAF South Africa    1  Eastern Cape  ZA.EC    NA    EC
-## 2        2  211 ZAF South Africa    2    Free State  ZA.FS    NA    FS
-## 3        3  211 ZAF South Africa    3       Gauteng  ZA.GT    NA    GT
-## 4        4  211 ZAF South Africa    4 KwaZulu-Natal  ZA.NL    NA   KZN
-## 5        5  211 ZAF South Africa    5       Limpopo  ZA.NP    NA   LIM
-## 6        6  211 ZAF South Africa    6    Mpumalanga  ZA.MP    NA    MP
-## 7        7  211 ZAF South Africa    7    North West  ZA.NW    NA    NW
-## 8        8  211 ZAF South Africa    8 Northern Cape  ZA.NC    NA    NC
-## 9        9  211 ZAF South Africa    9  Western Cape  ZA.WC    NA    WC
-##      TYPE_1 ENGTYPE_1 NL_NAME_1
-## 1 Provinsie  Province          
-## 2 Provinsie  Province          
-## 3 Provinsie  Province          
-## 4 Provinsie  Province          
-## 5 Provinsie  Province          
-## 6 Provinsie  Province          
-## 7 Provinsie  Province          
-## 8 Provinsie  Province          
-## 9 Provinsie  Province          
-##                                                   VARNAME_1
-## 1                                                  Oos-Kaap
-## 2                                Orange Free State|Vrystaat
-## 3                               Pretoria/Witwatersrand/Vaal
-## 4                                        Natal and Zululand
-## 5 Noordelike Provinsie|Northern Transvaal|Northern Province
-## 6                                         Eastern Transvaal
-## 7                                       North-West|Noordwes
-## 8                                                Noord-Kaap
-## 9                                                  Wes-Kaap</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["GID_0"],"name":[1],"type":["chr"],"align":["left"]},{"label":["NAME_0"],"name":[2],"type":["chr"],"align":["left"]},{"label":["GID_1"],"name":[3],"type":["chr"],"align":["left"]},{"label":["NAME_1"],"name":[4],"type":["chr"],"align":["left"]},{"label":["VARNAME_1"],"name":[5],"type":["chr"],"align":["left"]},{"label":["NL_NAME_1"],"name":[6],"type":["chr"],"align":["left"]},{"label":["TYPE_1"],"name":[7],"type":["chr"],"align":["left"]},{"label":["ENGTYPE_1"],"name":[8],"type":["chr"],"align":["left"]},{"label":["CC_1"],"name":[9],"type":["chr"],"align":["left"]},{"label":["HASC_1"],"name":[10],"type":["chr"],"align":["left"]}],"data":[{"1":"ZAF","2":"South Africa","3":"ZAF.1_1","4":"Eastern Cape","5":"Oos-Kaap","6":"NA","7":"Provinsie","8":"Province","9":"EC","10":"ZA.EC","_rn_":"1"},{"1":"ZAF","2":"South Africa","3":"ZAF.2_1","4":"Free State","5":"Orange Free State|Vrystaat","6":"NA","7":"Provinsie","8":"Province","9":"FS","10":"ZA.FS","_rn_":"2"},{"1":"ZAF","2":"South Africa","3":"ZAF.3_1","4":"Gauteng","5":"Pretoria/Witwatersrand/Vaal","6":"NA","7":"Provinsie","8":"Province","9":"GT","10":"ZA.GT","_rn_":"3"},{"1":"ZAF","2":"South Africa","3":"ZAF.4_1","4":"KwaZulu-Natal","5":"Natal and Zululand","6":"NA","7":"Provinsie","8":"Province","9":"KZN","10":"ZA.NL","_rn_":"4"},{"1":"ZAF","2":"South Africa","3":"ZAF.5_1","4":"Limpopo","5":"Noordelike Provinsie|Northern Transvaal|Northern Province","6":"NA","7":"Provinsie","8":"Province","9":"LIM","10":"ZA.NP","_rn_":"5"},{"1":"ZAF","2":"South Africa","3":"ZAF.6_1","4":"Mpumalanga","5":"Eastern Transvaal","6":"NA","7":"Provinsie","8":"Province","9":"MP","10":"ZA.MP","_rn_":"6"},{"1":"ZAF","2":"South Africa","3":"ZAF.7_1","4":"North West","5":"North-West|Noordwes","6":"NA","7":"Provinsie","8":"Province","9":"NW","10":"ZA.NW","_rn_":"7"},{"1":"ZAF","2":"South Africa","3":"ZAF.8_1","4":"Northern Cape","5":"Noord-Kaap","6":"NA","7":"Provinsie","8":"Province","9":"NC","10":"ZA.NC","_rn_":"8"},{"1":"ZAF","2":"South Africa","3":"ZAF.9_1","4":"Western Cape","5":"Wes-Kaap","6":"NA","7":"Provinsie","8":"Province","9":"WC","10":"ZA.WC","_rn_":"9"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <pre class="r"><code>za=subset(za,NAME_1==&quot;Eastern Cape&quot;)
 plot(za)</code></pre>
 <div class="well">
@@ -838,9 +874,8 @@ plot(country)</code></pre>
 <li><code>rasterBrick</code>: Multiple Bands of <em>same</em> thing.</li>
 </ul>
 <p>Normally, you’ll obtain rasters data by downloading it from somewhere (e.g. global climate data below), but to get a better understanding of rasters, let’s build one from scratch.</p>
-<pre class="r"><code>x &lt;- raster()</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code>x</code></pre>
+<pre class="r"><code>x &lt;- raster()
+x</code></pre>
 <pre><code>## class       : RasterLayer 
 ## dimensions  : 180, 360, 64800  (nrow, ncol, ncell)
 ## resolution  : 1, 1  (x, y)
@@ -922,9 +957,8 @@ res(x)</code></pre>
 </div>
 <div id="raster-data-storage" class="section level2">
 <h2><span class="header-section-number">4.2</span> Raster data storage</h2>
-<pre class="r"><code>r &lt;- raster(ncol=10, nrow=10)</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code>ncell(r)</code></pre>
+<pre class="r"><code>r &lt;- raster(ncol=10, nrow=10)
+ncell(r)</code></pre>
 <pre><code>## [1] 100</code></pre>
 <p>But it is an empty raster</p>
 <pre class="r"><code>hasValues(r)</code></pre>
@@ -947,18 +981,13 @@ hasValues(r)</code></pre>
 Show Solution
 </button>
 <div id="demo2" class="collapse">
-<pre class="r"><code>x=raster(nrow=100,ncol=50,vals=rnorm(100*50))</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code># OR
-x= raster(nrow=100,ncol=50)</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code>values(x)= rnorm(5000)
+<pre class="r"><code>x=raster(nrow=100,ncol=50,vals=rnorm(100*50))
+# OR
+x= raster(nrow=100,ncol=50)
+values(x)= rnorm(5000)
 
 plot(x)</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
 </div>
 </div>
 <!-- ## Raster memory usage -->
@@ -972,17 +1001,17 @@ plot(x)</code></pre>
 <h2><span class="header-section-number">4.3</span> Raster Plotting</h2>
 <p>Plotting is easy (but slow) with <code>plot</code>.</p>
 <pre class="r"><code>plot(r, main=&#39;Raster with 100 cells&#39;)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-33-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
 <div id="ggplot-and-rastervis" class="section level3">
 <h3><span class="header-section-number">4.3.1</span> ggplot and rasterVis</h3>
 <p>rasterVis package has <code>gplot()</code> for plotting raster data in the <code>ggplot()</code> framework.</p>
 <pre class="r"><code>gplot(r,maxpixels=50000)+ # reference the data
   geom_raster(aes(fill=value)) # cell&#39;s data value determines its color</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
 <p>Adjust <code>maxpixels</code> for faster plotting of large datasets.</p>
 <pre class="r"><code>gplot(r,maxpixels=10)+
   geom_raster(aes(fill=value))</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
 <!-- Can use all the `ggplot` color ramps, etc. -->
 <!-- ```{r} -->
 <!-- gplot(r)+ # reference the data -->
@@ -1129,7 +1158,7 @@ plot(x)</code></pre>
 <div id="plot-with-plot" class="section level3">
 <h3><span class="header-section-number">5.3.2</span> Plot with <code>plot()</code></h3>
 <pre class="r"><code>plot(clim[[1:3]]) # just the first 3, since its slow</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
 </div>
 </div>
 <div id="faceting-in-ggplot" class="section level2">
@@ -1141,7 +1170,7 @@ plot(x)</code></pre>
   coord_equal()</code></pre>
 <pre><code>## Warning in self$trans$transform(x): NaNs produced</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in discrete y-axis</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-41-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-42-1.png" /><!-- --></p>
 <p>Let’s dig a little deeper into the data object:</p>
 <pre class="r"><code>## is it held in RAM?
 inMemory(clim)</code></pre>
@@ -1170,14 +1199,14 @@ r1 &lt;- crop(clim[[1]], bbox(za))</code></pre>
 ## names       : bio1 
 ## values      : 5.8, 24.6  (min, max)</code></pre>
 <pre class="r"><code>plot(r1)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-44-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-45-1.png" /><!-- --></p>
 </div>
 <div id="spatial-aggregation" class="section level2">
 <h2><span class="header-section-number">5.6</span> Spatial aggregation</h2>
 <pre class="r"><code>## aggregate using a function
 aggregate(r1, 3, fun=mean) %&gt;%
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-45-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-46-1.png" /><!-- --></p>
 <div class="well">
 <h2 id="your-turn-4"><span class="header-section-number">5.6</span> Your turn</h2>
 <p>Create a new raster by aggregating to the minimum (<code>min</code>) value of <code>r1</code> within a 10 pixel window</p>
@@ -1187,7 +1216,7 @@ Show Solution
 <div id="demo3" class="collapse">
 <pre class="r"><code>aggregate(r1, 10, fun=min) %&gt;%
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-46-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-47-1.png" /><!-- --></p>
 </div>
 </div>
 </div>
@@ -1196,7 +1225,7 @@ Show Solution
 <pre class="r"><code>## apply a function over a moving window
 focal(r1, w=matrix(1,3,3), fun=mean) %&gt;% 
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-47-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-48-1.png" /><!-- --></p>
 <pre class="r"><code>## apply a function over a moving window
 rf_min &lt;- focal(r1, w=matrix(1,11,11), fun=min)
 rf_max &lt;- focal(r1, w=matrix(1,11,11), fun=max)
@@ -1205,7 +1234,7 @@ rf_range=rf_max-rf_min
 ## or just use the range function
 rf_range2 &lt;- focal(r1, w=matrix(1,11,11), fun=range)
 plot(rf_range2)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-48-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-49-1.png" /><!-- --></p>
 <div class="well">
 <h2 id="your-turn-5"><span class="header-section-number">5.7</span> Your turn</h2>
 <p>Plot the focal standard deviation of <code>r1</code> over a 3x3 window.</p>
@@ -1215,7 +1244,7 @@ Show Solution
 <div id="demo4" class="collapse">
 <pre class="r"><code>focal(r1,w=matrix(1,3,3),fun=sd)%&gt;%
   plot()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-49-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-50-1.png" /><!-- --></p>
 </div>
 </div>
 </div>
@@ -1240,7 +1269,7 @@ cellStats(r,range)</code></pre>
 <pre class="r"><code># find cells with values less than 15 degrees C
 r = r1 &lt; 15
 plot(r)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-51-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-52-1.png" /><!-- --></p>
 <div id="apply-algebraic-functions" class="section level3">
 <h3><span class="header-section-number">5.8.1</span> Apply algebraic functions</h3>
 <pre class="r"><code># multiply s times r and add 5
@@ -1266,7 +1295,7 @@ cellStats(s,range)</code></pre>
 <pre class="r"><code>## define a new dataset of points to play with
 pts=sampleRandom(clim,100,xy=T,sp=T)
 plot(pts);axis(1);axis(2)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-53-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-54-1.png" /><!-- --></p>
 </div>
 <div id="extract-data-using-a-spatialpoints-object" class="section level3">
 <h3><span class="header-section-number">5.9.2</span> Extract data using a <code>SpatialPoints</code> object</h3>
@@ -1286,7 +1315,7 @@ head(pts_data)</code></pre>
 <h3><span class="header-section-number">5.9.3</span> Plot the global dataset with the random points</h3>
 <pre class="r"><code>plot(clim[[1]])
 points(pts,col=&#39;red&#39;)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-55-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-56-1.png" /><!-- --></p>
 <!-- ### Summarize climate data at point locations -->
 <!-- Use `gather()` to reshape the climate data for easy plotting with ggplot. -->
 <!-- ```{r,warning=F} -->
@@ -1319,7 +1348,7 @@ transect=SpatialLinesDataFrame(
 
 gplot(r1)+geom_tile(aes(fill=value))+
   geom_line(aes(x=long,y=lat),data=fortify(transect),col=&quot;red&quot;)</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-56-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-57-1.png" /><!-- --></p>
 </div>
 <div id="plot-transect" class="section level3">
 <h3><span class="header-section-number">5.9.5</span> Plot Transect</h3>
@@ -1357,7 +1386,7 @@ head(transl)</code></pre>
                   group=variable,
                   order=order))+
   geom_line()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-60-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-61-1.png" /><!-- --></p>
 <!-- ### _Zonal_ statistics -->
 <!-- Calculate mean annual temperature averaged by province (polygons). -->
 <!-- ```{r} -->
@@ -1501,7 +1530,7 @@ head(transl)</code></pre>
       colors=c(&quot;blue&quot;,&quot;green&quot;,&quot;red&quot;),
       name=&quot;Month&quot;)+
     geom_line()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-69-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-70-1.png" /><!-- --></p>
 <p>Or the same data in a levelplot:</p>
 <pre class="r"><code>ggplot(transl,
        aes(x=lon,y=monthname,
@@ -1511,7 +1540,7 @@ head(transl)</code></pre>
       palette=&quot;PuBuGn&quot;,
       name=&quot;Tmax&quot;)+
     geom_raster()</code></pre>
-<p><img src="05_Raster_files/figure-html/unnamed-chunk-70-1.png" /><!-- --></p>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-71-1.png" /><!-- --></p>
 <!--
 ## Raster Processing
 

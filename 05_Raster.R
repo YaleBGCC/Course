@@ -14,6 +14,8 @@
 #' 
 #' # Setup
 #' 
+#' Note that you may need to install some of these packages with, e.g., `install.packages(c('dplyr','tidyr'))`, etc. 
+#' 
 ## ----message=F,warning=FALSE, results='hide'-----------------------------
 library(dplyr)
 library(tidyr)
@@ -24,6 +26,7 @@ library(maptools)
 library(rgdal)
 library(raster)
 library(rasterVis)  #visualization library for raster
+library(spocc)
 
 #' 
 #' # Point data
@@ -114,6 +117,20 @@ df=data.frame(
 #' 
 #' </div>
 #' </div>
+#' 
+#' The main way we'll use point data in this course is to describe where species occur. There are many large online data aggregators of species occurrence records; GBIF is surely the biggest. So let's down load some records for garlic mustard (Alliaria petiolata).
+#' 
+## ------------------------------------------------------------------------
+pres=spocc::occ('Alliaria petiolata',from='gbif',limit=500)$gbif # this can take a sec
+head(pres$data)
+# promote this to a spatial points object
+d=data.frame(pres$data$Alliaria_petiolata)
+# notice that some coords have misssing values
+d=d[complete.cases(d[,c('longitude','latitude')]),]
+coordinates(d)=c('longitude','latitude')
+plot(d)
+
+#' As we'll see in the SDM lesson, these two clumps correspond to North America and Europe.
 #' 
 #' ## Examine topsoil quality in the Meuse river data set
 #' 
