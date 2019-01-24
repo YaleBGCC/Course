@@ -27,6 +27,7 @@ library(rgdal)
 library(raster)
 library(rasterVis)  #visualization library for raster
 library(spocc)
+library(sf)
 
 #' 
 #' # Point data
@@ -890,3 +891,128 @@ ggplot(transl,
 #' * Use of external programs (e.g. GDAL)
 #' * Use of external GIS viewer (e.g. QGIS)
 #' -->
+#' 
+#' # sf Package
+#' 
+#' <img src="05_assets/sf.jpg" alt="alt text" width="70%">
+#' 
+#' ## Why sf?
+#' 
+#' The `sf` package is a fairly new (~2 years) tool for the handling and processing of shapefiles and other vector data. Why use sf when there are several other packages with similar functionality? Three very good reasons to do so:
+#' 
+#' - integration
+#' - piping
+#' - speed
+#' 
+#' ## Integration
+#' 
+#' `sf` treats spatial objects as a special type of data frame. This is a familiar type of data format to most R users, and can be manipulated as such. Each row of the data frame corresponds to a particular geometry (e.g., polygon or point) and each column corresponds to a particular attribute of the data.
+#' 
+## ------------------------------------------------------------------------
+countries <- st_read("World/TM_WORLD_BORDERS.shp")
+head(countries)
+
+#' 
+#' `sf` integrates well with packages in the Hadleyverse (e.g., `ggplot2`, `dplyr`, `tidyr`, etc.). Spatial objects can be manipulated and summarized in the same way as data frames.
+#' 
+## ------------------------------------------------------------------------
+we <- filter(countries, SUBREGION_ == "Western Europe")
+plot(we['NAME'])
+
+#' 
+#' Everything you need is integrated into one package: reading, writing, and geometric manipulations can all be done directly with `sf` functions. An entire separate library of different spatial S4 object classes (e.g., `SpatialPolygons`, `SpatialPoints`, `SpatialLines` in the `sp` package) is no longer needed.
+#' 
+#' ## Piping
+#' 
+#' `sf` really shines with piping.
+#' 
+## ------------------------------------------------------------------------
+# calculate population density of each subregion
+pop.dens <- countries %>%
+  group_by(SUBREGION_) %>%
+  summarise(Population = sum(POP2005),
+            Area = sum(AREA),
+            Density = Population/Area, 
+            do_union = F)
+pop.dens
+plot(pop.dens['Density'])
+
+#' 
+## ------------------------------------------------------------------------
+# pull out Canada multipolygon, split into individual polygons
+canada <- countries %>%
+  filter(NAME == "Canada") %>%
+  st_cast("POLYGON") %>%
+  mutate(ID = row_number())
+plot(canada['ID'])
+
+#' 
+#' ## Speed 
+#' 
+#' `sf` is _much_ faster at reading and performing spatial tasks.
+#' 
+## ------------------------------------------------------------------------
+library(microbenchmark)
+
+test.sf <- microbenchmark(
+  st_read("World/TM_WORLD_BORDERS.shp", quiet = T), 
+  times = 5)
+test.sp <- microbenchmark(
+  rgdal::readOGR("World/TM_WORLD_BORDERS.shp", verbose = F),
+  times = 5)
+
+print(rbind(test.sf, test.sp))
+
+#' 
+#' ## Some familiar functions
+#' 
+#' Lots of functionality:
+#' 
+#' - Unions and intersections:
+#'     - `st_union`
+#'     - `st_difference`
+#'     - `st_intersection`
+#' - Changing and setting projections:
+#'     - `st_crs`
+#'     - `st_transform`
+#' - Spatial manipulation:
+#'     - `st_buffer`
+#'     - `st_convex_hull`
+#'     - `st_centroid`
+#' - Data manipulation:
+#'     - `filter`
+#'     - `group_by`
+#'     - `mutate`
+#'     - `select`
+#'     - `summarise`
+#'     - `gather`
+#'     - `spread`
+#' - Raster compatibility:
+#'     - `raster::rasterize`
+#'     - `raster::mask`
+#'     - `raster::crop`
+#'     - `raster::extract`
+#' - Much more!
+#' 
+#' ## Compatibility
+#' 
+#' `sf` is fairly new, and several other spatial packages have not yet been updated to integrate with it. Some may never be updated. When working with other packages, it may be necessary to convert `sf` objects into `Spatial` objects for backward compatibility.
+#' 
+## ------------------------------------------------------------------------
+class(countries)
+countries.sp <- as(countries, "Spatial")
+class(countries.sp)
+
+#' 
+#' The `raster` package contains methods for `sf` objects; `rasterVis` currently does not, but that is likely to change in the near future.
+#' 
+#' The `lwgeom` package extends `sf` functionality and provides several tools for geodetic calculations (i.e., spherical and ellipsoidal geometry).
+#' 
+#' The `mapview` package creates interactive maps in html using the popular `leaflet` package.
+#' 
+## ---- fig.height=3, fig.width=3------------------------------------------
+library(mapview)
+
+mapView(countries["NAME"], legend = F, viewer.suppress = F)
+
+#' 
