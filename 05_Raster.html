@@ -380,7 +380,8 @@ library(rgeos)
 library(maptools)
 library(rgdal)
 library(raster)
-library(rasterVis)  #visualization library for raster</code></pre>
+library(rasterVis)  #visualization library for raster
+library(sf)</code></pre>
 </div>
 <div id="point-data" class="section level1">
 <h1><span class="header-section-number">2</span> Point data</h1>
@@ -392,8 +393,8 @@ library(rasterVis)  #visualization library for raster</code></pre>
 )
 str(coords)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    100 obs. of  2 variables:
-##  $ x: num  1.996 0.103 0.239 0.83 -0.323 ...
-##  $ y: num  -0.421 -1.103 0.222 -0.753 -0.833 ...</code></pre>
+##  $ x: num  1.015 -0.766 -1.031 -1.128 -1.285 ...
+##  $ y: num  -0.0538 0.4665 1.6766 1.3182 -0.7389 ...</code></pre>
 <pre class="r"><code>plot(coords)</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-4-1.png" /><!-- --></p>
 </div>
@@ -403,11 +404,11 @@ str(coords)</code></pre>
 <pre class="r"><code>sp = SpatialPoints(coords)
 str(sp)</code></pre>
 <pre><code>## Formal class &#39;SpatialPoints&#39; [package &quot;sp&quot;] with 3 slots
-##   ..@ coords     : num [1:100, 1:2] 1.996 0.103 0.239 0.83 -0.323 ...
+##   ..@ coords     : num [1:100, 1:2] 1.015 -0.766 -1.031 -1.128 -1.285 ...
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : NULL
 ##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
-##   ..@ bbox       : num [1:2, 1:2] -2.29 -1.83 2.37 2.35
+##   ..@ bbox       : num [1:2, 1:2] -3.11 -2.83 2.84 3.11
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
 ##   .. .. ..$ : chr [1:2] &quot;min&quot; &quot;max&quot;
@@ -419,13 +420,11 @@ str(sp)</code></pre>
 <p>First generate a dataframe (analagous to the <em>attribute table</em> in a shapefile)</p>
 <pre class="r"><code>data=data.frame(ID=1:100,group=letters[1:20])
 head(data)</code></pre>
-<pre><code>##   ID group
-## 1  1     a
-## 2  2     b
-## 3  3     c
-## 4  4     d
-## 5  5     e
-## 6  6     f</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["int"],"align":["right"]},{"label":["group"],"name":[2],"type":["fctr"],"align":["left"]}],"data":[{"1":"1","2":"a","_rn_":"1"},{"1":"2","2":"b","_rn_":"2"},{"1":"3","2":"c","_rn_":"3"},{"1":"4","2":"d","_rn_":"4"},{"1":"5","2":"e","_rn_":"5"},{"1":"6","2":"f","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <p>Combine the coordinates with the data</p>
 <pre class="r"><code>spdf = SpatialPointsDataFrame(coords, data)
 spdf = SpatialPointsDataFrame(sp, data)
@@ -436,11 +435,11 @@ str(spdf)</code></pre>
 ##   .. ..$ ID   : int [1:100] 1 2 3 4 5 6 7 8 9 10 ...
 ##   .. ..$ group: Factor w/ 20 levels &quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
 ##   ..@ coords.nrs : num(0) 
-##   ..@ coords     : num [1:100, 1:2] 1.996 0.103 0.239 0.83 -0.323 ...
+##   ..@ coords     : num [1:100, 1:2] 1.015 -0.766 -1.031 -1.128 -1.285 ...
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : NULL
 ##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
-##   ..@ bbox       : num [1:2, 1:2] -2.29 -1.83 2.37 2.35
+##   ..@ bbox       : num [1:2, 1:2] -3.11 -2.83 2.84 3.11
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
 ##   .. .. ..$ : chr [1:2] &quot;min&quot; &quot;max&quot;
@@ -457,11 +456,11 @@ str(spdf)</code></pre>
 ##   .. ..$ ID   : int [1:100] 1 2 3 4 5 6 7 8 9 10 ...
 ##   .. ..$ group: Factor w/ 20 levels &quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
 ##   ..@ coords.nrs : num(0) 
-##   ..@ coords     : num [1:100, 1:2] 1.996 0.103 0.239 0.83 -0.323 ...
+##   ..@ coords     : num [1:100, 1:2] 1.015 -0.766 -1.031 -1.128 -1.285 ...
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : NULL
 ##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
-##   ..@ bbox       : num [1:2, 1:2] -2.29 -1.83 2.37 2.35
+##   ..@ bbox       : num [1:2, 1:2] -3.11 -2.83 2.84 3.11
 ##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. .. ..$ : chr [1:2] &quot;x&quot; &quot;y&quot;
 ##   .. .. ..$ : chr [1:2] &quot;min&quot; &quot;max&quot;
@@ -473,7 +472,7 @@ str(spdf)</code></pre>
 <pre class="r"><code>subset(spdf, group==&quot;a&quot;)</code></pre>
 <pre><code>## class       : SpatialPointsDataFrame 
 ## features    : 5 
-## extent      : -1.589283, 1.995578, -0.4209843, 1.726206  (xmin, xmax, ymin, ymax)
+## extent      : -1.108746, 2.843913, -1.01525, 1.008464  (xmin, xmax, ymin, ymax)
 ## coord. ref. : NA 
 ## variables   : 2
 ## names       : ID, group 
@@ -483,7 +482,7 @@ str(spdf)</code></pre>
 <pre class="r"><code>spdf[spdf$group==&quot;a&quot;,]</code></pre>
 <pre><code>## class       : SpatialPointsDataFrame 
 ## features    : 5 
-## extent      : -1.589283, 1.995578, -0.4209843, 1.726206  (xmin, xmax, ymin, ymax)
+## extent      : -1.108746, 2.843913, -1.01525, 1.008464  (xmin, xmax, ymin, ymax)
 ## coord. ref. : NA 
 ## variables   : 2
 ## names       : ID, group 
@@ -624,8 +623,16 @@ str(meuse)</code></pre>
 <li><code>theme</code>: Visual defaults (background, grids, axes, typeface, colors, etc.)</li>
 </ol>
 <pre class="r"><code># Old Faithful Geyser Data on duration and waiting times.
-library(&quot;MASS&quot;)
-data(geyser)
+library(&quot;MASS&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:raster&#39;:
+## 
+##     area, select</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre class="r"><code>data(geyser)
 m &lt;- ggplot(geyser, aes(x = duration, y = waiting)) # define data
 m + # reference the data
   geom_point() +  # add points
@@ -661,8 +668,11 @@ m + # reference the data
 <pre class="r"><code>getData(&quot;ISO3&quot;)%&gt;%
   as.data.frame%&gt;%
   filter(NAME==&quot;South Africa&quot;)</code></pre>
-<pre><code>##   ISO3         NAME
-## 1  ZAF South Africa</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ISO3"],"name":[1],"type":["chr"],"align":["left"]},{"label":["NAME"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"ZAF","2":"South Africa"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <blockquote>
 <p>Note that <code>%&gt;%</code> is a <em>pipe</em>, defined by the <code>dplyr</code> package that says ’Use the previous thing as the first argument in this function. So this is equivalent to <code>temp1 = getData(&quot;ISO3&quot;)</code> followed by <code>temp2 = as.data.frame(temp1)</code> followed by <code>output=filter(temp2,NAME==South Africa')</code>.</p>
 </blockquote>
@@ -674,36 +684,11 @@ m + # reference the data
 <div id="check-out-attribute-table" class="section level3">
 <h3><span class="header-section-number">3.2.1</span> Check out attribute table</h3>
 <pre class="r"><code>za@data</code></pre>
-<pre><code>##   OBJECTID ID_0 ISO       NAME_0 ID_1        NAME_1 HASC_1 CCN_1 CCA_1
-## 1        1  211 ZAF South Africa    1  Eastern Cape  ZA.EC    NA    EC
-## 2        2  211 ZAF South Africa    2    Free State  ZA.FS    NA    FS
-## 3        3  211 ZAF South Africa    3       Gauteng  ZA.GT    NA    GT
-## 4        4  211 ZAF South Africa    4 KwaZulu-Natal  ZA.NL    NA   KZN
-## 5        5  211 ZAF South Africa    5       Limpopo  ZA.NP    NA   LIM
-## 6        6  211 ZAF South Africa    6    Mpumalanga  ZA.MP    NA    MP
-## 7        7  211 ZAF South Africa    7    North West  ZA.NW    NA    NW
-## 8        8  211 ZAF South Africa    8 Northern Cape  ZA.NC    NA    NC
-## 9        9  211 ZAF South Africa    9  Western Cape  ZA.WC    NA    WC
-##      TYPE_1 ENGTYPE_1 NL_NAME_1
-## 1 Provinsie  Province          
-## 2 Provinsie  Province          
-## 3 Provinsie  Province          
-## 4 Provinsie  Province          
-## 5 Provinsie  Province          
-## 6 Provinsie  Province          
-## 7 Provinsie  Province          
-## 8 Provinsie  Province          
-## 9 Provinsie  Province          
-##                                                   VARNAME_1
-## 1                                                  Oos-Kaap
-## 2                                Orange Free State|Vrystaat
-## 3                               Pretoria/Witwatersrand/Vaal
-## 4                                        Natal and Zululand
-## 5 Noordelike Provinsie|Northern Transvaal|Northern Province
-## 6                                         Eastern Transvaal
-## 7                                       North-West|Noordwes
-## 8                                                Noord-Kaap
-## 9                                                  Wes-Kaap</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["OBJECTID"],"name":[1],"type":["int"],"align":["right"]},{"label":["ID_0"],"name":[2],"type":["int"],"align":["right"]},{"label":["ISO"],"name":[3],"type":["chr"],"align":["left"]},{"label":["NAME_0"],"name":[4],"type":["chr"],"align":["left"]},{"label":["ID_1"],"name":[5],"type":["int"],"align":["right"]},{"label":["NAME_1"],"name":[6],"type":["chr"],"align":["left"]},{"label":["HASC_1"],"name":[7],"type":["chr"],"align":["left"]},{"label":["CCN_1"],"name":[8],"type":["int"],"align":["right"]},{"label":["CCA_1"],"name":[9],"type":["chr"],"align":["left"]},{"label":["TYPE_1"],"name":[10],"type":["chr"],"align":["left"]},{"label":["ENGTYPE_1"],"name":[11],"type":["chr"],"align":["left"]},{"label":["NL_NAME_1"],"name":[12],"type":["chr"],"align":["left"]},{"label":["VARNAME_1"],"name":[13],"type":["chr"],"align":["left"]}],"data":[{"1":"1","2":"211","3":"ZAF","4":"South Africa","5":"1","6":"Eastern Cape","7":"ZA.EC","8":"NA","9":"EC","10":"Provinsie","11":"Province","12":"","13":"Oos-Kaap"},{"1":"2","2":"211","3":"ZAF","4":"South Africa","5":"2","6":"Free State","7":"ZA.FS","8":"NA","9":"FS","10":"Provinsie","11":"Province","12":"","13":"Orange Free State|Vrystaat"},{"1":"3","2":"211","3":"ZAF","4":"South Africa","5":"3","6":"Gauteng","7":"ZA.GT","8":"NA","9":"GT","10":"Provinsie","11":"Province","12":"","13":"Pretoria/Witwatersrand/Vaal"},{"1":"4","2":"211","3":"ZAF","4":"South Africa","5":"4","6":"KwaZulu-Natal","7":"ZA.NL","8":"NA","9":"KZN","10":"Provinsie","11":"Province","12":"","13":"Natal and Zululand"},{"1":"5","2":"211","3":"ZAF","4":"South Africa","5":"5","6":"Limpopo","7":"ZA.NP","8":"NA","9":"LIM","10":"Provinsie","11":"Province","12":"","13":"Noordelike Provinsie|Northern Transvaal|Northern Province"},{"1":"6","2":"211","3":"ZAF","4":"South Africa","5":"6","6":"Mpumalanga","7":"ZA.MP","8":"NA","9":"MP","10":"Provinsie","11":"Province","12":"","13":"Eastern Transvaal"},{"1":"7","2":"211","3":"ZAF","4":"South Africa","5":"7","6":"North West","7":"ZA.NW","8":"NA","9":"NW","10":"Provinsie","11":"Province","12":"","13":"North-West|Noordwes"},{"1":"8","2":"211","3":"ZAF","4":"South Africa","5":"8","6":"Northern Cape","7":"ZA.NC","8":"NA","9":"NC","10":"Provinsie","11":"Province","12":"","13":"Noord-Kaap"},{"1":"9","2":"211","3":"ZAF","4":"South Africa","5":"9","6":"Western Cape","7":"ZA.WC","8":"NA","9":"WC","10":"Provinsie","11":"Province","12":"","13":"Wes-Kaap"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <pre class="r"><code>za=subset(za,NAME_1==&quot;Eastern Cape&quot;)
 plot(za)</code></pre>
 <div class="well">
@@ -736,9 +721,8 @@ plot(country)</code></pre>
 <li><code>rasterBrick</code>: Multiple Bands of <em>same</em> thing.</li>
 </ul>
 <p>Normally, you’ll obtain rasters data by downloading it from somewhere (e.g. global climate data below), but to get a better understanding of rasters, let’s build one from scratch.</p>
-<pre class="r"><code>x &lt;- raster()</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code>x</code></pre>
+<pre class="r"><code>x &lt;- raster()
+x</code></pre>
 <pre><code>## class       : RasterLayer 
 ## dimensions  : 180, 360, 64800  (nrow, ncol, ncell)
 ## resolution  : 1, 1  (x, y)
@@ -815,9 +799,8 @@ ncol(x)</code></pre>
 </div>
 <div id="raster-data-storage" class="section level2">
 <h2><span class="header-section-number">4.2</span> Raster data storage</h2>
-<pre class="r"><code>r &lt;- raster(ncol=10, nrow=10)</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code>ncell(r)</code></pre>
+<pre class="r"><code>r &lt;- raster(ncol=10, nrow=10)
+ncell(r)</code></pre>
 <pre><code>## [1] 100</code></pre>
 <p>But it is an empty raster</p>
 <pre class="r"><code>hasValues(r)</code></pre>
@@ -840,17 +823,12 @@ hasValues(r)</code></pre>
 Show Solution
 </button>
 <div id="demo2" class="collapse">
-<pre class="r"><code>x=raster(nrow=100,ncol=50,vals=rnorm(100*50))</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code># OR
-x= raster(nrow=100,ncol=50)</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
-<pre class="r"><code>values(x)= rnorm(5000)
+<pre class="r"><code>x=raster(nrow=100,ncol=50,vals=rnorm(100*50))
+# OR
+x= raster(nrow=100,ncol=50)
+values(x)= rnorm(5000)
 
 plot(x)</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-32-1.png" /><!-- --></p>
 </div>
 </div>
@@ -868,22 +846,16 @@ plot(x)</code></pre>
 <h2><span class="header-section-number">4.4</span> Raster Plotting</h2>
 <p>Plotting is easy (but slow) with <code>plot</code>.</p>
 <pre class="r"><code>plot(r, main=&#39;Raster with 100 cells&#39;)</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
 <div id="ggplot-and-rastervis" class="section level3">
 <h3><span class="header-section-number">4.4.1</span> ggplot and rasterVis</h3>
 <p>rasterVis package has <code>gplot()</code> for plotting raster data in the <code>ggplot()</code> framework.</p>
 <pre class="r"><code>gplot(r,maxpixels=50000)+ # reference the data
   geom_raster(aes(fill=value)) # cell&#39;s data value determines its color</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
 <p>Adjust <code>maxpixels</code> for faster plotting of large datasets.</p>
 <pre class="r"><code>gplot(r,maxpixels=10)+
   geom_raster(aes(fill=value))</code></pre>
-<pre><code>## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files
-## NOTE: rgdal::checkCRSArgs: no proj_defs.dat in PROJ.4 shared files</code></pre>
 <p><img src="05_Raster_files/figure-html/unnamed-chunk-36-1.png" /><!-- --></p>
 <!-- Can use all the `ggplot` color ramps, etc. -->
 <!-- ```{r} -->
@@ -1039,7 +1011,7 @@ inMemory(clim)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 <pre class="r"><code>## How big is it?
 object.size(clim)</code></pre>
-<pre><code>## 233840 bytes</code></pre>
+<pre><code>## 245688 bytes</code></pre>
 <pre class="r"><code>## can we work with it directly in RAM?
 canProcessInMemory(clim)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
@@ -1166,7 +1138,7 @@ plot(pts);axis(1);axis(2)</code></pre>
 head(pts_data)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["bio4"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"12.7","3":"12.6","4":"2.8","5":"1114.2","_rn_":"1"},{"1":"2","2":"3.1","3":"8.4","4":"2.5","5":"838.5","_rn_":"2"},{"1":"3","2":"23.0","3":"11.6","4":"7.0","5":"90.5","_rn_":"3"},{"1":"4","2":"2.9","3":"15.2","4":"3.1","5":"1098.9","_rn_":"4"},{"1":"5","2":"11.8","3":"8.7","4":"3.2","5":"642.8","_rn_":"5"},{"1":"6","2":"23.7","3":"13.4","4":"6.2","5":"259.9","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ID"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["bio1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["bio2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["bio3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["bio4"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"25.6","3":"15.1","4":"6.9","5":"139.8","_rn_":"1"},{"1":"2","2":"-1.3","3":"7.9","4":"2.5","5":"728.0","_rn_":"2"},{"1":"3","2":"-22.7","3":"7.3","4":"2.0","5":"1055.5","_rn_":"3"},{"1":"4","2":"-18.7","3":"7.1","4":"1.8","5":"1136.7","_rn_":"4"},{"1":"5","2":"-14.4","3":"6.7","4":"1.5","5":"1377.1","_rn_":"5"},{"1":"6","2":"8.2","3":"11.6","4":"2.9","5":"971.1","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <blockquote>
@@ -1413,6 +1385,138 @@ Things to consider:
 * Use of external programs (e.g. GDAL)
 * Use of external GIS viewer (e.g. QGIS)
 -->
+</div>
+</div>
+<div id="sf-package" class="section level1">
+<h1><span class="header-section-number">6</span> sf Package</h1>
+<p><img src="05_assets/sf.jpg" alt="alt text" width="70%"></p>
+<div id="why-sf" class="section level2">
+<h2><span class="header-section-number">6.1</span> Why sf?</h2>
+<p>The <code>sf</code> package is a fairly new (~2 years) tool for the handling and processing of shapefiles and other vector data. Why use sf when there are several other packages with similar functionality? Three very good reasons to do so:</p>
+<ul>
+<li>integration</li>
+<li>piping</li>
+<li>speed</li>
+</ul>
+</div>
+<div id="integration" class="section level2">
+<h2><span class="header-section-number">6.2</span> Integration</h2>
+<p><code>sf</code> treats spatial objects as a special type of data frame. This is a familiar type of data format to most R users, and can be manipulated as such. Each row of the data frame corresponds to a particular geometry (e.g., polygon or point) and each column corresponds to a particular attribute of the data.</p>
+<pre class="r"><code>countries &lt;- st_read(&quot;World/TM_WORLD_BORDERS.shp&quot;)</code></pre>
+<pre><code>## Reading layer `TM_WORLD_BORDERS&#39; from data source `/Users/darwin/Dropbox/GitHub/YaleBGCCourses/World/TM_WORLD_BORDERS.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 242 features and 12 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -180 ymin: -90 xmax: 180 ymax: 83.6236
+## epsg (SRID):    4326
+## proj4string:    +proj=longlat +datum=WGS84 +no_defs</code></pre>
+<pre class="r"><code>head(countries)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["ISO3"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["FIPS"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["ISO2"],"name":[3],"type":["fctr"],"align":["left"]},{"label":["UN"],"name":[4],"type":["int"],"align":["right"]},{"label":["NAME"],"name":[5],"type":["fctr"],"align":["left"]},{"label":["AREA"],"name":[6],"type":["int"],"align":["right"]},{"label":["POP2005"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["REGION"],"name":[8],"type":["int"],"align":["right"]},{"label":["LON"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["LAT"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["SUBREGION"],"name":[11],"type":["int"],"align":["right"]},{"label":["SUBREGION_"],"name":[12],"type":["fctr"],"align":["left"]},{"label":["geometry"],"name":[13],"type":["S3: sfc_MULTIPOLYGON"],"align":["right"]}],"data":[{"1":"ABW","2":"AA","3":"AW","4":"533","5":"Aruba","6":"0","7":"102897","8":"19","9":"-69.977","10":"12.517","11":"419","12":"Latin America and the Caribbean","13":"<S3: sfc_MULTIPOLYGON>","_rn_":"1"},{"1":"AFG","2":"AF","3":"AF","4":"4","5":"Afghanistan","6":"65209","7":"25067407","8":"142","9":"65.216","10":"33.677","11":"34","12":"Southern Asia","13":"<S3: sfc_MULTIPOLYGON>","_rn_":"2"},{"1":"AGO","2":"AO","3":"AO","4":"24","5":"Angola","6":"124670","7":"16095214","8":"2","9":"17.544","10":"-12.296","11":"202","12":"Sub-Saharan Africa","13":"<S3: sfc_MULTIPOLYGON>","_rn_":"3"},{"1":"AIA","2":"AV","3":"AI","4":"660","5":"Anguilla","6":"0","7":"12256","8":"19","9":"-63.032","10":"18.237","11":"419","12":"Latin America and the Caribbean","13":"<S3: sfc_MULTIPOLYGON>","_rn_":"4"},{"1":"ALA","2":"NA","3":"AX","4":"248","5":"Åland Islands","6":"0","7":"0","8":"150","9":"19.952","10":"60.198","11":"154","12":"Northern Europe","13":"<S3: sfc_MULTIPOLYGON>","_rn_":"5"},{"1":"ALB","2":"AL","3":"AL","4":"8","5":"Albania","6":"2740","7":"3153731","8":"150","9":"20.068","10":"41.143","11":"39","12":"Southern Europe","13":"<S3: sfc_MULTIPOLYGON>","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p><code>sf</code> integrates well with packages in the Hadleyverse (e.g., <code>ggplot2</code>, <code>dplyr</code>, <code>tidyr</code>, etc.). Spatial objects can be manipulated and summarized in the same way as data frames.</p>
+<pre class="r"><code>we &lt;- filter(countries, SUBREGION_ == &quot;Western Europe&quot;)
+plot(we[&#39;NAME&#39;])</code></pre>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-73-1.png" /><!-- --></p>
+<p>Everything you need is integrated into one package: reading, writing, and geometric manipulations can all be done directly with <code>sf</code> functions. An entire separate library of different spatial S4 object classes (e.g., <code>SpatialPolygons</code>, <code>SpatialPoints</code>, <code>SpatialLines</code> in the <code>sp</code> package) is no longer needed.</p>
+</div>
+<div id="piping" class="section level2">
+<h2><span class="header-section-number">6.3</span> Piping</h2>
+<p><code>sf</code> really shines with piping.</p>
+<pre class="r"><code># calculate population density of each subregion
+pop.dens &lt;- countries %&gt;%
+  group_by(SUBREGION_) %&gt;%
+  summarise(Population = sum(POP2005),
+            Area = sum(AREA),
+            Density = Population/Area, 
+            do_union = F)
+pop.dens</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["SUBREGION_"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Population"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Area"],"name":[3],"type":["int"],"align":["right"]},{"label":["Density"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["geometry"],"name":[5],"type":["S3: sfc_MULTIPOLYGON"],"align":["right"]}],"data":[{"1":"Australia and New Zealand","2":"24407320","3":"795030","4":"30.69987","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Central Asia","2":"58390758","3":"392679","4":"148.69845","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Eastern Asia","2":"1514941747","3":"1147757","4":"1319.91506","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Eastern Europe","2":"297775434","3":"1806489","4":"164.83656","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Latin America and the Caribbean","2":"511045107","3":"2017933","4":"253.25177","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Melanesia","2":"7819731","3":"52959","4":"147.65632","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Micronesia","2":"335086","3":"200","4":"1675.43000","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Northern Africa","2":"189562020","3":"811439","4":"233.61216","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Northern America","2":"332244951","3":"1866297","4":"178.02362","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Northern Europe","2":"96221438","3":"164179","4":"586.07640","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Polynesia","2":"645431","3":"809","4":"797.81335","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"South-eastern Asia","2":"552571494","3":"436035","4":"1267.26408","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Southern Asia","2":"1449446587","3":"641746","4":"2258.59855","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Southern Europe","2":"93425671","3":"119396","4":"782.48577","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Sub-Saharan Africa","2":"679185941","3":"2124579","4":"319.68025","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Western Asia","2":"184530104","3":"480078","4":"384.37526","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"Western Europe","2":"171881635","3":"105554","4":"1628.37633","5":"<S3: sfc_MULTIPOLYGON>"},{"1":"NA","2":"0","3":"0","4":"NaN","5":"<S3: sfc_MULTIPOLYGON>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>plot(pop.dens[&#39;Density&#39;])</code></pre>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-74-1.png" /><!-- --></p>
+<pre class="r"><code># pull out Canada multipolygon, split into individual polygons
+canada &lt;- countries %&gt;%
+  filter(NAME == &quot;Canada&quot;) %&gt;%
+  st_cast(&quot;POLYGON&quot;) %&gt;%
+  mutate(ID = row_number())</code></pre>
+<pre><code>## Warning in st_cast.sf(., &quot;POLYGON&quot;): repeating attributes for all sub-
+## geometries for which they may not be constant</code></pre>
+<pre class="r"><code>plot(canada[&#39;ID&#39;])</code></pre>
+<p><img src="05_Raster_files/figure-html/unnamed-chunk-75-1.png" /><!-- --></p>
+</div>
+<div id="speed" class="section level2">
+<h2><span class="header-section-number">6.4</span> Speed</h2>
+<p><code>sf</code> is <em>much</em> faster at reading and performing spatial tasks.</p>
+<pre class="r"><code>library(microbenchmark)
+
+test.sf &lt;- microbenchmark(
+  st_read(&quot;World/TM_WORLD_BORDERS.shp&quot;, quiet = T), 
+  times = 5)
+test.sp &lt;- microbenchmark(
+  rgdal::readOGR(&quot;World/TM_WORLD_BORDERS.shp&quot;, verbose = F),
+  times = 5)
+
+print(rbind(test.sf, test.sp))</code></pre>
+<pre><code>## Unit: milliseconds
+##                                                       expr       min
+##           st_read(&quot;World/TM_WORLD_BORDERS.shp&quot;, quiet = T)  28.18283
+##  rgdal::readOGR(&quot;World/TM_WORLD_BORDERS.shp&quot;, verbose = F) 761.96160
+##         lq      mean    median        uq       max neval
+##   28.25744  31.41285  28.73009  30.58042  41.31348     5
+##  774.38748 783.03476 788.61361 790.25213 799.95897     5</code></pre>
+</div>
+<div id="some-familiar-functions" class="section level2">
+<h2><span class="header-section-number">6.5</span> Some familiar functions</h2>
+<p>Lots of functionality:</p>
+<ul>
+<li>Unions and intersections:
+<ul>
+<li><code>st_union</code></li>
+<li><code>st_difference</code></li>
+<li><code>st_intersection</code></li>
+</ul></li>
+<li>Changing and setting projections:
+<ul>
+<li><code>st_crs</code></li>
+<li><code>st_transform</code></li>
+</ul></li>
+<li>Spatial manipulation:
+<ul>
+<li><code>st_buffer</code></li>
+<li><code>st_convex_hull</code></li>
+<li><code>st_centroid</code></li>
+</ul></li>
+<li>Data manipulation:
+<ul>
+<li><code>filter</code></li>
+<li><code>group_by</code></li>
+<li><code>mutate</code></li>
+<li><code>select</code></li>
+<li><code>summarise</code></li>
+<li><code>gather</code></li>
+<li><code>spread</code></li>
+</ul></li>
+<li>Much more!</li>
+</ul>
+</div>
+<div id="limitations-and-compatibility" class="section level2">
+<h2><span class="header-section-number">6.6</span> Limitations and compatibility</h2>
+<p><code>sf</code> is fairly new, and several other spatial packages have not yet been updated to integrate with it. Some may never be updated. When working with other packages, it may be necessary to convert <code>sf</code> objects into <code>Spatial</code> objects for backward compatibility.</p>
+<pre class="r"><code>class(countries)</code></pre>
+<pre><code>## [1] &quot;sf&quot;         &quot;data.frame&quot;</code></pre>
+<pre class="r"><code>countries.sp &lt;- as(countries, &quot;Spatial&quot;)
+class(countries.sp)</code></pre>
+<pre><code>## [1] &quot;SpatialPolygonsDataFrame&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;sp&quot;</code></pre>
+<p>The <code>raster</code> package contains methods for <code>sf</code> objects; <code>rasterVis</code> currently does not, but that is likely to change in the near future.</p>
+<p>The <code>lwgeom</code> package extends <code>sf</code> functionality and provides several tools for geodetic calculations (i.e., spherical and ellipsoidal geometry).</p>
 </div>
 </div>
 
