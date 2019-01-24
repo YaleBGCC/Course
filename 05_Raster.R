@@ -970,6 +970,11 @@ print(rbind(test.sf, test.sp))
 #'     - `summarise`
 #'     - `gather`
 #'     - `spread`
+#' - Raster compatibility:
+#'     - `raster::rasterize`
+#'     - `raster::mask`
+#'     - `raster::crop`
+#'     - `raster::extract`
 #' - Much more!
 #' 
 #' ## Compatibility

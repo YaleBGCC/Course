@@ -1016,6 +1016,11 @@ Lots of functionality:
     - `summarise`
     - `gather`
     - `spread`
+- Raster compatibility:
+    - `raster::rasterize`
+    - `raster::mask`
+    - `raster::crop`
+    - `raster::extract`
 - Much more!
 
 ## Compatibility
