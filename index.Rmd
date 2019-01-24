@@ -11,7 +11,7 @@ EEB 713, Spring 2019
 <a href="https://scottrinnan.wordpress.com"> Scott Rinnan</a><br>
 <a > Brett Jesmer</a><br>
 <a > Gabriel Reygondeau</a><br>
-<a > Ruth Oliver</a><br>
+<a href="https://rutholiver.weebly.com/"> Ruth Oliver</a><br>
 
 Department of Ecology and Evolutionary Biology <br> 
 Yale University, New Haven, CT
