@@ -78,7 +78,7 @@ coordinates(data) = cbind(coords$x, coords$y)
 
 #' 
 ## ------------------------------------------------------------------------
-str(spdf)
+str(data)
 
 #' 
 #' ## Subset data
@@ -280,17 +280,20 @@ str(x)
 ## ---- echo=T, results=T--------------------------------------------------
 x <- raster(ncol=36, nrow=18, xmn=-1000, xmx=1000, ymn=-100, ymx=900)
 res(x)
-res(x) <- 100
-res(x)
 ncol(x)
 
 #' 
 ## ------------------------------------------------------------------------
-# change the numer of columns (affects resolution)
-ncol(x) <- 18
-ncol(x)
-res(x)
+extent(x)
+head(values(x))
 
+#' 
+#' <!-- ```{r} -->
+#' <!-- # change the numer of columns (affects resolution) -->
+#' <!-- ncol(x) <- 18 -->
+#' <!-- ncol(x) -->
+#' <!-- res(x) -->
+#' <!-- ``` -->
 #' 
 #' ## Raster data storage
 #' 

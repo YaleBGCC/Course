@@ -137,7 +137,7 @@ coordinates(data) = cbind(coords$x, coords$y)
 
 
 ```r
-str(spdf)
+str(data)
 ```
 
 ```
@@ -149,10 +149,10 @@ str(spdf)
 ##   ..@ coords     : num [1:100, 1:2] 1.996 0.103 0.239 0.83 -0.323 ...
 ##   .. ..- attr(*, "dimnames")=List of 2
 ##   .. .. ..$ : NULL
-##   .. .. ..$ : chr [1:2] "x" "y"
+##   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
 ##   ..@ bbox       : num [1:2, 1:2] -2.29 -1.83 2.37 2.35
 ##   .. ..- attr(*, "dimnames")=List of 2
-##   .. .. ..$ : chr [1:2] "x" "y"
+##   .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
 ##   .. .. ..$ : chr [1:2] "min" "max"
 ##   ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slot
 ##   .. .. ..@ projargs: chr NA
@@ -587,40 +587,40 @@ res(x)
 ```
 
 ```r
-res(x) <- 100
-res(x)
-```
-
-```
-## [1] 100 100
-```
-
-```r
 ncol(x)
 ```
 
 ```
-## [1] 20
+## [1] 36
 ```
 
 
 ```r
-# change the numer of columns (affects resolution)
-ncol(x) <- 18
-ncol(x)
+extent(x)
 ```
 
 ```
-## [1] 18
+## class       : Extent 
+## xmin        : -1000 
+## xmax        : 1000 
+## ymin        : -100 
+## ymax        : 900
 ```
 
 ```r
-res(x)
+head(values(x))
 ```
 
 ```
-## [1] 111.1111 100.0000
+## [1] NA NA NA NA NA NA
 ```
+
+<!-- ```{r} -->
+<!-- # change the numer of columns (affects resolution) -->
+<!-- ncol(x) <- 18 -->
+<!-- ncol(x) -->
+<!-- res(x) -->
+<!-- ``` -->
 
 ## Raster data storage
 
