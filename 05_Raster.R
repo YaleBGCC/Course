@@ -972,7 +972,7 @@ print(rbind(test.sf, test.sp))
 #'     - `spread`
 #' - Much more!
 #' 
-#' ## Limitations and compatibility
+#' ## Compatibility
 #' 
 #' `sf` is fairly new, and several other spatial packages have not yet been updated to integrate with it. Some may never be updated. When working with other packages, it may be necessary to convert `sf` objects into `Spatial` objects for backward compatibility.
 #' 
@@ -985,3 +985,12 @@ class(countries.sp)
 #' The `raster` package contains methods for `sf` objects; `rasterVis` currently does not, but that is likely to change in the near future.
 #' 
 #' The `lwgeom` package extends `sf` functionality and provides several tools for geodetic calculations (i.e., spherical and ellipsoidal geometry).
+#' 
+#' The `mapview` package creates interactive maps in html using the popular `leaflet` package.
+#' 
+## ---- fig.height=3, fig.width=3------------------------------------------
+library(mapview)
+
+mapView(countries["NAME"], legend = F, viewer.suppress = F)
+
+#' 
