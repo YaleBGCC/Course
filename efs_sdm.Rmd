@@ -10,6 +10,20 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<div>
+<iframe src="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf" width="100%" height="700px"> </iframe>
+</div>
+
+<div>
+<object data="efs_sdm_assets/YaleCoursesSDM2.pdf" type="application/pdf" width="100%" height="600px"> 
+  <p>It appears you don't have a PDF plugin for this browser.
+   No biggie... you can <a href="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf">click here to
+  download the PDF file.</a></p>  
+ </object>
+ </div>
+<p><a href="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf">Download the PDF of the presentation</a></p> 
+
+
 ## Lab Exercise steps
 
 We will perform a regression-based species distribution analysis using avian occurrence data (Parus major), and landsat-derived remote-sensing data.

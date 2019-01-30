@@ -8,6 +8,20 @@ output: html_document
 
 
 
+<div>
+<iframe src="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf" width="100%" height="700px"> </iframe>
+</div>
+
+<div>
+<object data="efs_sdm_assets/YaleCoursesSDM2.pdf" type="application/pdf" width="100%" height="600px"> 
+  <p>It appears you don't have a PDF plugin for this browser.
+   No biggie... you can <a href="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf">click here to
+  download the PDF file.</a></p>  
+ </object>
+ </div>
+<p><a href="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf">Download the PDF of the presentation</a></p> 
+
+
 ## Lab Exercise steps
 
 We will perform a regression-based species distribution analysis using avian occurrence data (Parus major), and landsat-derived remote-sensing data.
@@ -252,7 +266,9 @@ plot(vario.mod1, cex=1.3, col=1,xlab="Distance (km)")
 ```
 
 ![](efs_sdm_files/figure-html/vario model-1.png)<!-- -->
-Or we can look for patterns inspecific directions:
+
+Or we can look for patterns in specific directions:
+
 
 ```r
 vario.mod1.4dir <- gstat::variogram(rstandard(sdm)~1, spdata,alpha=c(0,45, 90, 135)) ## alpha indicates direction in degrees
@@ -260,6 +276,7 @@ plot(vario.mod1.4dir, cex=1.3, col=1,xlab="Distance (km)")
 ```
 
 ![](efs_sdm_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
 **Are your variograms relatively flat? Is there evidence of an upward slope before the plot levels-off? Is it only in a particular direction?**
 
 If your residuals look ok, have a look at the estimates of your model.
@@ -451,7 +468,7 @@ head(dat2)  ##compare to full model metrics
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3223467","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3399309","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3331185","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.4019721","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3351660","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3257718","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3129802","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3338436","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3238877","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.3986432","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3360395","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3241310","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -469,7 +486,7 @@ mod1.accX[c(1, 4:5, 7:8)]  # examine accuracies
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.10024068"},{"1":"mod1.10f","2":"0.4472574","3":"0.5903756","4":"0.5301896","5":"0.03763297"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.1002407"},{"1":"mod1.10f","2":"0.4493671","3":"0.5938967","4":"0.5300001","5":"0.0432638"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 ###External validation
