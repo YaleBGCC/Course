@@ -468,7 +468,7 @@ head(dat2)  ##compare to full model metrics
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3129802","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3338436","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3238877","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.3986432","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3360395","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3241310","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3122456","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3304870","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3291463","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.4044971","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3337972","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3258155","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -486,7 +486,7 @@ mod1.accX[c(1, 4:5, 7:8)]  # examine accuracies
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.1002407"},{"1":"mod1.10f","2":"0.4493671","3":"0.5938967","4":"0.5300001","5":"0.0432638"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.10024068"},{"1":"mod1.10f","2":"0.4789030","3":"0.6009390","4":"0.5321495","5":"0.07984192"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 ###External validation
@@ -609,4 +609,56 @@ plot(rfmap)
 ```
 
 ![](efs_sdm_files/figure-html/unnamed-chunk-13-9.png)<!-- -->
+
+# Homework exercise
+
+You have access to 7 grassland bird presence/absence data sets: *DICK* = dickcissel, *EAME* = eastern meadowlark, *FISP* = field sparrow, *GRSP* = grasshopper sparrow, *NOBO* = northern bobwhite quail, *RWBL* = red-winged blackbird, *WEME* = western meadowlark. For this exercise, you will select 2 species for which you will investigate the spatial scale that predicts occurrence at a sampling location.
+
+Occurrence data were based on aural point count surveys taken at various wildlife management areas across southern Nebraska during the breeding season. During a 3min period, observers would count the number of individuals of each species detected within a 500m radius. Count data were collapsed into binary 0/1 data for this exercise.
+
+Your datasets include the proportions of woodland and grassland found in multiple 'buffer' radii around each sampling site, representing different 'scales' at which landcover data might predict bird occurrence. 
+
+### General workflow:
+1. Choose 2 target species of interest.
+2. Think about what relationships these species might have with proportions of woodland and grassland in the surrounding area (e.g., linear? quadratic?).
+3. Hypothesize whether bird occurrence at a location should be influenced by very local or relatively larger-scale landcover characteristics.
+4. Try to justify the hypotheses.
+5. Think about how you would test whether your hypothesized 'scales' are the 'right' ones.
+6. Condunct the test- likely: fit a model or models including your hypothesized predictor variables for each species
+7. Were your hypotheses supported?
+
+### Homework products
+
+Come to class next week with example(s) of ways you might test which spatial scales are most informative in occupancy studies, and any possible assumptions that underly those methods. Be prepared to explain why you hypothesized that certain spatial scales might be more important than others, and whether your hypothesis was supported.
+
+### Warm-up code
+
+You might need the following packages installed and loaded:
+
+
+```r
+library(lme4)
+library(sp)
+library(rgdal)
+library(corrplot)
+library(gstat)
+library(DAAG) 
+library(PresenceAbsence)
+library(dplyr)
+```
+
+Read in some data
+
+
+```r
+#dataspp1<-read.csv("path_to_where_you_downloaded_the_data/DICK_occ.csv", sep=",",header=TRUE)
+```
+
+Look at the data structure and content using **str()** and **head()**
+
+*Route.Point* indicates the sampling location
+*detN* was the species count
+*WMA* refers to the larger Wildlife Management Area where the survey site was nested inside
+*grass###m* refers to the proportions of grassland found within a ###m radius 'buffer' around the sampling location
+*trees###m* refers to the proportions of woodland found within a ###m radius 'buffer' around the sampling location
 

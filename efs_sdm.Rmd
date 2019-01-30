@@ -432,3 +432,53 @@ rfmap <- predict(pred_stack,rf.model,type="response")# Prediction map
 plot(rfmap)
 ```
 
+# Homework exercise
+
+You have access to 7 grassland bird presence/absence data sets: *DICK* = dickcissel, *EAME* = eastern meadowlark, *FISP* = field sparrow, *GRSP* = grasshopper sparrow, *NOBO* = northern bobwhite quail, *RWBL* = red-winged blackbird, *WEME* = western meadowlark. For this exercise, you will select 2 species for which you will investigate the spatial scale that predicts occurrence at a sampling location.
+
+Occurrence data were based on aural point count surveys taken at various wildlife management areas across southern Nebraska during the breeding season. During a 3min period, observers would count the number of individuals of each species detected within a 500m radius. Count data were collapsed into binary 0/1 data for this exercise.
+
+Your datasets include the proportions of woodland and grassland found in multiple 'buffer' radii around each sampling site, representing different 'scales' at which landcover data might predict bird occurrence. 
+
+### General workflow:
+1. Choose 2 target species of interest.
+2. Think about what relationships these species might have with proportions of woodland and grassland in the surrounding area (e.g., linear? quadratic?).
+3. Hypothesize whether bird occurrence at a location should be influenced by very local or relatively larger-scale landcover characteristics.
+4. Try to justify the hypotheses.
+5. Think about how you would test whether your hypothesized 'scales' are the 'right' ones.
+6. Condunct the test- likely: fit a model or models including your hypothesized predictor variables for each species
+7. Were your hypotheses supported?
+
+### Homework products
+
+Come to class next week with example(s) of ways you might test which spatial scales are most informative in occupancy studies, and any possible assumptions that underly those methods. Be prepared to explain why you hypothesized that certain spatial scales might be more important than others, and whether your hypothesis was supported.
+
+### Warm-up code
+
+You might need the following packages installed and loaded:
+
+```{r message=F,warning=FALSE, results='hide'}
+library(lme4)
+library(sp)
+library(rgdal)
+library(corrplot)
+library(gstat)
+library(DAAG) 
+library(PresenceAbsence)
+library(dplyr)
+```
+
+Read in some data
+
+```{r}
+#dataspp1<-read.csv("path_to_where_you_downloaded_the_data/DICK_occ.csv", sep=",",header=TRUE)
+```
+
+Look at the data structure and content using **str()** and **head()**
+
+*Route.Point* indicates the sampling location
+*detN* was the species count
+*WMA* refers to the larger Wildlife Management Area where the survey site was nested inside
+*grass###m* refers to the proportions of grassland found within a ###m radius 'buffer' around the sampling location
+*trees###m* refers to the proportions of woodland found within a ###m radius 'buffer' around the sampling location
+
