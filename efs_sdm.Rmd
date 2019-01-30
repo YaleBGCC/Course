@@ -2,7 +2,10 @@
 title: "Lab 2 - Species Distribution Models"
 author: "Erica Stuber: efstuber@gmail.com"
 date: "January 31, 2019"
-output: html_document
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
 ---
 
 

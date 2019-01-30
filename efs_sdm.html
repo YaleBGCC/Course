@@ -711,7 +711,7 @@ dat2 &lt;- cbind(dat2,mod1.10f)  # bind all metrics
 head(dat2)  ##compare to full model metrics</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3094642","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3283848","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3329328","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.4085165","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3451723","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3291986","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3226062","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3390877","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3250036","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.3955140","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3304778","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3332434","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p><strong>What does it mean if your cross-validation metrics are much lower than metrics from the full model?</strong></p>
@@ -723,7 +723,7 @@ mod1.accX &lt;- cbind(mod1.accX[1:7], tss) # bind all metrics
 mod1.accX[c(1, 4:5, 7:8)]  # examine accuracies</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.10024068"},{"1":"mod1.10f","2":"0.4599156","3":"0.5974178","4":"0.5239372","5":"0.05733345"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.10024068"},{"1":"mod1.10f","2":"0.4767932","3":"0.5892019","4":"0.5229393","5":"0.06599513"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
