@@ -21,6 +21,7 @@ output: html_document
  </div>
 <p><a href="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf">Download the PDF of the presentation</a></p> 
 
+[The R Script associated with this page is available here](https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm.R).  Copy-paste into a new script with RStudio so you can follow along.  
 
 ## Lab Exercise steps
 
@@ -468,7 +469,7 @@ head(dat2)  ##compare to full model metrics
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3122456","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3304870","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3291463","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.4044971","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3337972","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3258155","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["modl"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Occur"],"name":[2],"type":["int"],"align":["right"]},{"label":["pred.within"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mod1.10f"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.glm","2":"0","3":"0.3141177","4":"0.3132913","_rn_":"1"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3249986","_rn_":"2"},{"1":"pred.glm","2":"0","3":"0.3289293","4":"0.3229551","_rn_":"3"},{"1":"pred.glm","2":"0","3":"0.4005297","4":"0.4044513","_rn_":"4"},{"1":"pred.glm","2":"0","3":"0.3412110","4":"0.3442068","_rn_":"5"},{"1":"pred.glm","2":"0","3":"0.3271410","4":"0.3353147","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -486,7 +487,7 @@ mod1.accX[c(1, 4:5, 7:8)]  # examine accuracies
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.10024068"},{"1":"mod1.10f","2":"0.4789030","3":"0.6009390","4":"0.5321495","5":"0.07984192"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["model"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sensitivity"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["specificity"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["AUC"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["tss"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"pred.within","2":"0.4957806","3":"0.6044601","4":"0.5575873","5":"0.10024068"},{"1":"mod1.10f","2":"0.4915612","3":"0.5786385","4":"0.5343409","5":"0.07019968"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 ###External validation

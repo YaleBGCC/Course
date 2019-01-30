@@ -23,6 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
  </div>
 <p><a href="https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm_assets/YaleCoursesSDM2.pdf">Download the PDF of the presentation</a></p> 
 
+[The R Script associated with this page is available here](https://raw.githubusercontent.com/YaleBGCC/Course/master/efs_sdm.R).  Copy-paste into a new script with RStudio so you can follow along.  
 
 ## Lab Exercise steps
 
