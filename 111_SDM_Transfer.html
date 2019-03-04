@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Cory Merow" />
+
+
+<title>Transfering Species Distribution Models</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="cm_yeti_bootswatch.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 66px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h2 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h3 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h4 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h5 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h6 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Ecology, Statistics, and Data Science with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Head2_Schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Course Materials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Head1_CourseContent.html">About Course Content</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Module 1: Introduction to R</li>
+    <li>
+      <a href="00_CourseIntroductionFrame.html">1.0 Course Introduction</a>
+    </li>
+    <li>
+      <a href="01_Rintro.html">1.1 First Steps</a>
+    </li>
+    <li>
+      <a href="02_DataWrangling.html">1.2 Data Wrangling</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Module 2: Spatial Analysis in R</li>
+    <li>
+      <a href="05_Raster.html">2.1 Spatial Data</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Module 3: Species Distribution Models</li>
+    <li>
+      <a href="101SDMs.html">3.1 Basic SDMS</a>
+    </li>
+    <li>
+      <a href="111_SDM_Transfer.html">3.2 Extrapolating SDMS</a>
+    </li>
+    <li class="divider"></li>
+  </ul>
+</li>
+<li>
+  <a href="Head3_Resources.html">Resources</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/cmerow/RDataScience/tree/gh-pages">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Transfering Species Distribution Models</h1>
+<h4 class="author"><em>Cory Merow</em></h4>
+
+</div>
+
+
+<!-- <div> -->
+<!-- <iframe src="05_presentation/05_Spatial.html" width="100%" height="700px"> </iframe> -->
+<!-- </div> -->
+<div>
+<object data="111_assets/SDM_Transfer.pdf" type="application/pdf" width="100%" height="600px">
+<p>
+It appears you don’t have a PDF plugin for this browser. No biggie… you can <a href="111_assets/SDM_Transfer.pdf">click here to download the PDF file.</a>
+</p>
+</object>
+</div>
+<p>
+<a href="101_assets/SDM101_Intro.pdf">Download the PDF of the presentation</a>
+</p>
+<p><a href="111_SDM_Transfer.R"><i class="fa fa-file-code-o fa-3x" aria-hidden="true"></i> The R Script associated with this page is available here</a>. Download this file and open it (or copy-paste into a new script) with RStudio so you can follow along.</p>
+<div id="setup" class="section level1">
+<h1><span class="header-section-number">1</span> Setup</h1>
+<pre class="r"><code>library(spocc)
+library(raster)
+library(sp)
+library(rgdal)
+library(ROCR)
+library(corrplot)
+library(maxnet)
+library(spThin)</code></pre>
+</div>
+<div id="a-simple-sdm" class="section level1">
+<h1><span class="header-section-number">2</span> A simple SDM</h1>
+<p>The goal of this section is to use a simple set of operations to build an SDM. There are many packages that will perform much more refined versions of these steps, at the expense that decisions are made behind the scenes, or may be obscure to the user. So before getting into fancier tools, let’s see what the bare minimum looks like.</p>
+<div id="get-presence-data" class="section level2">
+<h2><span class="header-section-number">2.1</span> Get presence data</h2>
+<p>The <code>spocc</code> package allows you to hit a number of the larger databases for presence-only data within R. They provide a number of useful pieces of metadata, if your’e into that sort of this. For this, we’re not; we just want lat and lon.</p>
+<blockquote>
+<p>Decision: You assume the database of choice has sufficiently checked for errors in biology or typos. You know what happens when you assume…</p>
+</blockquote>
+<pre class="r"><code># get presence data
+pres.tmp=spocc::occ(&#39;Alliaria petiolata&#39;,from=&#39;gbif&#39;,limit=5000) # this can be slow
+pres=pres.tmp$gbif$data[[1]][,c(&#39;longitude&#39;,&#39;latitude&#39;)]
+  # so just read in the result of me running this earlier
+#pres=read.csv(&#39;https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv&#39;)[,c(&#39;longitude&#39;,&#39;latitude&#39;)]
+pres=pres[complete.cases(pres),] # toss records without coords</code></pre>
+</div>
+<div id="get-environmental-data" class="section level2">
+<h2><span class="header-section-number">2.2</span> Get environmental data</h2>
+<p>The <code>raster</code> package has a convenience function to get some types of data. To see more about <a href="http://worldclim.org/version2">Worldclim</a></p>
+<blockquote>
+<p>Decision: Worldclim data describes the environment well in this region. The ‘bioclim’ variables are biologically relevant summaries of climate.</p>
+</blockquote>
+<pre class="r"><code># get climate data
+  # the raster package has convenience function built in for worldclim
+clim=getData(&#39;worldclim&#39;, var=&#39;bio&#39;, res=10)</code></pre>
+<p>The Bioclim variables in <code>clim.us</code> are:</p>
+<p><small></p>
+<table>
+<thead>
+<tr class="header">
+<th>Varia</th>
+<th>ble Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BIO1</td>
+<td>Annual Mean Temperature</td>
+</tr>
+<tr class="even">
+<td>BIO2</td>
+<td>Mean Diurnal Range (Mean of monthly (max temp – min temp))</td>
+</tr>
+<tr class="odd">
+<td>BIO3</td>
+<td>Isothermality (BIO2/BIO7) (* 100)</td>
+</tr>
+<tr class="even">
+<td>BIO4</td>
+<td>Temperature Seasonality (standard deviation *100)</td>
+</tr>
+<tr class="odd">
+<td>BIO5</td>
+<td>Max Temperature of Warmest Month</td>
+</tr>
+<tr class="even">
+<td>BIO6</td>
+<td>Min Temperature of Coldest Month</td>
+</tr>
+<tr class="odd">
+<td>BIO7</td>
+<td>Temperature Annual Range (BIO5-BIO6)</td>
+</tr>
+<tr class="even">
+<td>BIO8</td>
+<td>Mean Temperature of Wettest Quarter</td>
+</tr>
+<tr class="odd">
+<td>BIO9</td>
+<td>Mean Temperature of Driest Quarter</td>
+</tr>
+<tr class="even">
+<td>BIO10</td>
+<td>Mean Temperature of Warmest Quarter</td>
+</tr>
+<tr class="odd">
+<td>BIO11</td>
+<td>Mean Temperature of Coldest Quarter</td>
+</tr>
+<tr class="even">
+<td>BIO12</td>
+<td>Annual Precipitation</td>
+</tr>
+<tr class="odd">
+<td>BIO13</td>
+<td>Precipitation of Wettest Month</td>
+</tr>
+<tr class="even">
+<td>BIO14</td>
+<td>Precipitation of Driest Month</td>
+</tr>
+<tr class="odd">
+<td>BIO15</td>
+<td>Precipitation Seasonality (Coefficient of Variation)</td>
+</tr>
+<tr class="even">
+<td>BIO16</td>
+<td>Precipitation of Wettest Quarter</td>
+</tr>
+<tr class="odd">
+<td>BIO17</td>
+<td>Precipitation of Driest Quarter</td>
+</tr>
+<tr class="even">
+<td>BIO18</td>
+<td>Precipitation of Warmest Quarter</td>
+</tr>
+<tr class="odd">
+<td>BIO19</td>
+<td>Precipitation of Coldest Quarter</td>
+</tr>
+</tbody>
+</table>
+<p></small></p>
+</div>
+<div id="choose-domain" class="section level2">
+<h2><span class="header-section-number">2.3</span> Choose domain</h2>
+<p>The ‘domain’ is the region of interest. It can be a political region, a biome, a park, a watershed, etc. It should include locations where the species is present and absent. Choosing relevent locations were the species does not occur is part of the art of <em>presence-only</em> modeling.</p>
+<blockquote>
+<p>Decision: We are only asking about invasion in New England, so we constrain the domain to a bounding box around New England</p>
+</blockquote>
+<pre class="r"><code># choose domain (just the Eastern US)
+clim.us=raster::crop(clim,c(-76,-65,40,50)) # trim to a smaller region
+plot(clim.us[[1]]) # plot just the 1st variable to see domain</code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+</div>
+<div id="prep-data" class="section level2">
+<h2><span class="header-section-number">2.4</span> Prep data</h2>
+<p>Many climate variables are highly correlated with one another, which can confound statistical analyses.</p>
+<blockquote>
+<p>Decision: Correlated predictors can make it difficult to interpret model coefficients or response curves. So we’ll remove the most correlated predictores</p>
+</blockquote>
+<pre class="r"><code># check for correlated predictors
+cors=cor(values(clim.us),use=&#39;complete.obs&#39;) # evaluate correlations
+corrplot(cors,order = &quot;AOE&quot;, addCoef.col = &quot;grey&quot;,number.cex=.6) # plot correlations</code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<p>This plot nicely clumps groups of similar variables. Choose a representative variable from each clump.</p>
+<pre class="r"><code>clim=clim[[c(&quot;bio1&quot;,&quot;bio2&quot;,&quot;bio13&quot;,&quot;bio14&quot;)]] # keep just reasonably uncorrelated ones
+clim.us=clim.us[[c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio13&#39;,&#39;bio14&#39;)]] # keep just reasonably uncorrelated ones
+cors=cor(values(clim.us),use=&#39;complete.obs&#39;) # evaluate correlations
+corrplot(cors,order = &quot;AOE&quot;, addCoef.col = &quot;grey&quot;,number.cex=.6)# plot correlations</code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
+<p>Ok, tolerable. Some people advocate that correlations should be &lt;0.7. I prefer lower, like 0.3, or 0.4 because I often forecast (as we’ll do below) and one must assume that those correlations hold in new scenarios hold to make meaningful forecasts.</p>
+<p>Scaling each predictor to zero mean and unit variance is a common statistical approach to make sure the coefficents you’ll estimate are comparable (on the same scale) and prevents a few other wonky things from possibly happening.</p>
+<pre class="r"><code># scale each predictor to mean=0, variance=1
+clim.means=apply(values(clim.us),2,mean,na.rm=T) # means
+clim.sds=apply(values(clim.us),2,sd,na.rm=T) # standard devations
+name=names(clim.us)
+values(clim.us)=sapply(1:nlayers(clim.us),function(x) (values(clim.us)[,x]-clim.means[x])/clim.sds[x]) 
+# z-scores
+names(clim.us)=name
+
+# get environment at pres points
+coordinates(pres)=c(&#39;longitude&#39;,&#39;latitude&#39;) # set coords to allow extraction (next line)
+pres.data=data.frame(raster::extract(clim.us,pres)) # extract data at pres locations
+coordinates(pres.data)=coordinates(pres) # make sure the data have coords associated
+pres.data=pres.data[complete.cases(pres.data@data),] # toss points without env data</code></pre>
+<pre class="r"><code>plot(clim.us) # view </code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-9-1.png" /><!-- --></p>
+</div>
+<div id="sample-background" class="section level2">
+<h2><span class="header-section-number">2.5</span> Sample background</h2>
+<p>In presence-only (PO) modeling, where absence data do not exist, so-called ‘background’ (==jargon) points are used. In PO models, one compares the environmental conditions at occupied locations (presences) to the conditions available in the region of interest. This asks, ‘how much does the species use environment x in proportion to its availability?’</p>
+<blockquote>
+<p>Decision: The species is equally likely to be anywhere on the landscapes, so we’ll compare presences to a random sample of background points.</p>
+</blockquote>
+<p>(There’s a lot of subtlties about background selection, just go with it for now…)</p>
+<pre class="r"><code>    ## save the data table
+# sample background (to compare against presences)
+all.background=which(complete.cases(values(clim.us))) # find cells on land
+bg.index=sample(all.background,min(length(all.background),10000)) # take random sample of land
+bg.data=data.frame(values(clim.us)[bg.index,]) # get the env at these cells
+coordinates(bg.data)=coordinates(clim.us)[bg.index,] # define spatial object</code></pre>
+</div>
+<div id="statistical-model" class="section level2">
+<h2><span class="header-section-number">2.6</span> Statistical model</h2>
+<blockquote>
+<p>Decision: Linear and quadratic terms are sufficient to describe the species’ response to the environment.</p>
+</blockquote>
+<p>Next, combine the data into a convenient form and specify a formula for the regression.</p>
+<pre class="r"><code># prep data for use in glm()
+all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)) # line up pres &amp; bg
+
+# specify formula (quickly to avoid writing out every name)
+(form=paste(&#39;pres/weight~&#39;, # lhs of eqn.
+            paste(names(all.data)[-1], collapse = &quot; + &quot;),&#39;+&#39;, # linear terms
+            paste(&quot;I(&quot;, names(all.data)[-1], &quot;^2)&quot;, sep = &quot;&quot;, collapse = &quot; + &quot;))) # qudratic terms</code></pre>
+<pre><code>## [1] &quot;pres/weight~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)&quot;</code></pre>
+<p>There are some subtle differences here compared to a regular old GLM. These weights allow one to fit a Poisson point process model with the <code>glm</code> function. If this sort of thing excites you, <a href="http://onlinelibrary.wiley.com/doi/10.1111/2041-210X.12352/abstract">this paper</a> describes point process models well, and the appendix describes this weighting scheme. If it doesn’t, just pretend this is a regular GLM for now.</p>
+<pre class="r"><code>all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
+mod.worst=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model
+summary(mod.worst) # show coefficients</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = form, family = poisson(link = &quot;log&quot;), data = all.data, 
+##     weights = weight)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -5.8954  -0.2600  -0.0861  -0.0287   5.0121  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -14.21454    0.22871 -62.150  &lt; 2e-16 ***
+## bio1          2.16403    0.24805   8.724  &lt; 2e-16 ***
+## bio2          0.35567    0.05117   6.951 3.63e-12 ***
+## bio13        -0.53618    0.06442  -8.324  &lt; 2e-16 ***
+## bio14         0.03566    0.09912   0.360 0.718982    
+## I(bio1^2)     0.24379    0.07819   3.118 0.001821 ** 
+## I(bio2^2)     0.09915    0.02684   3.694 0.000221 ***
+## I(bio13^2)    0.15718    0.05209   3.018 0.002549 ** 
+## I(bio14^2)    0.22543    0.05427   4.154 3.26e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 18398  on 3866  degrees of freedom
+## Residual deviance: 14650  on 3858  degrees of freedom
+## AIC: 16432
+## 
+## Number of Fisher Scoring iterations: 16</code></pre>
+</div>
+<div id="inspect-response-curves" class="section level2">
+<h2><span class="header-section-number">2.7</span> Inspect response curves</h2>
+<p>Response curves describe how the species’ occurrence (y-axis) depends on a single climate variable (x-axis). There’s one for each environmental variable in the model. Usually this is done by making predictions with all the other predictors set at their means. Most packages have 1-liners to make this instead, but this builds more character. We’ll use these response curves to explore the consequences of model transfer later.</p>
+<pre class="r"><code># check response curves
+  # these marginal response curves are evaluated at the means of the non-focal predictor
+clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
+dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
+names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
+response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
+  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
+  newdata=dummy.mean.matrix # data frame with right structure
+  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
+  ys=predict(mod.worst,newdata=newdata) # predictions
+  return(data.frame(xs=xs,ys=ys)) # define outputs
+})# ignore warnings</code></pre>
+<p>Check out the list of lists that store this.</p>
+<pre class="r"><code>str(response.curves) #structure of the object used for plotting</code></pre>
+<pre><code>## List of 4
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
+##   ..$ ys: num [1:100] -17.3 -17.2 -17.2 -17.1 -17.1 ...
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
+##   ..$ ys: num [1:100] -13.7 -13.7 -13.7 -13.8 -13.8 ...
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
+##   ..$ ys: num [1:100] -11.4 -11.5 -11.6 -11.7 -11.8 ...
+##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
+##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
+##   ..$ ys: num [1:100] -12.9 -12.9 -13 -13.1 -13.1 ...</code></pre>
+<pre class="r"><code>  # plot the curves
+par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
+for(i in 1:nlayers(clim.us)){ # loop over layers
+  plot(response.curves[[i]]$xs,response.curves[[i]]$ys, # xs and ys
+       type=&#39;l&#39;, # line plot
+       bty=&#39;n&#39;,las=1, # decorations
+       ylim=c(-20,20), # y axis limits
+       xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;) # axis labels
+  pres.env.range=range(pres.data[names(clim.us)[i]]@data)  # find limits of fitting data
+  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)  # plot limits of fitting data
+}</code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-15-1.png" /><!-- --></p>
+</div>
+<div id="map-predictions" class="section level2">
+<h2><span class="header-section-number">2.8</span> Map predictions</h2>
+<blockquote>
+<p>Decision: When predicting, its ok to extrapolate beyond the range of the fitting data</p>
+</blockquote>
+<pre class="r"><code># predict to US
+pred.r=raster::predict(clim.us,mod.worst, index=1,type=&quot;response&quot;)
+pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(pred.r)) # plot raster
+plot(pres,add=T) # plot points</code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+</div>
+<div id="transfer-to-new-conditions" class="section level2">
+<h2><span class="header-section-number">2.9</span> Transfer to new conditions</h2>
+<p>A common goal of SDMing is to transfer the models to new locations or times. Here we’ll project the model to the species native habitat in Europe. One might do this to determine whether garlic mustard in New England occupies the same climate niche in Europe. If its a smaller range in the US, perhaps its still expanding. If its a larger range in the US, perhaps it has evolved.</p>
+<blockquote>
+<p>Decision: The occurrence-environment relationship fit in New England also describes the species response to environment in Europe.</p>
+</blockquote>
+<pre class="r"><code># transfer to Europe
+# choose domain (just europe)
+clim.eu=raster::crop(clim,c(-10,55,30,75))
+values(clim.eu)=sapply(1:nlayers(clim.eu),function(x) (values(clim.eu)[,x]-clim.means[x])/clim.sds[x])
+names(clim.eu)=names(clim.us)
+# z-scores (to make values comparable to the scaeld values for fitting)
+transfer.r=raster::predict(clim.eu,mod.worst, index=1,type=&quot;response&quot;)
+transfer.r=transfer.r/sum(values(transfer.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(transfer.r)) # plot preds
+plot(pres,add=T) # plot presences </code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
+</div>
+<div id="how-do-predictions-differ-if-we-dont-extrapolate" class="section level2">
+<h2><span class="header-section-number">2.10</span> How do predictions differ if we don’t extrapolate?</h2>
+<p>A trick to prevent extrapolation is just to set the predictions to NA beyond the range of the data. Here’s a function I wrote to make a mask for the environmental conditions that are beyond the data range. Its not critical that you understand how I made this function at this stage, but rather how to use it. Here’s what the parameters mean:</p>
+<ul>
+<li><code>thisEnv</code> a <code>rasterStack</code>, corresponding to the layers you want to mask</li>
+<li><code>dat</code> a <code>data.frame</code> of the values of each predictor at background points</li>
+<li><code>val</code> the number of standard deviations beyond the fitting data where you’re willing to predict. Set to 0 for no extrapolation.</li>
+</ul>
+<pre class="r"><code>extrapolationMask=function(thisEnv,
+                                                     dat=NULL,
+                                                     val=1){
+  vars=colnames(dat)
+  check=names(thisEnv) %in% vars
+  if(any(!check)) warning(paste0(&#39;Some variables were not masked because 
+                                 they were not included in dat: &#39;
+                                 ,names(thisEnv)[!check])) 
+  masks=stack(lapply(vars,function(x){
+    e.min=min(dat[,x],na.rm=T)
+    e.max=max(dat[,x],na.rm=T)
+    e.sd=sd(dat[,x],na.rm=T)
+    e.min.lim=e.min-val*e.sd
+    e.max.lim=e.max+val*e.sd
+    mask1=thisEnv[[x]] &gt;= e.min.lim &amp; thisEnv[[x]] &lt;= e.max.lim
+    values(mask1)[values(mask1)==0]=NA
+    mask1
+  }))
+  names(masks)=vars
+  maskedEnv=stack(lapply(vars,function(x){
+    raster::mask(thisEnv[[x]],masks[[x]],maskValue=0)
+  }))
+  names(maskedEnv)=vars
+  
+  # make a report of which layers lead to masking
+  nonNAPreMask=apply(values(thisEnv),2,function(x) sum(!is.na(x)))
+  nonNAMasked=apply(values(maskedEnv),2,function(x) sum(!is.na(x)))
+  print(data.frame(nonNAPreMask=nonNAPreMask,nonNAMasked=nonNAMasked,
+                   numCellsMasked=nonNAPreMask-nonNAMasked))
+  
+    return(list(masks=masks,maskedEnv=maskedEnv))
+}</code></pre>
+<p>Let’s use <code>extrapolationMask</code> to prevent extrapolation.</p>
+<pre class="r"><code>noExtrapMask=extrapolationMask(clim.eu,
+                               all.data[,c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio13&#39;,&#39;bio14&#39;)],
+                               val=0)</code></pre>
+<pre><code>##       nonNAPreMask nonNAMasked numCellsMasked
+## bio1         67136       46803          20333
+## bio2         67136       58836           8300
+## bio13        67136       23813          43323
+## bio14        67136       12134          55002</code></pre>
+<pre class="r"><code>plot(noExtrapMask[[2]]) # plot each of the masked env layers. </code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-19-1.png" /><!-- --> Values of NA indicate that you’re not allowed to predict there (extrapolating)</p>
+<pre class="r"><code>transfer.r1=raster::predict(noExtrapMask[[2]],mod.worst, index=1,type=&quot;response&quot;)
+transfer.r1=transfer.r1/sum(values(transfer.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(transfer.r1)) # plot preds
+plot(pres,add=T,cex=.2) # plot presences </code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-20-1.png" /><!-- --></p>
+<p>Hmm, looks like you’re extrapolating in most of Europe. Since you build a niche model, I think its reasonable to extrapolate a little bit. That is, you’re assuming that your model describes some sort of general relationship, so why shouldn’t that relationship hold if you’re at least nearby your fitting data? Some other processes may come into play far from the fitting data, so its fair not to extrapolate too far. The trouble is, what’s too far? There isn’t an answer, but let’s try 1 SD beyond the fitting data</p>
+<pre class="r"><code>noExtrapMask1=extrapolationMask(clim.eu,
+                               all.data[,c(&#39;bio1&#39;,&#39;bio2&#39;,&#39;bio13&#39;,&#39;bio14&#39;)],
+                               val=1)</code></pre>
+<pre><code>##       nonNAPreMask nonNAMasked numCellsMasked
+## bio1         67136       56266          10870
+## bio2         67136       62473           4663
+## bio13        67136       38252          28884
+## bio14        67136       36814          30322</code></pre>
+<pre class="r"><code>plot(noExtrapMask[[2]]) # plot each of the masked env layers. </code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-21-1.png" /><!-- --> Values of NA indicate that you’re not allowed to predict there (extrapolating)</p>
+<pre class="r"><code>transfer.r2=raster::predict(noExtrapMask[[2]],mod.worst, index=1,type=&quot;response&quot;)
+transfer.r2=transfer.r2/sum(values(transfer.r),na.rm=T) # normalize prediction (sum to 1)
+plot(log(transfer.r2)) # plot preds
+plot(pres,add=T,cex=.2) # plot presences </code></pre>
+<p><img src="111_SDM_Transfer_files/figure-html/unnamed-chunk-22-1.png" /><!-- --></p>
+<p>How far would you have to extrapolate to make predictions across most of Europe?</p>
+<!-- #========================================================================= -->
+<!-- #========================================================================= -->
+</div>
+<div id="homework" class="section level2">
+<h2><span class="header-section-number">2.11</span> Homework</h2>
+<p>Build an SDM for a species of your choice, following the workflow above. Transfer it from one region to another. It may be easiest to choose an invasive species so you can fit in the native range and project to the invasible range, or vice versa. Explore different extrapolation scenarios. Answer the following questions in less than 4 sentences:</p>
+<ol style="list-style-type: decimal">
+<li><p>Explain why you chose your species.</p></li>
+<li><p>Based on your response curves, how many SDs beyond the fitting data are you willing to extrapolate</p></li>
+<li><p>Describe the pros and cons of building an SDM from an expert map, as I did in the case study at the beginning of the lecture.</p></li>
+</ol>
+</div>
+</div>
+
+
+<!-- give the footer some space -->
+<br/>
+<br/>
+
+<footer id="site-footer">
+  <div id="footer1">
+  <a href="https://cmerow.github.io"><img src="img/cory.png" alt="logo" width=40px></a>
+  <!--
+  <a href="http://adamwilson.us/#contact"><i class="fa fa-envelope fa-2x"></i></a> 
+  <a href="https://twitter.com/AdamWilsonLab"><i class="fa fa-twitter fa-2x"></i></a> 
+  <a href="https://github.com/AdamMWilson"><i class="fa fa-github fa-2x"></i></a>
+  -->
+  </div>
+  <div id="footer2">
+  <a rel="license" property="http://creativecommons.org/ns#license"
+  href="http://creativecommons.org/licenses/by/4.0/" ><img src="img/cc-by.svg" alt="cc-by"/></a> 
+  </div>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>

@@ -428,7 +428,7 @@ div.tocify {
       <a href="101SDMs.html">3.1 Basic SDMS</a>
     </li>
     <li>
-      <a href="110_SDMs_Integrating_Data_Types.html">3.2 Integrating data types in SDMS</a>
+      <a href="111_SDM_Transfer.html">3.2 Extrapolating SDMS</a>
     </li>
     <li class="divider"></li>
   </ul>
@@ -680,9 +680,9 @@ Show Solution
 <div id="demo4" class="collapse">
 <pre class="r"><code>matrix(rnorm(9),nrow=3)</code></pre>
 <pre><code>##            [,1]       [,2]      [,3]
-## [1,] -0.6385807 -1.1242050 0.1428754
-## [2,] -0.6640297 -0.4913995 0.3565074
-## [3,] -0.5751638  0.1669154 0.5599687</code></pre>
+## [1,] -0.3156805 -1.3199994 -1.826260
+## [2,] -1.1263467  0.7279074  2.672128
+## [3,] -1.6986529 -1.0096887  1.194776</code></pre>
 </div>
 </div>
 </div>
@@ -693,10 +693,11 @@ Show Solution
                    y = c(&quot;a&quot;,&quot;b&quot;,&quot;b&quot;),
                    z = c(T,F,T))
 data</code></pre>
-<pre><code>##    x y     z
-## 1 11 a  TRUE
-## 2 12 b FALSE
-## 3 14 b  TRUE</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["x"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["y"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["z"],"name":[3],"type":["lgl"],"align":["right"]}],"data":[{"1":"11","2":"a","3":"TRUE"},{"1":"12","2":"b","3":"FALSE"},{"1":"14","2":"b","3":"TRUE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <p>You can subset in several ways</p>
 <pre class="r"><code>mean(data$x)</code></pre>
 <pre><code>## [1] 12.33333</code></pre>

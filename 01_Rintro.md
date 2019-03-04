@@ -471,9 +471,9 @@ matrix(rnorm(9),nrow=3)
 
 ```
 ##            [,1]       [,2]      [,3]
-## [1,] -0.6385807 -1.1242050 0.1428754
-## [2,] -0.6640297 -0.4913995 0.3565074
-## [3,] -0.5751638  0.1669154 0.5599687
+## [1,] -0.3156805 -1.3199994 -1.826260
+## [2,] -1.1263467  0.7279074  2.672128
+## [3,] -1.6986529 -1.0096887  1.194776
 ```
 </div>
 </div>
@@ -489,12 +489,11 @@ data = data.frame( x = c(11,12,14),
 data
 ```
 
-```
-##    x y     z
-## 1 11 a  TRUE
-## 2 12 b FALSE
-## 3 14 b  TRUE
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["x"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["y"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["z"],"name":[3],"type":["lgl"],"align":["right"]}],"data":[{"1":"11","2":"a","3":"TRUE"},{"1":"12","2":"b","3":"FALSE"},{"1":"14","2":"b","3":"TRUE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 
 You can subset in several ways
