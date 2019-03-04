@@ -6,7 +6,7 @@ left:
   - text: "Schedule"
     href: Head2_Schedule.html
   - text: "Course Materials"
-    menu:
+    menu: 
       - text: "About Course Content"
         href: Head1_CourseContent.html
       - text: "-----------------"
