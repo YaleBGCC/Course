@@ -1,8 +1,8 @@
+*.Rproj
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-
 # History files
 .Rhistory
 .Rapp.history
@@ -30,5 +30,4 @@ vignettes/*.pdf
 .DS_Store
 .Rbuildignore
 .Rproj.user
-
 /Users/ctg/Dropbox/Projects/Workshops/YaleBGCCourses/110_assets/predictors/*

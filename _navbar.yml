@@ -6,7 +6,7 @@ left:
   - text: "Schedule"
     href: Head2_Schedule.html
   - text: "Course Materials"
-    menu:
+    menu: 
       - text: "About Course Content"
         href: Head1_CourseContent.html
       - text: "-----------------"
@@ -25,8 +25,8 @@ left:
       - text: "Module 3: Species Distribution Models"
       - text: "3.1 Basic SDMS"
         href: 101SDMs.html
-      - text: "3.2 Integrating data types in SDMS"
-        href: 110_SDMs_Integrating_Data_Types.html
+      - text: "3.2 Extrapolating SDMS"
+        href: 111_SDM_Transfer.html
       - text: "-----------------"
   - text: "Resources"
     href: Head3_Resources.html

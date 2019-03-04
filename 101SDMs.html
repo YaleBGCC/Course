@@ -429,7 +429,7 @@ div.tocify {
       <a href="101SDMs.html">3.1 Basic SDMS</a>
     </li>
     <li>
-      <a href="110_SDMs_Integrating_Data_Types.html">3.2 Integrating data types in SDMS</a>
+      <a href="111_SDM_Transfer.html">3.2 Extrapolating SDMS</a>
     </li>
     <li class="divider"></li>
   </ul>
@@ -540,9 +540,10 @@ library(spThin)</code></pre>
 <p>Decision: You assume the database of choice has sufficiently checked for errors in biology or typos. You know what happens when you assume…</p>
 </blockquote>
 <pre class="r"><code># get presence data
-# pres=spocc::occ(&#39;Alliaria petiolata&#39;,from=&#39;gbif&#39;,limit=5000) # this can be slow
+pres.tmp=spocc::occ(&#39;Alliaria petiolata&#39;,from=&#39;gbif&#39;,limit=500) # this can be slow
+pres=pres.tmp$gbif$data[[1]][,c(&#39;longitude&#39;,&#39;latitude&#39;)]
   # so just read in the result of me running this earlier
-pres=read.csv(&#39;https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv&#39;)[,c(&#39;longitude&#39;,&#39;latitude&#39;)]
+#pres=read.csv(&#39;https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv&#39;)[,c(&#39;longitude&#39;,&#39;latitude&#39;)]
 pres=pres[complete.cases(pres),] # toss records without coords</code></pre>
 </div>
 <div id="get-environmental-data" class="section level2">
@@ -719,8 +720,9 @@ all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bg.data@data)
 <pre><code>## [1] &quot;pres/weight~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)&quot;</code></pre>
 <p>There are some subtle differences here compared to a regular old GLM. These weights allow one to fit a Poisson point process model with the <code>glm</code> function. If this sort of thing excites you, <a href="http://onlinelibrary.wiley.com/doi/10.1111/2041-210X.12352/abstract">this paper</a> describes point process models well, and the appendix describes this weighting scheme. If it doesn’t, just pretend this is a regular GLM for now.</p>
 <pre class="r"><code>all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
-mod.worst=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model
-summary(mod.worst) # show coefficients</code></pre>
+mod.worst=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model</code></pre>
+<pre><code>## Warning: glm.fit: fitted rates numerically 0 occurred</code></pre>
+<pre class="r"><code>summary(mod.worst) # show coefficients</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = form, family = poisson(link = &quot;log&quot;), data = all.data, 
@@ -728,29 +730,29 @@ summary(mod.worst) # show coefficients</code></pre>
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -4.0280  -0.2408  -0.0706  -0.0308   5.1147  
+## -3.5896  -0.0003   0.0000   0.0000   4.7270  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -15.37924    0.30294 -50.766  &lt; 2e-16 ***
-## bio1          2.58714    0.30915   8.369  &lt; 2e-16 ***
-## bio2          0.88788    0.07252  12.243  &lt; 2e-16 ***
-## bio13         0.32046    0.09170   3.495 0.000475 ***
-## bio14        -0.96095    0.09545 -10.067  &lt; 2e-16 ***
-## I(bio1^2)     0.21355    0.10382   2.057 0.039705 *  
-## I(bio2^2)     0.23243    0.03706   6.272 3.57e-10 ***
-## I(bio13^2)    0.22246    0.06308   3.526 0.000421 ***
-## I(bio14^2)    0.41497    0.05867   7.073 1.52e-12 ***
+## (Intercept) -40.44010    4.25657  -9.501  &lt; 2e-16 ***
+## bio1         17.46309    3.71387   4.702 2.57e-06 ***
+## bio2          1.48382    0.18554   7.997 1.27e-15 ***
+## bio13        -0.26930    0.20034  -1.344 0.178886    
+## bio14         8.91494    2.13786   4.170 3.05e-05 ***
+## I(bio1^2)    -2.83028    0.88547  -3.196 0.001392 ** 
+## I(bio2^2)     0.72592    0.09437   7.692 1.45e-14 ***
+## I(bio13^2)    0.98064    0.26802   3.659 0.000253 ***
+## I(bio14^2)   -3.32022    0.98609  -3.367 0.000760 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
-##     Null deviance: 8340.1  on 3353  degrees of freedom
-## Residual deviance: 6823.3  on 3345  degrees of freedom
-## AIC: 7579.3
+##     Null deviance: 3095.8  on 3109  degrees of freedom
+## Residual deviance: 2254.0  on 3101  degrees of freedom
+## AIC: 2522
 ## 
-## Number of Fisher Scoring iterations: 17</code></pre>
+## Number of Fisher Scoring iterations: 21</code></pre>
 </div>
 <div id="inspect-response-curves" class="section level2">
 <h2><span class="header-section-number">2.7</span> Inspect response curves</h2>
@@ -772,16 +774,16 @@ response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
 <pre><code>## List of 4
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
-##   ..$ ys: num [1:100] -19.3 -19.2 -19.2 -19.1 -19 ...
+##   ..$ ys: num [1:100] -80.7 -79.4 -78.2 -77 -75.8 ...
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
-##   ..$ ys: num [1:100] -14.3 -14.4 -14.5 -14.6 -14.7 ...
+##   ..$ ys: num [1:100] -31.1 -31.5 -31.9 -32.2 -32.6 ...
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
-##   ..$ ys: num [1:100] -14.5 -14.6 -14.6 -14.7 -14.7 ...
+##   ..$ ys: num [1:100] -31.9 -32.2 -32.6 -32.9 -33.2 ...
 ##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
-##   ..$ ys: num [1:100] -10.3 -10.5 -10.7 -10.9 -11 ...</code></pre>
+##   ..$ ys: num [1:100] -84 -82.5 -80.9 -79.4 -77.9 ...</code></pre>
 <pre class="r"><code>  # plot the curves
 par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
 for(i in 1:nlayers(clim.us)){ # loop over layers
@@ -820,7 +822,7 @@ plot(perf.fit) # plot ROC curve
 abline(0,1) # 1:1 line indicate random predictions </code></pre>
 <p><img src="101SDMs_files/figure-html/unnamed-chunk-17-1.png" /><!-- --></p>
 <pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
-<pre><code>## [1] 0.9412932</code></pre>
+<pre><code>## [1] 0.9855531</code></pre>
 </div>
 <div id="transfer-to-new-conditions" class="section level2">
 <h2><span class="header-section-number">2.10</span> Transfer to new conditions</h2>
@@ -843,232 +845,153 @@ plot(pres,add=T) # plot presences </code></pre>
 </div>
 <div id="improvements" class="section level1">
 <h1><span class="header-section-number">3</span> Improvements</h1>
-<!-- #========================================================================= -->
-<div id="sampling-bias" class="section level2">
-<h2><span class="header-section-number">3.1</span> Sampling bias</h2>
-<div id="sample-background-1" class="section level3">
-<h3><span class="header-section-number">3.1.1</span> Sample background</h3>
-<p><img src="101_assets/Phillips_bias.png" style="width: 100"/></p>
-<blockquote>
-<p>Decision: Presences are most likely to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled.</p>
-</blockquote>
-<p>The data in <code>bias.bg</code> are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base.</p>
-<pre class="r"><code>bias.bg=read.csv(&#39;https://cmerow.github.io/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv&#39;)[,-1]
-coordinates(bias.bg)=c(1,2)
-bias.bg.data=data.frame(raster::extract(clim.us,bias.bg))
-coordinates(bias.bg.data)=coordinates(bias.bg)
-bias.bg.data=bias.bg.data[complete.cases(bias.bg.data@data),]</code></pre>
-<pre class="r"><code># prep data for use in glm()
-all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bias.bg.data@data))
-
-# specify formula (quickly to avoid writing out every name)
-(form=paste(&#39;pres/weight~&#39;, # lhs of eqn.
-            paste(names(all.data)[-1], collapse = &quot; + &quot;),&#39;+&#39;, # linear terms
-            paste(&quot;I(&quot;, names(all.data)[-1], &quot;^2)&quot;, sep = &quot;&quot;, collapse = &quot; + &quot;))) # qudratic terms</code></pre>
-<pre><code>## [1] &quot;pres/weight~ bio1 + bio2 + bio13 + bio14 + I(bio1^2) + I(bio2^2) + I(bio13^2) + I(bio14^2)&quot;</code></pre>
-<p><em>From this point on, the code is exactly the same as the previous example, except that the model is given a new name, <code>mod.bias</code> instead of <code>mod.worst</code></em></p>
-</div>
-</div>
-<div id="statistical-model-1" class="section level2">
-<h2><span class="header-section-number">3.2</span> Statistical model</h2>
-<pre class="r"><code>all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process
-mod.bias=glm(form,data=all.data,family=poisson(link=&#39;log&#39;),weights=weight) # fit the model
-summary(mod.bias) # show coefficients</code></pre>
-<pre><code>## 
-## Call:
-## glm(formula = form, family = poisson(link = &quot;log&quot;), data = all.data, 
-##     weights = weight)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.7729  -0.2560  -0.1099  -0.0320   6.3131  
-## 
-## Coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -17.31494    0.28372 -61.028  &lt; 2e-16 ***
-## bio1         -5.04764    0.31736 -15.905  &lt; 2e-16 ***
-## bio2          2.59214    0.07989  32.446  &lt; 2e-16 ***
-## bio13         1.15896    0.09228  12.560  &lt; 2e-16 ***
-## bio14        -2.61444    0.07388 -35.389  &lt; 2e-16 ***
-## I(bio1^2)     5.08107    0.12202  41.641  &lt; 2e-16 ***
-## I(bio2^2)     0.66814    0.05442  12.277  &lt; 2e-16 ***
-## I(bio13^2)    0.79904    0.10116   7.899 2.81e-15 ***
-## I(bio14^2)   -0.08801    0.08161  -1.078    0.281    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for poisson family taken to be 1)
-## 
-##     Null deviance: 8805.4  on 5976  degrees of freedom
-## Residual deviance: 5167.8  on 5968  degrees of freedom
-## AIC: 5923.8
-## 
-## Number of Fisher Scoring iterations: 18</code></pre>
-</div>
-<div id="inspect-response-curves-1" class="section level2">
-<h2><span class="header-section-number">3.3</span> Inspect response curves</h2>
-<pre class="r"><code># check response curves
-  # these marginal response curves are evaluated at the means of the non-focal predictor
-clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
-dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
-names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
-response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
-  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
-  newdata=dummy.mean.matrix # data frame with right structure
-  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
-  ys=predict(mod.bias,newdata=newdata) # predictions
-  return(data.frame(xs=xs,ys=ys)) # define outputs
-})# ignore warnings</code></pre>
-<pre class="r"><code>str(response.curves) #structure of the object used for plotting</code></pre>
-<pre><code>## List of 4
-##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
-##   ..$ ys: num [1:100] 7.92 6.89 5.88 4.89 3.92 ...
-##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
-##   ..$ ys: num [1:100] -14.5 -14.8 -15.1 -15.3 -15.6 ...
-##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
-##   ..$ ys: num [1:100] -14.2 -14.4 -14.6 -14.8 -15 ...
-##  $ :&#39;data.frame&#39;:    100 obs. of  2 variables:
-##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
-##   ..$ ys: num [1:100] -11.3 -11.4 -11.6 -11.7 -11.8 ...</code></pre>
-<pre class="r"><code>  # plot the curves
-par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
-for(i in 1:nlayers(clim.us)){ # loop over layers
-  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
-       type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data) # find limits of fitting data
-  abline(v=pres.env.range,col=&#39;red&#39;,lty=2) # plot limits of fitting data
-}</code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
-<div id="map-predictions-1" class="section level3">
-<h3><span class="header-section-number">3.3.1</span> Map predictions</h3>
-<pre class="r"><code># predict to US
-pred.r=raster::predict(clim.us,mod.bias, index=1,type=&quot;response&quot;)
-pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
-plot(log(pred.r)) # plot raster
-plot(pres,add=T) # plot points</code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
-</div>
-<div id="evaluate-performance-1" class="section level3">
-<h3><span class="header-section-number">3.3.2</span> Evaluate performance</h3>
-<pre class="r"><code># evaluate
-pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
-pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
-rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
-                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
-perf.fit=performance(rocr.pred,measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;) # calculate perfomance 
-plot(perf.fit) # plot ROC curve
-abline(0,1) # 1:1 line indicate random predictions </code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-26-1.png" /><!-- --></p>
-<pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
-<pre><code>## [1] 0.6737413</code></pre>
-<p>Oh, Snap! Not nearly as good as the model that ignored bias. This is common when accounting for bias; you’ve removed something that structured the observations from the model. So you evaluation on the <em>fitting</em> data will be worse. Performance on new data sets will often be better (conditional on the rest of the model being well designed), so long as those don’t suffer from the same sampling bias patterns.</p>
-<!-- #========================================================================= -->
-<!-- #========================================================================= -->
-</div>
-</div>
-<div id="other-algorithms-glmnet" class="section level2">
-<h2><span class="header-section-number">3.4</span> Other algorithms: glmnet</h2>
-</div>
-<div id="statistical-model-2" class="section level2">
-<h2><span class="header-section-number">3.5</span> Statistical model</h2>
-<pre class="r"><code>mod.maxnet=maxnet(p=all.data[,&#39;pres&#39;],data=all.data[,c(&quot;bio1&quot;,&quot;bio2&quot;,&quot;bio13&quot;,&quot;bio14&quot;)])
-summary(mod.maxnet) # show coefficients</code></pre>
-<pre><code>##                Length Class     Mode     
-## a0               200  -none-    numeric  
-## beta           81200  dgCMatrix S4       
-## df               200  -none-    numeric  
-## dim                2  -none-    numeric  
-## lambda           200  -none-    numeric  
-## dev.ratio        200  -none-    numeric  
-## nulldev            1  -none-    numeric  
-## npasses            1  -none-    numeric  
-## jerr               1  -none-    numeric  
-## offset             1  -none-    logical  
-## classnames         2  -none-    character
-## call               8  -none-    call     
-## nobs               1  -none-    numeric  
-## betas             24  -none-    numeric  
-## alpha              1  -none-    numeric  
-## entropy            1  -none-    numeric  
-## penalty.factor   406  -none-    numeric  
-## featuremins      406  -none-    numeric  
-## featuremaxs      406  -none-    numeric  
-## varmin             4  -none-    numeric  
-## varmax             4  -none-    numeric  
-## samplemeans        4  -none-    list     
-## levels             4  -none-    list</code></pre>
-<p><em>From this point on, the code is exactly the same as the previous example, except that the model is given a new name, <code>mod.maxnet</code> instead of <code>mod.bias</code></em></p>
-</div>
-<div id="inspect-response-curves-2" class="section level2">
-<h2><span class="header-section-number">3.6</span> Inspect response curves</h2>
-<pre class="r"><code># check response curves
-  # these marginal response curves are evaluated at the means of the non-focal predictor
-clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable
-dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below
-names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference
-response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable
-  xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve
-  newdata=dummy.mean.matrix # data frame with right structure
-  newdata[,x]=xs # plug in just the values for the focal variable that differ from mean
-  ys=predict(mod.maxnet,newdata=newdata) # predictions
-  return(data.frame(xs=xs,ys=ys)) # define outputs
-})# ignore warnings</code></pre>
-<pre class="r"><code>  # plot the curves
-par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting
-for(i in 1:nlayers(clim.us)){ # loop over layers
-  plot(response.curves[[i]]$xs,response.curves[[i]]$ys,
-       type=&#39;l&#39;,bty=&#39;n&#39;,las=1,xlab=colnames(clim.ranges)[i],ylab=&#39;occurence rate&#39;,ylim=c(-20,20))
-  pres.env.range=range(pres.data[names(clim.us)[i]]@data)  # find limits of fitting data
-  abline(v=pres.env.range,col=&#39;red&#39;,lty=2)  # plot limits of fitting data
-}</code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-29-1.png" /><!-- --></p>
-<div id="map-predictions-2" class="section level3">
-<h3><span class="header-section-number">3.6.1</span> Map predictions</h3>
-<pre class="r"><code># predict to US
-pred.r=raster::predict(clim.us,mod.maxnet, index=1,type=&quot;exponential&quot;) # note &#39;type&#39; differs from glm
-pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1)
-plot(log(pred.r)) # plot raster
-plot(pres,add=T) # plot points</code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-30-1.png" /><!-- --></p>
-</div>
-<div id="evaluate-performance-2" class="section level3">
-<h3><span class="header-section-number">3.6.2</span> Evaluate performance</h3>
-<pre class="r"><code># evaluate
-pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations
-pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations
-rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg),
-                          labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR
-perf.fit=performance(rocr.pred,measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;) # calculate perfomance 
-plot(perf.fit) # plot ROC curve
-abline(0,1) # 1:1 line indicate random predictions </code></pre>
-<p><img src="101SDMs_files/figure-html/unnamed-chunk-31-1.png" /><!-- --></p>
-<pre class="r"><code>(auc_ROCR &lt;- performance(rocr.pred, measure = &quot;auc&quot;)@y.values[[1]]) # get AUC</code></pre>
-<pre><code>## [1] 0.789735</code></pre>
-<p>Great, we’ve recovered some of the predictive accuracy lost when the sampling bias was factored out. By picking up more complex responses, we’re better able to describe the distribution. An important caveat is that we should check for overfitting, wherein we’ve fit to idiosyncracies of the particular fitting data set. To check this, we’d need to evaluate on independent data, which we won’t get to here <em>but is a critical step on any SDM you intend to publish.</em></p>
-</div>
-</div>
-<div id="other-options" class="section level2">
-<h2><span class="header-section-number">3.7</span> Other options</h2>
-<p>Within the framework described above:</p>
-<ul>
-<li>Thin presences to remove spatial autocorrelation</li>
-<li>Subsample presences to evaluate model on independent data (e.g., k-fold cross validation)</li>
-<li>Use remotely sensed data (removing artefacts of interpolation)</li>
-<li>More informative performance statistics (Boyce, partial AUC)</li>
-<li>Other algorithms (GAMs, Tree-based methods, Envelope methods)</li>
-<li>Model selection to find better suites of predictors</li>
-</ul>
-<p>Somewhat different frameworks:</p>
-<ul>
-<li>Model space explicitly (accounting for spatial autocorrelation)</li>
-<li>Borrow strength from other species (Joint SDMs)</li>
-<li>Bayesian models for more complete treatment of uncertainty or hierarchical structure, among other things</li>
-<li>Ensemble approaches to combine the results of multiple models</li>
-<li>Combine data from different parts of the distribution (e.g. native range) <!-- #========================================================================= --> <!-- ## Thin presences, Stratify sampling --></li>
-</ul>
+<!-- <!-- #========================================================================= -->
+<p>–&gt; <!-- ## Sampling bias --></p>
+<!-- ###  Sample background -->
+<!-- <img src="101_assets/Phillips_bias.png" style="width: 100"/> -->
+<!-- > Decision: Presences are most likely to be observed where other specie sampled with the same protocol or are taxonomically similar were sampled.  -->
+<!-- The data in `bias.bg` are the result of extracting the coordinates of all 187 species observed in the Invasive Plant Atlas of New England (IPANE) data base. -->
+<!-- ```{r} -->
+<!-- bias.bg=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/Bias_IPANE_allPoints.csv')[,-1] -->
+<!-- coordinates(bias.bg)=c(1,2) -->
+<!-- bias.bg.data=data.frame(raster::extract(clim.us,bias.bg)) -->
+<!-- coordinates(bias.bg.data)=coordinates(bias.bg) -->
+<!-- bias.bg.data=bias.bg.data[complete.cases(bias.bg.data@data),] -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- # prep data for use in glm() -->
+<!-- all.data=rbind(data.frame(pres=1,pres.data@data),data.frame(pres=0,bias.bg.data@data)) -->
+<!-- # specify formula (quickly to avoid writing out every name) -->
+<!-- (form=paste('pres/weight~', # lhs of eqn. -->
+<!--             paste(names(all.data)[-1], collapse = " + "),'+', # linear terms -->
+<!--             paste("I(", names(all.data)[-1], "^2)", sep = "", collapse = " + "))) # qudratic terms -->
+<!-- ``` -->
+<!-- *From this point on, the code is exactly the same as the previous example, except that the model is given a new name, `mod.bias` instead of `mod.worst`* -->
+<!-- ## Statistical model -->
+<!-- ```{r} -->
+<!-- all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process -->
+<!-- mod.bias=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model -->
+<!-- summary(mod.bias) # show coefficients -->
+<!-- ``` -->
+<!-- ## Inspect response curves -->
+<!-- ```{r,results='hide'} -->
+<!-- # check response curves -->
+<!--   # these marginal response curves are evaluated at the means of the non-focal predictor -->
+<!-- clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable -->
+<!-- dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below -->
+<!-- names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference -->
+<!-- response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable -->
+<!--   xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve -->
+<!--   newdata=dummy.mean.matrix # data frame with right structure -->
+<!--   newdata[,x]=xs # plug in just the values for the focal variable that differ from mean -->
+<!--   ys=predict(mod.bias,newdata=newdata) # predictions -->
+<!--   return(data.frame(xs=xs,ys=ys)) # define outputs -->
+<!-- })# ignore warnings -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- str(response.curves) #structure of the object used for plotting -->
+<!-- ``` -->
+<!-- ```{r, width=7} -->
+<!--   # plot the curves -->
+<!-- par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting -->
+<!-- for(i in 1:nlayers(clim.us)){ # loop over layers -->
+<!--   plot(response.curves[[i]]$xs,response.curves[[i]]$ys, -->
+<!--        type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20)) -->
+<!--   pres.env.range=range(pres.data[names(clim.us)[i]]@data) # find limits of fitting data -->
+<!--   abline(v=pres.env.range,col='red',lty=2) # plot limits of fitting data -->
+<!-- } -->
+<!-- ``` -->
+<!-- ### Map predictions -->
+<!-- ```{r, width=7} -->
+<!-- # predict to US -->
+<!-- pred.r=raster::predict(clim.us,mod.bias, index=1,type="response") -->
+<!-- pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1) -->
+<!-- plot(log(pred.r)) # plot raster -->
+<!-- plot(pres,add=T) # plot points -->
+<!-- ``` -->
+<!-- ### Evaluate performance -->
+<!-- ```{r,width=7} -->
+<!-- # evaluate -->
+<!-- pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations -->
+<!-- pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations -->
+<!-- rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg), -->
+<!--                           labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR -->
+<!-- perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") # calculate perfomance  -->
+<!-- plot(perf.fit) # plot ROC curve -->
+<!-- abline(0,1) # 1:1 line indicate random predictions  -->
+<!-- (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC -->
+<!-- ``` -->
+<!-- Oh, Snap! Not nearly as good as the model that ignored bias. This is common when accounting for bias; you've removed something that structured the observations from the model. So you evaluation on the *fitting* data will be worse. Performance on new data sets will often be better (conditional on the rest of the model being well designed), so long as those don't suffer from the same sampling bias patterns. -->
+<!-- <!-- #========================================================================= -->
+<p>–&gt; <!-- <!-- #========================================================================= --> –&gt; <!-- ## Other algorithms: glmnet --></p>
+<!-- ## Statistical model -->
+<!-- ```{r} -->
+<!-- mod.maxnet=maxnet(p=all.data[,'pres'],data=all.data[,c("bio1","bio2","bio13","bio14")]) -->
+<!-- summary(mod.maxnet) # show coefficients -->
+<!-- ``` -->
+<!-- *From this point on, the code is exactly the same as the previous example, except that the model is given a new name, `mod.maxnet` instead of `mod.bias`* -->
+<!-- ## Inspect response curves -->
+<!-- ```{r,results='hide'} -->
+<!-- # check response curves -->
+<!--   # these marginal response curves are evaluated at the means of the non-focal predictor -->
+<!-- clim.ranges=apply(values(clim.us),2,range,na.rm=T) # upper and lower limits for each variable -->
+<!-- dummy.mean.matrix=data.frame(matrix(0,ncol=nlayers(clim.us),nrow=100)) #makes prediction concise below -->
+<!-- names(dummy.mean.matrix)=colnames(clim.ranges) # line up names for later reference -->
+<!-- response.curves=lapply(1:nlayers(clim.us),function(x){ # loop over each variable -->
+<!--   xs=seq(clim.ranges[1,x],clim.ranges[2,x],length=100) # x values to evaluate the curve -->
+<!--   newdata=dummy.mean.matrix # data frame with right structure -->
+<!--   newdata[,x]=xs # plug in just the values for the focal variable that differ from mean -->
+<!--   ys=predict(mod.maxnet,newdata=newdata) # predictions -->
+<!--   return(data.frame(xs=xs,ys=ys)) # define outputs -->
+<!-- })# ignore warnings -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!--   # plot the curves -->
+<!-- par(mfrow=c(2,2),mar=c(4,5,.5,.5)) # # rows and cols for plotting -->
+<!-- for(i in 1:nlayers(clim.us)){ # loop over layers -->
+<!--   plot(response.curves[[i]]$xs,response.curves[[i]]$ys, -->
+<!--        type='l',bty='n',las=1,xlab=colnames(clim.ranges)[i],ylab='occurence rate',ylim=c(-20,20)) -->
+<!--   pres.env.range=range(pres.data[names(clim.us)[i]]@data)  # find limits of fitting data -->
+<!--   abline(v=pres.env.range,col='red',lty=2)  # plot limits of fitting data -->
+<!-- } -->
+<!-- ``` -->
+<!-- ### Map predictions -->
+<!-- ```{r} -->
+<!-- # predict to US -->
+<!-- pred.r=raster::predict(clim.us,mod.maxnet, index=1,type="exponential") # note 'type' differs from glm -->
+<!-- pred.r=pred.r/sum(values(pred.r),na.rm=T) # normalize prediction (sum to 1) -->
+<!-- plot(log(pred.r)) # plot raster -->
+<!-- plot(pres,add=T) # plot points -->
+<!-- ``` -->
+<!-- ### Evaluate performance -->
+<!-- ```{r} -->
+<!-- # evaluate -->
+<!-- pred.at.fitting.pres=raster::extract(pred.r,pres.data) # get predictions at pres locations -->
+<!-- pred.at.fitting.bg=raster::extract(pred.r,bg.data) # get predictions at background locations -->
+<!-- rocr.pred=ROCR::prediction(predictions=c(pred.at.fitting.pres,pred.at.fitting.bg), -->
+<!--                           labels=c(rep(1,length(pred.at.fitting.pres)),rep(0,length(pred.at.fitting.bg)))) # define the prediction object needed by ROCR -->
+<!-- perf.fit=performance(rocr.pred,measure = "tpr", x.measure = "fpr") # calculate perfomance  -->
+<!-- plot(perf.fit) # plot ROC curve -->
+<!-- abline(0,1) # 1:1 line indicate random predictions  -->
+<!-- (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) # get AUC -->
+<!-- ``` -->
+<!-- Great, we've recovered some of the predictive accuracy lost when the sampling bias was factored out. By picking up more complex responses, we're better able to describe the distribution. An important caveat is that we should check for overfitting, wherein we've fit to idiosyncracies of the particular fitting data set. To check this, we'd need to evaluate on independent data, which we won't get to here *but is a critical step on any SDM you intend to publish.* -->
+<!-- ## Other options -->
+<!-- Within the framework described above: -->
+<!-- * Thin presences to remove spatial autocorrelation -->
+<!-- * Subsample presences to evaluate model on independent data (e.g., k-fold cross validation) -->
+<!-- * Use remotely sensed data (removing artefacts of interpolation) -->
+<!-- * More informative performance statistics (Boyce, partial AUC) -->
+<!-- * Other algorithms (GAMs, Tree-based methods, Envelope methods) -->
+<!-- * Model selection to find better suites of predictors -->
+<!-- Somewhat different frameworks: -->
+<!-- * Model space explicitly (accounting for spatial autocorrelation) -->
+<!-- * Borrow strength from other species (Joint SDMs) -->
+<!-- * Bayesian models for more complete treatment of uncertainty or hierarchical structure, among other things -->
+<!-- * Ensemble approaches to combine the results of multiple models -->
+<!-- * Combine data from different parts of the distribution (e.g. native range) -->
+<!-- <!-- #========================================================================= -->
+<p>–&gt; <!-- <!-- ## Thin presences, Stratify sampling --> –&gt;</p>
 <!-- ```{r} -->
 <!-- all.data$weight = all.data$pres + (1 - all.data$pres) * 10000 # these allow you to fit a Point Process -->
 <!-- mod.worst=glm(form,data=all.data,family=poisson(link='log'),weights=weight) # fit the model -->
@@ -1093,7 +1016,6 @@ abline(0,1) # 1:1 line indicate random predictions </code></pre>
 <!-- # abline(0,1) -->
 <!-- # (auc_ROCR <- performance(rocr.pred, measure = "auc")@y.values[[1]]) -->
 <!-- #  -->
-</div>
 </div>
 
 
