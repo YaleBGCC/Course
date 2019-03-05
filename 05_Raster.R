@@ -951,7 +951,7 @@ plot(canada['ID'])
 #' 
 #' `sf` is _much_ faster at reading and performing spatial tasks.
 #' 
-## ----eval=F--------------------------------------------------------------
+## ----eval=FALSE----------------------------------------------------------
 ## library(microbenchmark)
 ## 
 ## test.sf <- microbenchmark(
@@ -1010,7 +1010,7 @@ class(countries.sp)
 #' 
 #' The `mapview` package creates interactive maps in html using the popular `leaflet` package.
 #' 
-## ---- fig.height=3, fig.width=3,eval=F-----------------------------------
+## ---- fig.height=3, fig.width=3,eval=FALSE-------------------------------
 ## library(mapview)
 ## 
 ## mapView(countries["NAME"], legend = F, viewer.suppress = F)
