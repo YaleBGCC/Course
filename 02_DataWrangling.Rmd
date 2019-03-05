@@ -7,7 +7,7 @@ title       : "Data Wrangling"
 input  = knitr::current_input()  # filename of input document
 output = paste(tools::file_path_sans_ext(input), 'R', sep = '.')
 knitr::purl(input,output,documentation=1,quiet=T)
-knitr::opts_chunk$set(cache=TRUE, warnings=F, messages=F)
+knitr::opts_chunk$set(cache=FALSE, warnings=F, messages=F)
 options(width=50)
 ```
 

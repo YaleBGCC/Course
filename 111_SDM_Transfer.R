@@ -45,12 +45,14 @@ library(spThin)
 #' 
 #' > Decision: You assume the database of choice has sufficiently checked for errors in biology or typos. You know what happens when you assume...
 #' 
+#' <!-- write.csv(pres,file='/Users/ctg/Dropbox/Projects/MoL/forkYaleBGCC_Coursse/101_assets/AP_gbif.csv') -->
+#' 
 ## ------------------------------------------------------------------------
 # get presence data
-pres.tmp=spocc::occ('Alliaria petiolata',from='gbif',limit=5000) # this can be slow
+pres.tmp=spocc::occ('Alliaria petiolata',from='gbif',limit=500) # this can be slow
 pres=pres.tmp$gbif$data[[1]][,c('longitude','latitude')]
   # so just read in the result of me running this earlier
-#pres=read.csv('https://cmerow.github.io/YaleBGCCourses/101_assets/AP_gbif.csv')[,c('longitude','latitude')]
+#pres=read.csv('https://cmerow.github.io/Course/101_assets/AP_gbif.csv')[,c('longitude','latitude')] 
 pres=pres[complete.cases(pres),] # toss records without coords
 
 #' 

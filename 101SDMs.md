@@ -27,29 +27,8 @@ author: "[Cory Merow](cmerow.github.io)"
 ```r
 library(spocc)
 library(raster)
-```
-
-```
-## Loading required package: sp
-```
-
-```r
 library(sp)
 library(rgdal)
-```
-
-```
-## rgdal: version: 1.3-6, (SVN revision 773)
-##  Geospatial Data Abstraction Library extensions to R successfully loaded
-##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
-##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/gdal
-##  GDAL binary built with GEOS: FALSE 
-##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
-##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/proj
-##  Linking to sp version: 1.3-1
-```
-
-```r
 library(ROCR)
 ```
 
@@ -114,10 +93,6 @@ library(spThin)
 
 ```
 ## Loading required package: fields
-```
-
-```
-## Loading required package: maps
 ```
 
 ```
@@ -330,27 +305,27 @@ summary(mod.worst) # show coefficients
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -3.5896  -0.0003   0.0000   0.0000   4.7270  
+## -3.6600  -0.0003   0.0000   0.0000   4.7384  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)    
-## (Intercept) -40.44010    4.25657  -9.501  < 2e-16 ***
-## bio1         17.46309    3.71387   4.702 2.57e-06 ***
-## bio2          1.48382    0.18554   7.997 1.27e-15 ***
-## bio13        -0.26930    0.20034  -1.344 0.178886    
-## bio14         8.91494    2.13786   4.170 3.05e-05 ***
-## I(bio1^2)    -2.83028    0.88547  -3.196 0.001392 ** 
-## I(bio2^2)     0.72592    0.09437   7.692 1.45e-14 ***
-## I(bio13^2)    0.98064    0.26802   3.659 0.000253 ***
-## I(bio14^2)   -3.32022    0.98609  -3.367 0.000760 ***
+## (Intercept) -40.86528    4.28898  -9.528  < 2e-16 ***
+## bio1         17.83658    3.74211   4.766 1.88e-06 ***
+## bio2          1.47517    0.18557   7.949 1.87e-15 ***
+## bio13        -0.24443    0.20396  -1.198  0.23075    
+## bio14         8.66689    2.10846   4.111 3.95e-05 ***
+## I(bio1^2)    -2.87364    0.88976  -3.230  0.00124 ** 
+## I(bio2^2)     0.70609    0.09251   7.633 2.30e-14 ***
+## I(bio13^2)    1.06099    0.26056   4.072 4.66e-05 ***
+## I(bio14^2)   -3.22554    0.97511  -3.308  0.00094 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
-##     Null deviance: 3095.8  on 3109  degrees of freedom
-## Residual deviance: 2254.0  on 3101  degrees of freedom
-## AIC: 2522
+##     Null deviance: 3232.2  on 3115  degrees of freedom
+## Residual deviance: 2340.6  on 3107  degrees of freedom
+## AIC: 2620.6
 ## 
 ## Number of Fisher Scoring iterations: 21
 ```
@@ -387,16 +362,16 @@ str(response.curves) #structure of the object used for plotting
 ## List of 4
 ##  $ :'data.frame':	100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -1.79 -1.74 -1.7 -1.65 -1.61 ...
-##   ..$ ys: num [1:100] -80.7 -79.4 -78.2 -77 -75.8 ...
+##   ..$ ys: num [1:100] -81.9 -80.6 -79.4 -78.2 -77 ...
 ##  $ :'data.frame':	100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -4.75 -4.68 -4.61 -4.54 -4.47 ...
-##   ..$ ys: num [1:100] -31.1 -31.5 -31.9 -32.2 -32.6 ...
+##   ..$ ys: num [1:100] -31.9 -32.3 -32.7 -33 -33.4 ...
 ##  $ :'data.frame':	100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -2.82 -2.76 -2.7 -2.64 -2.58 ...
-##   ..$ ys: num [1:100] -31.9 -32.2 -32.6 -32.9 -33.2 ...
+##   ..$ ys: num [1:100] -31.7 -32.1 -32.5 -32.8 -33.2 ...
 ##  $ :'data.frame':	100 obs. of  2 variables:
 ##   ..$ xs: num [1:100] -2.52 -2.46 -2.4 -2.34 -2.28 ...
-##   ..$ ys: num [1:100] -84 -82.5 -80.9 -79.4 -77.9 ...
+##   ..$ ys: num [1:100] -83.2 -81.7 -80.2 -78.7 -77.3 ...
 ```
 
 
@@ -457,7 +432,7 @@ abline(0,1) # 1:1 line indicate random predictions
 ```
 
 ```
-## [1] 0.9855531
+## [1] 0.9861202
 ```
 
 ## Transfer to new conditions

@@ -926,16 +926,16 @@ plot(we['NAME'])
 #' 
 #' `sf` really shines with piping.
 #' 
-## ------------------------------------------------------------------------
-# calculate population density of each subregion
-pop.dens <- countries %>%
-  group_by(SUBREGION_) %>%
-  summarise(Population = sum(POP2005),
-            Area = sum(AREA),
-            Density = Population/Area, 
-            do_union = F)
-pop.dens
-plot(pop.dens['Density'])
+## ----eval=F--------------------------------------------------------------
+## # calculate population density of each subregion
+## pop.dens <- countries %>%
+##   group_by(SUBREGION_) %>%
+##   summarise(Population = sum(POP2005),
+##             Area = sum(AREA),
+##             Density = Population/Area,
+##             do_union = F)
+## pop.dens
+## plot(pop.dens['Density'])
 
 #' 
 ## ------------------------------------------------------------------------
@@ -951,17 +951,17 @@ plot(canada['ID'])
 #' 
 #' `sf` is _much_ faster at reading and performing spatial tasks.
 #' 
-## ------------------------------------------------------------------------
-library(microbenchmark)
-
-test.sf <- microbenchmark(
-  st_read("World/TM_WORLD_BORDERS.shp", quiet = T), 
-  times = 5)
-test.sp <- microbenchmark(
-  rgdal::readOGR("World/TM_WORLD_BORDERS.shp", verbose = F),
-  times = 5)
-
-print(rbind(test.sf, test.sp))
+## ----eval=F--------------------------------------------------------------
+## library(microbenchmark)
+## 
+## test.sf <- microbenchmark(
+##   st_read("World/TM_WORLD_BORDERS.shp", quiet = T),
+##   times = 5)
+## test.sp <- microbenchmark(
+##   rgdal::readOGR("World/TM_WORLD_BORDERS.shp", verbose = F),
+##   times = 5)
+## 
+## print(rbind(test.sf, test.sp))
 
 #' 
 #' ## Some familiar functions
@@ -1010,9 +1010,10 @@ class(countries.sp)
 #' 
 #' The `mapview` package creates interactive maps in html using the popular `leaflet` package.
 #' 
-## ---- fig.height=3, fig.width=3------------------------------------------
-library(mapview)
+## ---- fig.height=3, fig.width=3,eval=F-----------------------------------
+## library(mapview)
+## 
+## mapView(countries["NAME"], legend = F, viewer.suppress = F)
 
-mapView(countries["NAME"], legend = F, viewer.suppress = F)
-
+#' 
 #' 
