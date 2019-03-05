@@ -502,12 +502,13 @@ library(spThin)</code></pre>
 <blockquote>
 <p>Decision: You assume the database of choice has sufficiently checked for errors in biology or typos. You know what happens when you assume…</p>
 </blockquote>
-<!-- write.csv(pres,file='/Users/ctg/Dropbox/Projects/MoL/forkYaleBGCC_Coursse/101_assets/AP_gbif.csv') -->
-<pre class="r"><code># get presence data
-pres.tmp=spocc::occ(&#39;Alliaria petiolata&#39;,from=&#39;gbif&#39;,limit=500) # this can be slow
-pres=pres.tmp$gbif$data[[1]][,c(&#39;longitude&#39;,&#39;latitude&#39;)]
+<!-- write.csv(pres,file='/Users/ctg/Dropbox/Projects/MoL/forkYaleBGCC_Coursse/101_assets/AP_gbif.csv',row.names=F) 
   # so just read in the result of me running this earlier
-#pres=read.csv(&#39;https://cmerow.github.io/Course/101_assets/AP_gbif.csv&#39;)[,c(&#39;longitude&#39;,&#39;latitude&#39;)] 
+#pres=read.csv('https://github.com/cmerow/Course/tree/master/101_assets/AP_gbif.csv')-->
+<pre class="r"><code># get presence data
+# this can be slow
+pres.tmp=spocc::occ(&#39;Alliaria petiolata&#39;,from=&#39;gbif&#39;,limit=500) 
+pres=pres.tmp$gbif$data[[1]][,c(&#39;longitude&#39;,&#39;latitude&#39;)]
 pres=pres[complete.cases(pres),] # toss records without coords</code></pre>
 </div>
 <div id="get-environmental-data" class="section level2">
